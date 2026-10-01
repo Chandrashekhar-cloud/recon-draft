@@ -26,3 +26,9 @@ What I did: Implemented src/scoring.py (deterministic metrics evaluator comparin
 What happened: Ran `pytest`; all 23 tests passed, verifying perfect output scoring (100% on all metrics) and error catching for false matches, hallucinated IDs, and plug entries.
 Error text (if any): None
 Fix: N/A
+
+## [2026-10-01 23:46:00] What I did / What happened / Error text (if any) / Fix
+What I did: Installed python-dotenv and anthropic. Implemented src/llm.py (call_claude with retries, validation, and JSONL logging) and src/runners.py (run_v0 baseline without tools/skills). Created tests/test_runners.py.
+What happened: Ran pytest across all 28 tests (passed). Ran `python -m src.runners v0 clean`; properly raised ValueError indicating ANTHROPIC_API_KEY is not set in .env.
+Error text (if any): ValueError: ANTHROPIC_API_KEY is not set. Please add it to your .env file or environment.
+Fix: Ready to accept user credentials in .env to run live Claude calls.

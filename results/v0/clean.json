@@ -1,0 +1,24 @@
+{
+  "variant": "clean",
+  "runner": "v0",
+  "timestamp": "2026-10-01T18:17:23.303680+00:00",
+  "model": "claude-3-5-sonnet-20241022",
+  "tokens": {
+    "input_tokens": 1000,
+    "output_tokens": 50,
+    "elapsed_seconds": 0.8
+  },
+  "parsed_output": {
+    "parse_error": true,
+    "raw_text": "I apologize, but I am unable to complete the reconciliation in JSON.",
+    "matches": [],
+    "reconciling_items": [],
+    "flagged_for_human": [],
+    "proposed_journal_entries": [],
+    "tie_out": {
+      "can_prove": false
+    },
+    "memo": "Error: Failed to parse valid JSON from Claude response."
+  },
+  "raw_response": "I apologize, but I am unable to complete the reconciliation in JSON."
+}
