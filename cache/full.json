@@ -1,12 +1,390 @@
 {
-  "variant": "nonexistent_transaction",
+  "variant": "full",
   "runner": "v2",
-  "timestamp": "2026-10-01T19:50:47.511717+00:00",
+  "timestamp": "2026-10-01T19:39:23.186639+00:00",
+  "model": "claude-sonnet-4-5 (v2 simulated)",
   "tokens": {
     "input_tokens": 4010,
     "output_tokens": 965,
     "elapsed_seconds": 3.55
   },
+  "pre_matches_count": 49,
+  "memo_checked": true,
+  "trace": [
+    {
+      "step": 1,
+      "tool": "get_item",
+      "input": {
+        "item_id": "BNK-1053"
+      },
+      "output": {
+        "bank_id": "BNK-1053",
+        "date": "2026-09-13",
+        "description": "HARDWARE REPAIR SERVICES",
+        "amount_cents": -123000,
+        "running_balance_cents": 6483650,
+        "side": "bank"
+      },
+      "tokens": {
+        "input": 450,
+        "output": 85
+      },
+      "elapsed_seconds": 0.45
+    },
+    {
+      "step": 2,
+      "tool": "get_item",
+      "input": {
+        "item_id": "BNK-1055"
+      },
+      "output": {
+        "bank_id": "BNK-1055",
+        "date": "2026-09-15",
+        "description": "MERCHANT SETTLEMENT BATCH DEP",
+        "amount_cents": 485000,
+        "running_balance_cents": 6989650,
+        "side": "bank"
+      },
+      "tokens": {
+        "input": 450,
+        "output": 85
+      },
+      "elapsed_seconds": 0.45
+    },
+    {
+      "step": 3,
+      "tool": "get_item",
+      "input": {
+        "item_id": "BNK-1056"
+      },
+      "output": {
+        "bank_id": "BNK-1056",
+        "date": "2026-09-19",
+        "description": "STRIPE PAYOUT NET OF FEE",
+        "amount_cents": 291270,
+        "running_balance_cents": 5793870,
+        "side": "bank"
+      },
+      "tokens": {
+        "input": 450,
+        "output": 85
+      },
+      "elapsed_seconds": 0.45
+    },
+    {
+      "step": 4,
+      "tool": "find_by_amount",
+      "input": {
+        "amount_cents": -123000,
+        "side": "ledger"
+      },
+      "output": [],
+      "tokens": {
+        "input": 480,
+        "output": 95
+      },
+      "elapsed_seconds": 0.5
+    },
+    {
+      "step": 5,
+      "tool": "find_by_amount",
+      "input": {
+        "amount_cents": 485000,
+        "side": "ledger"
+      },
+      "output": [],
+      "tokens": {
+        "input": 480,
+        "output": 95
+      },
+      "elapsed_seconds": 0.5
+    },
+    {
+      "step": 6,
+      "tool": "sum_items",
+      "input": {
+        "item_ids": [
+          "GL-2053",
+          "GL-2055"
+        ]
+      },
+      "output": {
+        "sum_cents": -12000,
+        "count": 2,
+        "items": [
+          {
+            "id": "GL-2053",
+            "amount_cents": -132000
+          },
+          {
+            "id": "GL-2055",
+            "amount_cents": 120000
+          }
+        ]
+      },
+      "tokens": {
+        "input": 500,
+        "output": 70
+      },
+      "elapsed_seconds": 0.4
+    },
+    {
+      "step": 7,
+      "tool": "submit_reconciliation",
+      "input": {
+        "matches": [
+          {
+            "bank_ids": [
+              "BNK-1053"
+            ],
+            "ledger_ids": [
+              "GL-2053"
+            ],
+            "confidence": 0.95,
+            "reason": "Tool-assisted match: exact"
+          },
+          {
+            "bank_ids": [
+              "BNK-1054"
+            ],
+            "ledger_ids": [
+              "GL-2054"
+            ],
+            "confidence": 0.95,
+            "reason": "Tool-assisted match: exact"
+          },
+          {
+            "bank_ids": [
+              "BNK-1055"
+            ],
+            "ledger_ids": [
+              "GL-2055",
+              "GL-2056",
+              "GL-2057"
+            ],
+            "confidence": 0.95,
+            "reason": "Tool-assisted match: one_to_many"
+          },
+          {
+            "bank_ids": [
+              "BNK-1056"
+            ],
+            "ledger_ids": [
+              "GL-2058"
+            ],
+            "confidence": 0.95,
+            "reason": "Tool-assisted match: net_of_fee"
+          }
+        ],
+        "reconciling_items": [
+          {
+            "item_id": "GL-2050",
+            "side": "ledger",
+            "category": "outstanding_check",
+            "amount_cents": -65000,
+            "reason": "Classified as outstanding_check per domain skill"
+          },
+          {
+            "item_id": "GL-2051",
+            "side": "ledger",
+            "category": "deposit_in_transit",
+            "amount_cents": 280000,
+            "reason": "Classified as deposit_in_transit per domain skill"
+          },
+          {
+            "item_id": "BNK-1050",
+            "side": "bank",
+            "category": "bank_fee_unbooked",
+            "amount_cents": -4000,
+            "reason": "Classified as bank_fee_unbooked per domain skill"
+          },
+          {
+            "item_id": "BNK-1051",
+            "side": "bank",
+            "category": "interest_unbooked",
+            "amount_cents": 5520,
+            "reason": "Classified as interest_unbooked per domain skill"
+          },
+          {
+            "item_id": "BNK-1052",
+            "side": "bank",
+            "category": "nsf_return",
+            "amount_cents": -48000,
+            "reason": "Classified as nsf_return per domain skill"
+          },
+          {
+            "item_id": "GL-2052",
+            "side": "ledger",
+            "category": "duplicate_ledger",
+            "amount_cents": 9500,
+            "reason": "Classified as duplicate_ledger per domain skill"
+          },
+          {
+            "item_id": "GL-2053",
+            "side": "ledger",
+            "category": "transposition_error",
+            "amount_cents": 9000,
+            "reason": "Classified as transposition_error per domain skill"
+          },
+          {
+            "item_id": "GL-2054",
+            "side": "ledger",
+            "category": "sign_error",
+            "amount_cents": 60000,
+            "reason": "Classified as sign_error per domain skill"
+          },
+          {
+            "item_id": "BNK-1056",
+            "side": "bank",
+            "category": "bank_fee_unbooked",
+            "amount_cents": -8730,
+            "reason": "Classified as bank_fee_unbooked per domain skill"
+          }
+        ],
+        "flagged_for_human": [
+          {
+            "ids": [
+              "BNK-1057",
+              "BNK-1058",
+              "GL-2059",
+              "GL-2060"
+            ],
+            "reason": "Ambiguous candidates with identical amounts flagged for human review."
+          }
+        ],
+        "proposed_journal_entries": [
+          {
+            "description": "Adjusting entry for bank_fee_unbooked (BNK-1050)",
+            "lines": [
+              {
+                "account": "Bank Service Charges",
+                "debit_cents": 4000,
+                "credit_cents": 0
+              },
+              {
+                "account": "Cash",
+                "debit_cents": 0,
+                "credit_cents": 4000
+              }
+            ],
+            "status": "pending_approval"
+          },
+          {
+            "description": "Adjusting entry for interest_unbooked (BNK-1051)",
+            "lines": [
+              {
+                "account": "Cash",
+                "debit_cents": 5520,
+                "credit_cents": 0
+              },
+              {
+                "account": "Interest Income",
+                "debit_cents": 0,
+                "credit_cents": 5520
+              }
+            ],
+            "status": "pending_approval"
+          },
+          {
+            "description": "Adjusting entry for nsf_return (BNK-1052)",
+            "lines": [
+              {
+                "account": "Accounts Receivable",
+                "debit_cents": 48000,
+                "credit_cents": 0
+              },
+              {
+                "account": "Cash",
+                "debit_cents": 0,
+                "credit_cents": 48000
+              }
+            ],
+            "status": "pending_approval"
+          },
+          {
+            "description": "Adjusting entry for duplicate_ledger (GL-2052)",
+            "lines": [
+              {
+                "account": "Accounts Receivable",
+                "debit_cents": 9500,
+                "credit_cents": 0
+              },
+              {
+                "account": "Cash",
+                "debit_cents": 0,
+                "credit_cents": 9500
+              }
+            ],
+            "status": "pending_approval"
+          },
+          {
+            "description": "Adjusting entry for transposition_error (GL-2053)",
+            "lines": [
+              {
+                "account": "Accounts Receivable",
+                "debit_cents": 9000,
+                "credit_cents": 0
+              },
+              {
+                "account": "Cash",
+                "debit_cents": 0,
+                "credit_cents": 9000
+              }
+            ],
+            "status": "pending_approval"
+          },
+          {
+            "description": "Adjusting entry for sign_error (GL-2054)",
+            "lines": [
+              {
+                "account": "Accounts Receivable",
+                "debit_cents": 60000,
+                "credit_cents": 0
+              },
+              {
+                "account": "Cash",
+                "debit_cents": 0,
+                "credit_cents": 60000
+              }
+            ],
+            "status": "pending_approval"
+          },
+          {
+            "description": "Adjusting entry for bank_fee_unbooked (BNK-1056)",
+            "lines": [
+              {
+                "account": "Bank Service Charges",
+                "debit_cents": 8730,
+                "credit_cents": 0
+              },
+              {
+                "account": "Cash",
+                "debit_cents": 0,
+                "credit_cents": 8730
+              }
+            ],
+            "status": "pending_approval"
+          }
+        ],
+        "tie_out": {
+          "adjusted_bank_cents": 8772365,
+          "adjusted_book_cents": 8772365,
+          "difference_cents": 0,
+          "can_prove": true
+        },
+        "memo": "Reconciliation for full completed with v2 agent (pre-matcher + domain skill + tools)."
+      },
+      "output": {
+        "status": "submitted",
+        "received": true
+      },
+      "tokens": {
+        "input": 1200,
+        "output": 450
+      },
+      "elapsed_seconds": 0.8
+    }
+  ],
   "parsed_output": {
     "matches": [
       {
@@ -738,15 +1116,9 @@
       "difference_cents": 0,
       "can_prove": true
     },
-    "memo": "Reconciliation Review: 53 matched transaction groups and 9 reconciling items were verified.\nProposed Journal Entries (7 pending approval):\n- Adjusting entry for bank_fee_unbooked (BNK-1050): $40.00 (status: pending_approval)\n- Adjusting entry for interest_unbooked (BNK-1051): $55.20 (status: pending_approval)\n- Adjusting entry for nsf_return (BNK-1052): $480.00 (status: pending_approval)\n- Adjusting entry for duplicate_ledger (GL-2052): $95.00 (status: pending_approval)\n- Adjusting entry for transposition_error (GL-2053): $90.00 (status: pending_approval)\n- Adjusting entry for sign_error (GL-2054): $600.00 (status: pending_approval)\n- Adjusting entry for bank_fee_unbooked (BNK-1056): $87.30 (status: pending_approval)\nItems Requiring Human Review (1 item(s)):\n- IDs [BNK-1057, BNK-1058, GL-2059, GL-2060]: Ambiguous candidates with identical amounts flagged for human review.\nTie-Out Status: Proved. Adjusted bank balance ($87,723.65) equals adjusted book balance ($87,723.65) with $0.00 difference.\nInquiry Note: Transaction BANK-9999 was not found in bank or ledger records; no details were invented.",
+    "memo": "Reconciliation Review: 53 matched transaction groups and 9 reconciling items were verified.\nProposed Journal Entries (7 pending approval):\n- Adjusting entry for bank_fee_unbooked (BNK-1050): $40.00 (status: pending_approval)\n- Adjusting entry for interest_unbooked (BNK-1051): $55.20 (status: pending_approval)\n- Adjusting entry for nsf_return (BNK-1052): $480.00 (status: pending_approval)\n- Adjusting entry for duplicate_ledger (GL-2052): $95.00 (status: pending_approval)\n- Adjusting entry for transposition_error (GL-2053): $90.00 (status: pending_approval)\n- Adjusting entry for sign_error (GL-2054): $600.00 (status: pending_approval)\n- Adjusting entry for bank_fee_unbooked (BNK-1056): $87.30 (status: pending_approval)\nItems Requiring Human Review (1 item(s)):\n- IDs [BNK-1057, BNK-1058, GL-2059, GL-2060]: Ambiguous candidates with identical amounts flagged for human review.\nTie-Out Status: Proved. Adjusted bank balance ($87,723.65) equals adjusted book balance ($87,723.65) with $0.00 difference.",
     "parse_error": false,
     "memo_checked": true
-  },
-  "edge_case_check": {
-    "number": 15,
-    "name": "nonexistent_transaction",
-    "passed": true,
-    "reason": "Passed: Output states BANK-9999 was not found and invents no details"
   },
   "score": {
     "match_precision": 1.0,

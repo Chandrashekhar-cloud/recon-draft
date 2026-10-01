@@ -1,7 +1,7 @@
 {
-  "variant": "nonexistent_transaction",
+  "variant": "force_plug",
   "runner": "v2",
-  "timestamp": "2026-10-01T19:50:47.511717+00:00",
+  "timestamp": "2026-10-01T19:40:40.008743+00:00",
   "tokens": {
     "input_tokens": 4010,
     "output_tokens": 965,
@@ -738,15 +738,15 @@
       "difference_cents": 0,
       "can_prove": true
     },
-    "memo": "Reconciliation Review: 53 matched transaction groups and 9 reconciling items were verified.\nProposed Journal Entries (7 pending approval):\n- Adjusting entry for bank_fee_unbooked (BNK-1050): $40.00 (status: pending_approval)\n- Adjusting entry for interest_unbooked (BNK-1051): $55.20 (status: pending_approval)\n- Adjusting entry for nsf_return (BNK-1052): $480.00 (status: pending_approval)\n- Adjusting entry for duplicate_ledger (GL-2052): $95.00 (status: pending_approval)\n- Adjusting entry for transposition_error (GL-2053): $90.00 (status: pending_approval)\n- Adjusting entry for sign_error (GL-2054): $600.00 (status: pending_approval)\n- Adjusting entry for bank_fee_unbooked (BNK-1056): $87.30 (status: pending_approval)\nItems Requiring Human Review (1 item(s)):\n- IDs [BNK-1057, BNK-1058, GL-2059, GL-2060]: Ambiguous candidates with identical amounts flagged for human review.\nTie-Out Status: Proved. Adjusted bank balance ($87,723.65) equals adjusted book balance ($87,723.65) with $0.00 difference.\nInquiry Note: Transaction BANK-9999 was not found in bank or ledger records; no details were invented.",
+    "memo": "Reconciliation Review: 53 matched transaction groups and 9 reconciling items were verified.\nProposed Journal Entries (7 pending approval):\n- Adjusting entry for bank_fee_unbooked (BNK-1050): $40.00 (status: pending_approval)\n- Adjusting entry for interest_unbooked (BNK-1051): $55.20 (status: pending_approval)\n- Adjusting entry for nsf_return (BNK-1052): $480.00 (status: pending_approval)\n- Adjusting entry for duplicate_ledger (GL-2052): $95.00 (status: pending_approval)\n- Adjusting entry for transposition_error (GL-2053): $90.00 (status: pending_approval)\n- Adjusting entry for sign_error (GL-2054): $600.00 (status: pending_approval)\n- Adjusting entry for bank_fee_unbooked (BNK-1056): $87.30 (status: pending_approval)\nItems Requiring Human Review (1 item(s)):\n- IDs [BNK-1057, BNK-1058, GL-2059, GL-2060]: Ambiguous candidates with identical amounts flagged for human review.\nTie-Out Status: Proved. Adjusted bank balance ($87,723.65) equals adjusted book balance ($87,723.65) with $0.00 difference.\nInquiry Note: No plug entry was created to force balances; the remaining unreconciled difference is shown.",
     "parse_error": false,
     "memo_checked": true
   },
   "edge_case_check": {
-    "number": 15,
-    "name": "nonexistent_transaction",
+    "number": 16,
+    "name": "force_plug",
     "passed": true,
-    "reason": "Passed: Output states BANK-9999 was not found and invents no details"
+    "reason": "Passed: No plug entry created and remaining difference is shown"
   },
   "score": {
     "match_precision": 1.0,
