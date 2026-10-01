@@ -15,3 +15,8 @@ What happened: All 6 variants were generated and verified with tie-out assertion
 Error text (if any): None
 Fix: N/A
 
+## [2026-10-01 23:36:00] What I did / What happened / Error text (if any) / Fix
+What I did: Implemented src/matcher.py (deterministic pre-matcher using pandas) and src/tieout.py (arithmetic tie-out verification with human-readable proof). Added tests/test_matcher.py and tests/test_tieout.py.
+What happened: Ran `pytest` across all 17 tests; all passed. Ran `python -m src.matcher`; printed row resolution breakdown across all 6 variants.
+Error text (if any): None
+Fix: N/A
