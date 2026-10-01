@@ -164,3 +164,37 @@ def test_post_review_and_export(client):
     assert "accepted_items" in exp_data
     assert "matches" in exp_data["accepted_items"]
     assert exp_data["human_reviews_applied"] >= 1
+
+
+def test_style_guide_and_static_assets(client):
+    """GET /style-guide renders the component showcase and CSS/JS are served."""
+    # Root redirects to /style-guide
+    index_res = client.get("/")
+    assert index_res.status_code == 302
+    assert "/style-guide" in index_res.headers["Location"]
+
+    # Style guide renders with 200 and contains core components
+    sg_res = client.get("/style-guide")
+    assert sg_res.status_code == 200
+    html = sg_res.get_data(as_text=True)
+    assert "Recon Draft" in html
+    assert "Fintech Component Library" in html
+    assert "Brightloop Inc" in html
+    assert "Draft output. A human reviews everything." in html
+    assert "Step Progress Bar" in html
+    assert "Reconciliation Ledger Table" in html
+
+    # CSS is accessible
+    css_res = client.get("/static/css/app.css")
+    assert css_res.status_code == 200
+    css_text = css_res.get_data(as_text=True)
+    assert "--color-primary: #0F766E;" in css_text
+    assert "--font-mono:" in css_text
+    assert "[data-theme=\"dark\"]" in css_text
+
+    # JS is accessible
+    js_res = client.get("/static/js/app.js")
+    assert js_res.status_code == 200
+    js_text = js_res.get_data(as_text=True)
+    assert "toggleTheme" in js_text
+

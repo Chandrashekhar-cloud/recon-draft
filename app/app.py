@@ -19,7 +19,7 @@ import time
 from typing import Any, Dict, List, Optional, Set, Tuple
 import uuid
 
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, redirect, render_template, request, url_for
 
 from evals.edge_cases import EDGE_CASE_NAMES, ensure_edge_case_data
 import src.runners as runners_module
@@ -611,5 +611,46 @@ def export_accepted_items(run_id: str):
     return jsonify(export_payload), 200
 
 
+# ==============================================================================
+# FRONTEND TEMPLATE ROUTES
+# ==============================================================================
+
+@app.route("/", methods=["GET"])
+def index():
+    """Default entry point redirects to the style guide."""
+    return redirect(url_for("style_guide"))
+
+
+@app.route("/style-guide", methods=["GET"])
+def style_guide():
+    """Component library and visual design system showcase."""
+    return render_template("style_guide.html", active_nav="style_guide")
+
+
+@app.route("/run", methods=["GET"])
+def nav_run():
+    """Run page placeholder pointing to style guide."""
+    return render_template("style_guide.html", active_nav="run")
+
+
+@app.route("/review", methods=["GET"])
+def nav_review():
+    """Review page placeholder pointing to style guide."""
+    return render_template("style_guide.html", active_nav="review")
+
+
+@app.route("/evals", methods=["GET"])
+def nav_evals():
+    """Evals page placeholder pointing to style guide."""
+    return render_template("style_guide.html", active_nav="evals")
+
+
+@app.route("/under-the-hood", methods=["GET"])
+def nav_under_the_hood():
+    """Under the Hood page placeholder pointing to style guide."""
+    return render_template("style_guide.html", active_nav="under_the_hood")
+
+
 if __name__ == "__main__":
     app.run(host="127.0.0.1", port=5000, debug=False)
+

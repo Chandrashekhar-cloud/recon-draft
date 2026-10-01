@@ -1,0 +1,505 @@
+{% extends "base.html" %}
+
+{% block title %}Design System & Style Guide - Recon Draft{% endblock %}
+
+{% block content %}
+<div style="display: flex; flex-direction: column; gap: var(--space-6);">
+
+  <!-- Page Header -->
+  <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: var(--space-4);">
+    <div>
+      <div style="display: flex; align-items: center; gap: var(--space-2); margin-bottom: var(--space-1);">
+        <span class="badge badge-info">Design System v2.0</span>
+        <span class="badge badge-neutral">Offline / Local Assets</span>
+      </div>
+      <h1>Fintech Component Library</h1>
+      <p class="text-muted" style="margin-top: var(--space-1); max-width: 680px;">
+        High-precision design system optimized for autonomous financial reconciliation, screen-sharing, and projector presentations.
+      </p>
+    </div>
+
+    <!-- Quick Actions -->
+    <div style="display: flex; align-items: center; gap: var(--space-3);">
+      <button class="btn btn-secondary" onclick="window.ReconApp.toggleTheme()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="5"/>
+          <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+        </svg>
+        Toggle Theme
+      </button>
+      <button class="btn btn-primary" data-modal-open="demo-modal">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+          <line x1="9" y1="9" x2="15" y2="15"/>
+          <line x1="15" y1="9" x2="9" y2="15"/>
+        </svg>
+        Open Demo Modal
+      </button>
+    </div>
+  </div>
+
+  <!-- 1. Step Progress Bar -->
+  <section class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Step Progress Bar</div>
+        <div class="card-subtitle">Real-time pipeline progression with distinct status states</div>
+      </div>
+      <span class="badge badge-success"><span class="badge-dot"></span> Pipeline Active</span>
+    </div>
+    <div class="card-body">
+      <div class="step-progress">
+        <div class="step-line">
+          <div class="step-line-fill" style="width: 50%;"></div>
+        </div>
+
+        <!-- Step 1: Matching -->
+        <div class="step-item completed">
+          <div class="step-circle">
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+            </svg>
+          </div>
+          <div class="step-label">1. Matching</div>
+        </div>
+
+        <!-- Step 2: Asking Claude -->
+        <div class="step-item completed">
+          <div class="step-circle">
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+            </svg>
+          </div>
+          <div class="step-label">2. Asking Claude</div>
+        </div>
+
+        <!-- Step 3: Verifying -->
+        <div class="step-item active">
+          <div class="step-circle">3</div>
+          <div class="step-label">3. Verifying</div>
+        </div>
+
+        <!-- Step 4: Writing Memo -->
+        <div class="step-item">
+          <div class="step-circle">4</div>
+          <div class="step-label">4. Writing Memo</div>
+        </div>
+
+        <!-- Step 5: Done -->
+        <div class="step-item">
+          <div class="step-circle">5</div>
+          <div class="step-label">5. Done</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. Stat Tiles (KPI Grid) -->
+  <section>
+    <div style="margin-bottom: var(--space-3);">
+      <h2>Key Metrics (Stat Tiles)</h2>
+      <p class="text-muted">High-contrast metrics with right-aligned tabular numbers.</p>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: var(--space-4);">
+      <!-- Stat 1 -->
+      <div class="stat-tile">
+        <div class="stat-label">Reconciled Match Rate</div>
+        <div class="stat-value" style="color: var(--color-success);">100.0%</div>
+        <div class="stat-meta">
+          <span class="stat-delta positive">&uarr; +50.0%</span>
+          <span>vs raw v0 baseline</span>
+        </div>
+      </div>
+
+      <!-- Stat 2 -->
+      <div class="stat-tile">
+        <div class="stat-label">False Matches / Hallucinations</div>
+        <div class="stat-value">0 <span style="font-size: var(--font-base); color: var(--color-text-muted); font-weight: 500;">items</span></div>
+        <div class="stat-meta">
+          <span class="badge badge-success"><span class="badge-dot"></span> Zero Drift</span>
+          <span>Deterministic verify</span>
+        </div>
+      </div>
+
+      <!-- Stat 3 -->
+      <div class="stat-tile">
+        <div class="stat-label">Adjusted Bank Balance</div>
+        <div class="stat-value money">$87,723.65</div>
+        <div class="stat-meta">
+          <span class="badge badge-info">Tie-Out Proved</span>
+          <span>Diff: $0.00</span>
+        </div>
+      </div>
+
+      <!-- Stat 4 -->
+      <div class="stat-tile">
+        <div class="stat-label">Token Consumption</div>
+        <div class="stat-value">42,030</div>
+        <div class="stat-meta">
+          <span class="stat-delta positive">&darr; -48%</span>
+          <span>Filtered via pre-matcher</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. Financial Table with Sticky Header, Zebra Rows & Monospace Money -->
+  <section class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Reconciliation Ledger Table</div>
+        <div class="card-subtitle">Sticky headers, alternating zebra rows, right-aligned monospace money, negative amounts in red</div>
+      </div>
+      <div style="display: flex; gap: var(--space-2);">
+        <span class="badge badge-neutral">5 Samples Shown</span>
+      </div>
+    </div>
+    <div class="table-container">
+      <table class="table">
+        <thead>
+          <tr>
+            <th style="width: 14%;">Transaction ID</th>
+            <th style="width: 12%;">Date</th>
+            <th style="width: 34%;">Description / Memo</th>
+            <th style="width: 16%;">Classification</th>
+            <th style="width: 24%;" class="col-money">Amount (Monospace)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="item-id">BNK-1001</span></td>
+            <td class="text-mono">2026-09-02</td>
+            <td>Soma Office Suites Rent Check #401</td>
+            <td><span class="badge badge-info">Matched</span></td>
+            <td class="col-money">
+              <span class="money money-negative">-$4,500.00</span>
+            </td>
+          </tr>
+          <tr>
+            <td><span class="item-id">BNK-1030</span></td>
+            <td class="text-mono">2026-09-28</td>
+            <td>Quantum Dynamics Annual Contract ACH</td>
+            <td><span class="badge badge-success">Matched</span></td>
+            <td class="col-money">
+              <span class="money money-positive">+$9,400.00</span>
+            </td>
+          </tr>
+          <tr>
+            <td><span class="item-id">BNK-1050</span></td>
+            <td class="text-mono">2026-09-30</td>
+            <td>Monthly Account Analysis Maintenance Fee</td>
+            <td><span class="badge badge-warning">Unbooked Fee</span></td>
+            <td class="col-money">
+              <span class="money money-negative">-$40.00</span>
+            </td>
+          </tr>
+          <tr>
+            <td><span class="item-id">BNK-1051</span></td>
+            <td class="text-mono">2026-09-30</td>
+            <td>Commercial Account Earned Interest Credit</td>
+            <td><span class="badge badge-success">Book Adj</span></td>
+            <td class="col-money">
+              <span class="money money-positive">+$55.20</span>
+            </td>
+          </tr>
+          <tr>
+            <td><span class="item-id">GL-2050</span></td>
+            <td class="text-mono">2026-09-29</td>
+            <td>Vendor Apex Payment Check #403 (In Transit)</td>
+            <td><span class="badge badge-neutral">Outstanding Check</span></td>
+            <td class="col-money">
+              <span class="money money-negative">-$650.00</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card-footer">
+      <span class="text-muted" style="font-size: var(--font-sm);">Showing verified transactions with exact integer-cent precision</span>
+      <div style="display: flex; gap: var(--space-4);">
+        <span style="font-size: var(--font-sm);">Total Outflow: <strong class="money money-negative">-$5,190.00</strong></span>
+        <span style="font-size: var(--font-sm);">Total Inflow: <strong class="money money-positive">+$9,455.20</strong></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. Interactive Tabs & Tooltips -->
+  <section class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Interactive Tabs & Tooltips</div>
+        <div class="card-subtitle">Zero CDN, purely local DOM switching with hover micro-tooltips</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <!-- Tabs Nav -->
+      <div class="tabs-nav">
+        <button class="tab-btn active" data-tab="tab-proposed-je">Proposed Journal Entries (7)</button>
+        <button class="tab-btn" data-tab="tab-human-flagged">Flagged For Human (1)</button>
+        <button class="tab-btn" data-tab="tab-tieout">Tie-Out Reconciliation</button>
+      </div>
+
+      <!-- Tab Panes -->
+      <div class="tab-pane active" id="tab-proposed-je">
+        <p style="margin-bottom: var(--space-4);">
+          All unbooked items require draft journal entries with strict status <code>pending_approval</code>.
+        </p>
+        <div style="display: flex; flex-direction: column; gap: var(--space-3);">
+          <div style="background-color: var(--color-surface-subtle); border: 1px solid var(--color-border); border-radius: var(--radius-btn); padding: var(--space-4);">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <strong>Adjusting entry for bank_fee_unbooked (BNK-1050)</strong>
+              <span class="badge badge-warning">pending_approval</span>
+            </div>
+            <div style="margin-top: var(--space-2); font-family: var(--font-mono); font-size: var(--font-sm);">
+              <div>Debit: Bank Service Charges <span class="money">$40.00</span></div>
+              <div>Credit: Cash <span class="money">$40.00</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-pane" id="tab-human-flagged">
+        <p style="margin-bottom: var(--space-4);">
+          Items flagged when deterministic or domain heuristics detect ambiguity or transposition errors.
+        </p>
+        <div style="background-color: var(--color-warning-subtle); border: 1px solid var(--color-warning-border); border-radius: var(--radius-btn); padding: var(--space-4);">
+          <div style="display: flex; align-items: center; gap: var(--space-2); color: var(--color-warning-text); font-weight: 700;">
+            <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+            </svg>
+            Ambiguous Match Candidates Flagged
+          </div>
+          <p style="font-size: var(--font-sm); color: var(--color-warning-text); margin-top: var(--space-2);">
+            IDs: <code>BNK-1057</code>, <code>BNK-1058</code>, <code>GL-2059</code>, <code>GL-2060</code> share identical amounts ($1,200.00). Matching on amount alone is prevented by Domain Skill Hard Rule #3.
+          </p>
+        </div>
+      </div>
+
+      <div class="tab-pane" id="tab-tieout">
+        <p style="margin-bottom: var(--space-4);">
+          Mathematical tie-out recomputed in Python: <code>can_prove = true</code>.
+        </p>
+        <table class="table" style="max-width: 600px;">
+          <tbody>
+            <tr>
+              <td>Adjusted Bank Balance</td>
+              <td class="col-money"><strong class="money">$87,723.65</strong></td>
+            </tr>
+            <tr>
+              <td>Adjusted Book Balance</td>
+              <td class="col-money"><strong class="money">$87,723.65</strong></td>
+            </tr>
+            <tr style="background-color: var(--color-success-subtle);">
+              <td><strong>Reconciliation Variance</strong></td>
+              <td class="col-money"><strong class="money money-positive">$0.00 (Proved)</strong></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. Button Styles & Status Badges -->
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: var(--space-5);">
+    <!-- Buttons Section -->
+    <section class="card">
+      <div class="card-header">
+        <div class="card-title">Buttons & Actions</div>
+      </div>
+      <div class="card-body" style="display: flex; flex-direction: column; gap: var(--space-4);">
+        <!-- Button Row 1 -->
+        <div style="display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center;">
+          <button class="btn btn-primary">Primary Action</button>
+          <button class="btn btn-secondary">Secondary</button>
+          <button class="btn btn-ghost">Ghost</button>
+          <button class="btn btn-danger">Danger Action</button>
+        </div>
+
+        <!-- Button Row 2: Sizes & States -->
+        <div style="display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center;">
+          <button class="btn btn-primary btn-sm">Small</button>
+          <button class="btn btn-secondary btn-sm">Small Secondary</button>
+          <button class="btn btn-secondary" disabled>Disabled State</button>
+          <button class="btn btn-secondary btn-icon-only tooltip-wrapper" data-tooltip="Download Report">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Badges Section -->
+    <section class="card">
+      <div class="card-header">
+        <div class="card-title">Status Badges</div>
+      </div>
+      <div class="card-body" style="display: flex; flex-direction: column; gap: var(--space-4);">
+        <div style="display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center;">
+          <span class="badge badge-success"><span class="badge-dot"></span> Success</span>
+          <span class="badge badge-warning"><span class="badge-dot"></span> Warning</span>
+          <span class="badge badge-danger"><span class="badge-dot"></span> Danger</span>
+          <span class="badge badge-info"><span class="badge-dot"></span> Info</span>
+          <span class="badge badge-neutral"><span class="badge-dot"></span> Neutral</span>
+        </div>
+
+        <div style="display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center;">
+          <span class="badge badge-success">Tie-Out Verified</span>
+          <span class="badge badge-danger">Transposition Error</span>
+          <span class="badge badge-warning">Pending Approval</span>
+          <span class="badge badge-info">Tool Call Active</span>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- 6. Interactive Toasts & Notifications -->
+  <section class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Toast Notifications</div>
+        <div class="card-subtitle">Click below to trigger live non-blocking toast alerts</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div style="display: flex; flex-wrap: wrap; gap: var(--space-3);">
+        <button class="btn btn-secondary" onclick="window.ReconApp.showToast({title: 'Run Completed', message: 'Variant full reconciled in 3.55s with zero false matches.', type: 'success'})">
+          Trigger Success Toast
+        </button>
+        <button class="btn btn-secondary" onclick="window.ReconApp.showToast({title: 'Review Required', message: 'Item BNK-1057 has ambiguous amount $1,200.00.', type: 'warning'})">
+          Trigger Warning Toast
+        </button>
+        <button class="btn btn-secondary" onclick="window.ReconApp.showToast({title: 'Integrity Alert', message: 'Unbalanced draft entry rejected by deterministic verifier.', type: 'danger'})">
+          Trigger Danger Toast
+        </button>
+        <button class="btn btn-secondary" onclick="window.ReconApp.showToast({title: 'Background Thread', message: 'Pipeline started in background daemon (run_6f507a0443).', type: 'info'})">
+          Trigger Info Toast
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. Code Block with Copy Button -->
+  <section class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Code Block Component</div>
+        <div class="card-subtitle">Dark container, monospace styling, one-click copy with visual confirmation</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="code-container">
+        <div class="code-header">
+          <span>json &bull; GET /api/run/run_6f507a0443/status</span>
+          <button class="copy-btn" data-copy-target="code-snippet-1">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+            </svg>
+            Copy JSON
+          </button>
+        </div>
+        <pre class="code-content" id="code-snippet-1"><code>{
+  "run_id": "run_6f507a0443",
+  "status": "done",
+  "current_step": "done",
+  "steps": [
+    {"step": "created", "timestamp": "2026-10-01T19:50:28.239527+00:00"},
+    {"step": "matching", "timestamp": "2026-10-01T19:50:28.240834+00:00"},
+    {"step": "verifying", "timestamp": "2026-10-01T19:50:28.307076+00:00"},
+    {"step": "writing memo", "timestamp": "2026-10-01T19:50:28.391888+00:00"},
+    {"step": "done", "timestamp": "2026-10-01T19:50:28.395891+00:00"}
+  ]
+}</code></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8. Skeleton Loader & Empty State -->
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: var(--space-5);">
+    <!-- Skeleton Loaders -->
+    <section class="card">
+      <div class="card-header">
+        <div class="card-title">Skeleton Loader</div>
+        <div class="card-subtitle">Smooth shimmering placeholder for async loading</div>
+      </div>
+      <div class="card-body">
+        <div style="display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-4);">
+          <div class="skeleton skeleton-avatar"></div>
+          <div style="flex: 1;">
+            <div class="skeleton skeleton-title" style="width: 50%;"></div>
+            <div class="skeleton skeleton-text" style="width: 80%;"></div>
+          </div>
+        </div>
+        <div class="skeleton skeleton-text" style="width: 100%;"></div>
+        <div class="skeleton skeleton-text" style="width: 90%;"></div>
+        <div class="skeleton skeleton-text" style="width: 75%;"></div>
+      </div>
+    </section>
+
+    <!-- Empty State -->
+    <section class="card">
+      <div class="card-header">
+        <div class="card-title">Empty State</div>
+        <div class="card-subtitle">Clean guidance when no data is loaded</div>
+      </div>
+      <div class="card-body" style="padding: 0;">
+        <div class="empty-state" style="border: none; border-radius: 0;">
+          <div class="empty-icon-wrap">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+              <line x1="16" y1="13" x2="8" y2="13"/>
+              <line x1="16" y1="17" x2="8" y2="17"/>
+              <polyline points="10 9 9 9 8 9"/>
+            </svg>
+          </div>
+          <div class="empty-title">No Reconciliation Runs Yet</div>
+          <div class="empty-subtitle">
+            Select an evaluation variant and launch the autonomous reconciliation agent to review suggested matches.
+          </div>
+          <button class="btn btn-primary" onclick="window.ReconApp.showToast({title: 'Action Triggered', message: 'Navigating to Run screen...', type: 'info'})">
+            Launch New Run
+          </button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+</div>
+
+<!-- Interactive Demo Modal -->
+<div class="modal-backdrop" id="demo-modal" role="dialog" aria-modal="true" aria-labelledby="modal-demo-title">
+  <div class="modal-dialog">
+    <div class="modal-header">
+      <h3 class="modal-title" id="modal-demo-title">Confirm Adjusting Entry</h3>
+      <button class="modal-close" data-modal-close aria-label="Close Modal">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p style="margin-bottom: var(--space-3);">
+        You are approving proposed adjusting entry for <strong>BNK-1050</strong> (Monthly Maintenance Fee).
+      </p>
+      <div style="background-color: var(--color-surface-subtle); border: 1px solid var(--color-border); border-radius: var(--radius-sm); padding: var(--space-3); font-family: var(--font-mono); font-size: var(--font-sm);">
+        <div>DR Bank Service Charges: <strong class="money">$40.00</strong></div>
+        <div>CR Cash: <strong class="money">$40.00</strong></div>
+      </div>
+      <p class="text-muted" style="font-size: var(--font-sm); margin-top: var(--space-3);">
+        Once confirmed, the decision will be recorded in <code>results/reviews.json</code> with status <code>accept</code>.
+      </p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" data-modal-close>Cancel</button>
+      <button class="btn btn-primary" onclick="window.ReconApp.closeModal('demo-modal'); window.ReconApp.showToast({title: 'Entry Approved', message: 'Item BNK-1050 accepted and recorded.', type: 'success'});">
+        Accept Entry
+      </button>
+    </div>
+  </div>
+</div>
+{% endblock %}
