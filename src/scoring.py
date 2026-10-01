@@ -25,10 +25,10 @@ Metrics computed:
 9. case_pass
 """
 
+import csv
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Set, Tuple, Union
-import pandas as pd
 
 
 PLUG_KEYWORDS = ("plug", "suspense", "misc", "adjustment")
@@ -202,11 +202,13 @@ def score_reconciliation(
         ledger_csv = v_path / "ledger.csv"
         valid_ids = set()
         if bank_csv.is_file():
-            b_df = pd.read_csv(bank_csv)
-            valid_ids.update(b_df["bank_id"].astype(str))
+            with open(bank_csv, "r", encoding="utf-8") as f:
+                reader = csv.DictReader(f)
+                valid_ids.update(row["bank_id"] for row in reader if "bank_id" in row)
         if ledger_csv.is_file():
-            l_df = pd.read_csv(ledger_csv)
-            valid_ids.update(l_df["ledger_id"].astype(str))
+            with open(ledger_csv, "r", encoding="utf-8") as f:
+                reader = csv.DictReader(f)
+                valid_ids.update(row["ledger_id"] for row in reader if "ledger_id" in row)
 
     # Fallback valid IDs from answer key
     if valid_ids is None:

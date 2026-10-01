@@ -129,42 +129,131 @@ def run_v0(
     metadata = {"runner": "v0", "variant": variant_name}
 
     if mock or os.getenv("MOCK_LLM") == "1":
-        # Simulate realistic unassisted raw Claude response (matches most items, misses subtle lags, struggles with arithmetic)
+        # Simulate realistic unassisted raw Claude response across variants
         from src.llm import LLMResponse, log_llm_call
         answer_key_file = v_dir / "answer_key.json"
         sim_matches = []
+        sim_recon = []
+        sim_flagged = []
+        sim_jes = []
+
         if answer_key_file.is_file():
             with open(answer_key_file, "r", encoding="utf-8") as f:
                 ak = json.load(f)
-            # Raw Claude matches 46 of 49 items without tools, dropping 3 due to date lags
-            for i, m in enumerate(ak.get("matches", [])):
-                if i < 46:
+
+            raw_matches = ak.get("matches", [])
+
+            if variant_name == "clean":
+                # Clean: matches 46 of 49 items, misses 3 due to date lag
+                for i, m in enumerate(raw_matches):
+                    if i < 46:
+                        sim_matches.append({
+                            "bank_ids": m["bank_ids"],
+                            "ledger_ids": m["ledger_ids"],
+                            "confidence": 0.95,
+                            "reason": "Matched by amount and date window",
+                        })
+
+            elif variant_name == "timing":
+                # Timing: matches regular items, but only identifies 1 of 3 timing items
+                for i, m in enumerate(raw_matches):
+                    if i < 45:
+                        sim_matches.append({"bank_ids": m["bank_ids"], "ledger_ids": m["ledger_ids"], "confidence": 0.95, "reason": "Standard match"})
+                # Misses 2 timing items, only catches 1 check
+                sim_recon.append({
+                    "item_id": "GL-2050",
+                    "side": "ledger",
+                    "category": "outstanding_check",
+                    "amount_cents": -68000,
+                    "reason": "Check not found on bank statement",
+                })
+
+            elif variant_name == "fees":
+                # Fees: identifies unbooked fee, but misses NSF return and unbooked interest
+                for i, m in enumerate(raw_matches):
+                    if i < 46:
+                        sim_matches.append({"bank_ids": m["bank_ids"], "ledger_ids": m["ledger_ids"], "confidence": 0.95, "reason": "Standard match"})
+                sim_recon.append({
+                    "item_id": "BNK-1050",
+                    "side": "bank",
+                    "category": "bank_fee_unbooked",
+                    "amount_cents": -3500,
+                    "reason": "Bank charge not on books",
+                })
+
+            elif variant_name == "errors":
+                # Errors: unassisted Claude makes a false match on transposition error ($1450 vs $1540)
+                for i, m in enumerate(raw_matches):
+                    if i < 44:
+                        sim_matches.append({"bank_ids": m["bank_ids"], "ledger_ids": m["ledger_ids"], "confidence": 0.95, "reason": "Standard match"})
+                # False match (classic LLM hallucination: matching different amounts)
+                sim_matches.append({
+                    "bank_ids": ["BNK-1001"],
+                    "ledger_ids": ["GL-2052"],
+                    "confidence": 0.85,
+                    "reason": "Assumed match despite amount variance",
+                })
+
+            elif variant_name == "tricky":
+                # Tricky: fails to flag ambiguous pair for human; force-matches it instead
+                for i, m in enumerate(raw_matches):
+                    if i < 46:
+                        sim_matches.append({"bank_ids": m["bank_ids"], "ledger_ids": m["ledger_ids"], "confidence": 0.95, "reason": "Standard match"})
+                # Force-matches ambiguous $500 wires (violates Rule 4 & 9)
+                amb_groups = ak.get("ambiguous_groups", [])
+                if amb_groups:
+                    g = amb_groups[0]
                     sim_matches.append({
-                        "bank_ids": m["bank_ids"],
-                        "ledger_ids": m["ledger_ids"],
-                        "confidence": 0.95,
-                        "reason": f"Matched by amount and date window",
+                        "bank_ids": [g["bank_ids"][0]],
+                        "ledger_ids": [g["ledger_ids"][0]],
+                        "confidence": 0.50,
+                        "reason": "Force matched identical $500 wire without human review",
+                    })
+
+            elif variant_name == "full":
+                # Full: mix of errors, force-matches ambiguous pair, misses several traps
+                for i, m in enumerate(raw_matches):
+                    if i < 42:
+                        sim_matches.append({"bank_ids": m["bank_ids"], "ledger_ids": m["ledger_ids"], "confidence": 0.95, "reason": "Standard match"})
+                # False match
+                sim_matches.append({
+                    "bank_ids": ["BNK-1001"],
+                    "ledger_ids": ["GL-2052"],
+                    "confidence": 0.70,
+                    "reason": "Approximate match",
+                })
+                # Force-matches ambiguous pair
+                amb_groups = ak.get("ambiguous_groups", [])
+                if amb_groups:
+                    g = amb_groups[0]
+                    sim_matches.append({
+                        "bank_ids": [g["bank_ids"][0]],
+                        "ledger_ids": [g["ledger_ids"][0]],
+                        "confidence": 0.50,
+                        "reason": "Force matched ambiguous wire",
                     })
 
         sim_output_dict = {
             "matches": sim_matches,
-            "reconciling_items": [],
-            "flagged_for_human": [],
-            "proposed_journal_entries": [],
+            "reconciling_items": sim_recon,
+            "flagged_for_human": sim_flagged,
+            "proposed_journal_entries": sim_jes,
             "tie_out": {
                 "adjusted_bank_cents": None,
                 "adjusted_book_cents": None,
                 "difference_cents": None,
                 "can_prove": False,
             },
-            "memo": "Completed initial reconciliation pass. Unassisted arithmetic tie-out could not be computed without code execution.",
+            "memo": "Completed unassisted reconciliation pass. Arithmetic tie-out could not be verified without code execution.",
         }
         raw_text = json.dumps(sim_output_dict, indent=2)
-        log_llm_call("claude-sonnet-4-5 (simulated)", 3420, 1510, 1.84, metadata)
+        in_toks = 3400 + len(sim_matches) * 20
+        out_toks = 800 + len(sim_matches) * 25
+        log_llm_call("claude-sonnet-4-5 (simulated)", in_toks, out_toks, 1.84, metadata)
         llm_resp = LLMResponse(
             content=raw_text,
-            input_tokens=3420,
-            output_tokens=1510,
+            input_tokens=in_toks,
+            output_tokens=out_toks,
             elapsed_seconds=1.84,
             model="claude-sonnet-4-5 (simulated)",
         )

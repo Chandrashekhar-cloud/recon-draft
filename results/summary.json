@@ -1,0 +1,51 @@
+{
+  "timestamp": "2026-10-01T18:42:22.870701+00:00",
+  "versions": [
+    "v0"
+  ],
+  "variants": [
+    "clean"
+  ],
+  "pricing": {
+    "input_price_per_million": 3.0,
+    "output_price_per_million": 15.0
+  },
+  "matrix": {
+    "clean": {
+      "v0": {
+        "status": "PASS",
+        "display": "PASS (fm=0, h=0)",
+        "case_pass": true,
+        "match_precision": 1.0,
+        "match_recall": 0.9388,
+        "false_matches": 0,
+        "hallucinated_ids": 0,
+        "classification_accuracy": 1.0,
+        "ambiguous_handled": true,
+        "tie_out_correct": true,
+        "plug_detected": false,
+        "journal_entries_pending": true,
+        "tokens": {
+          "input_tokens": 4320,
+          "output_tokens": 1950,
+          "total_tokens": 6270,
+          "cost_usd": 0.0422
+        }
+      }
+    }
+  },
+  "totals": {
+    "v0": {
+      "implemented": true,
+      "total_tested": 1,
+      "passed": 1,
+      "pass_rate": 1.0,
+      "false_matches": 0,
+      "hallucinated_ids": 0,
+      "input_tokens": 4320,
+      "output_tokens": 1950,
+      "total_tokens": 6270,
+      "total_cost_usd": 0.0422
+    }
+  }
+}
