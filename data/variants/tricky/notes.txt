@@ -1,0 +1,4 @@
+Brightloop Inc - September 2026 Reconciliation Notes.
+Stripe payouts arrive net of processing fees.
+Merchant settlements batch multiple customer invoices into a single deposit.
+Two identical wire transfers of $500.00 were executed on Sep 18 for external contractors.

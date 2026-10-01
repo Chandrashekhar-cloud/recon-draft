@@ -1,0 +1,3 @@
+Brightloop Inc - September 2026 Reconciliation Notes.
+Checks #403 and #404 were mailed to vendors near month-end and have not yet cleared the bank.
+A client check deposit from Summit Health was logged into the general ledger on September 30 after bank cutoff hours.

@@ -1,0 +1,501 @@
+{
+  "variant": "errors",
+  "period_start": "2026-09-01",
+  "period_end": "2026-09-30",
+  "balances": {
+    "bank_opening_cents": 5000000,
+    "bank_closing_cents": 7900575,
+    "book_opening_cents": 5000000,
+    "book_closing_cents": 7829575
+  },
+  "matches": [
+    {
+      "bank_ids": [
+        "BNK-1001"
+      ],
+      "ledger_ids": [
+        "GL-2001"
+      ],
+      "kind": "date_lag"
+    },
+    {
+      "bank_ids": [
+        "BNK-1002"
+      ],
+      "ledger_ids": [
+        "GL-2002"
+      ],
+      "kind": "date_lag"
+    },
+    {
+      "bank_ids": [
+        "BNK-1003"
+      ],
+      "ledger_ids": [
+        "GL-2003"
+      ],
+      "kind": "date_lag"
+    },
+    {
+      "bank_ids": [
+        "BNK-1004"
+      ],
+      "ledger_ids": [
+        "GL-2004"
+      ],
+      "kind": "date_lag"
+    },
+    {
+      "bank_ids": [
+        "BNK-1005"
+      ],
+      "ledger_ids": [
+        "GL-2005"
+      ],
+      "kind": "date_lag"
+    },
+    {
+      "bank_ids": [
+        "BNK-1006"
+      ],
+      "ledger_ids": [
+        "GL-2006"
+      ],
+      "kind": "date_lag"
+    },
+    {
+      "bank_ids": [
+        "BNK-1007"
+      ],
+      "ledger_ids": [
+        "GL-2007"
+      ],
+      "kind": "date_lag"
+    },
+    {
+      "bank_ids": [
+        "BNK-1008"
+      ],
+      "ledger_ids": [
+        "GL-2008"
+      ],
+      "kind": "date_lag"
+    },
+    {
+      "bank_ids": [
+        "BNK-1009"
+      ],
+      "ledger_ids": [
+        "GL-2009"
+      ],
+      "kind": "date_lag"
+    },
+    {
+      "bank_ids": [
+        "BNK-1010"
+      ],
+      "ledger_ids": [
+        "GL-2010"
+      ],
+      "kind": "date_lag"
+    },
+    {
+      "bank_ids": [
+        "BNK-1011"
+      ],
+      "ledger_ids": [
+        "GL-2011"
+      ],
+      "kind": "exact"
+    },
+    {
+      "bank_ids": [
+        "BNK-1012"
+      ],
+      "ledger_ids": [
+        "GL-2012"
+      ],
+      "kind": "exact"
+    },
+    {
+      "bank_ids": [
+        "BNK-1013"
+      ],
+      "ledger_ids": [
+        "GL-2013"
+      ],
+      "kind": "exact"
+    },
+    {
+      "bank_ids": [
+        "BNK-1014"
+      ],
+      "ledger_ids": [
+        "GL-2014"
+      ],
+      "kind": "exact"
+    },
+    {
+      "bank_ids": [
+        "BNK-1015"
+      ],
+      "ledger_ids": [
+        "GL-2015"
+      ],
+      "kind": "exact"
+    },
+    {
+      "bank_ids": [
+        "BNK-1016"
+      ],
+      "ledger_ids": [
+        "GL-2016"
+      ],
+      "kind": "exact"
+    },
+    {
+      "bank_ids": [
+        "BNK-1017"
+      ],
+      "ledger_ids": [
+        "GL-2017"
+      ],
+      "kind": "exact"
+    },
+    {
+      "bank_ids": [
+        "BNK-1018"
+      ],
+      "ledger_ids": [
+        "GL-2018"
+      ],
+      "kind": "exact"
+    },
+    {
+      "bank_ids": [
+        "BNK-1019"
+      ],
+      "ledger_ids": [
+        "GL-2019"
+      ],
+      "kind": "exact"
+    },
+    {
+      "bank_ids": [
+        "BNK-1020"
+      ],
+      "ledger_ids": [
+        "GL-2020"
+      ],
+      "kind": "exact"
+    },
+    {
+      "bank_ids": [
+        "BNK-1021"
+      ],
+      "ledger_ids": [
+        "GL-2021"
+      ],
+      "kind": "exact"
+    },
+    {
+      "bank_ids": [
+        "BNK-1022"
+      ],
+      "ledger_ids": [
+        "GL-2022"
+      ],
+      "kind": "exact"
+    },
+    {
+      "bank_ids": [
+        "BNK-1023"
+      ],
+      "ledger_ids": [
+        "GL-2023"
+      ],
+      "kind": "exact"
+    },
+    {
+      "bank_ids": [
+        "BNK-1024"
+      ],
+      "ledger_ids": [
+        "GL-2024"
+      ],
+      "kind": "exact"
+    },
+    {
+      "bank_ids": [
+        "BNK-1025"
+      ],
+      "ledger_ids": [
+        "GL-2025"
+      ],
+      "kind": "exact"
+    },
+    {
+      "bank_ids": [
+        "BNK-1026"
+      ],
+      "ledger_ids": [
+        "GL-2026"
+      ],
+      "kind": "date_lag"
+    },
+    {
+      "bank_ids": [
+        "BNK-1027"
+      ],
+      "ledger_ids": [
+        "GL-2027"
+      ],
+      "kind": "date_lag"
+    },
+    {
+      "bank_ids": [
+        "BNK-1028"
+      ],
+      "ledger_ids": [
+        "GL-2028"
+      ],
+      "kind": "date_lag"
+    },
+    {
+      "bank_ids": [
+        "BNK-1029"
+      ],
+      "ledger_ids": [
+        "GL-2029"
+      ],
+      "kind": "date_lag"
+    },
+    {
+      "bank_ids": [
+        "BNK-1030"
+      ],
+      "ledger_ids": [
+        "GL-2030"
+      ],
+      "kind": "date_lag"
+    },
+    {
+      "bank_ids": [
+        "BNK-1031"
+      ],
+      "ledger_ids": [
+        "GL-2031"
+      ],
+      "kind": "date_lag"
+    },
+    {
+      "bank_ids": [
+        "BNK-1032"
+      ],
+      "ledger_ids": [
+        "GL-2032"
+      ],
+      "kind": "date_lag"
+    },
+    {
+      "bank_ids": [
+        "BNK-1033"
+      ],
+      "ledger_ids": [
+        "GL-2033"
+      ],
+      "kind": "date_lag"
+    },
+    {
+      "bank_ids": [
+        "BNK-1034"
+      ],
+      "ledger_ids": [
+        "GL-2034"
+      ],
+      "kind": "date_lag"
+    },
+    {
+      "bank_ids": [
+        "BNK-1035"
+      ],
+      "ledger_ids": [
+        "GL-2035"
+      ],
+      "kind": "date_lag"
+    },
+    {
+      "bank_ids": [
+        "BNK-1036"
+      ],
+      "ledger_ids": [
+        "GL-2036"
+      ],
+      "kind": "date_lag"
+    },
+    {
+      "bank_ids": [
+        "BNK-1037"
+      ],
+      "ledger_ids": [
+        "GL-2037"
+      ],
+      "kind": "date_lag"
+    },
+    {
+      "bank_ids": [
+        "BNK-1038"
+      ],
+      "ledger_ids": [
+        "GL-2038"
+      ],
+      "kind": "date_lag"
+    },
+    {
+      "bank_ids": [
+        "BNK-1039"
+      ],
+      "ledger_ids": [
+        "GL-2039"
+      ],
+      "kind": "date_lag"
+    },
+    {
+      "bank_ids": [
+        "BNK-1040"
+      ],
+      "ledger_ids": [
+        "GL-2040"
+      ],
+      "kind": "date_lag"
+    },
+    {
+      "bank_ids": [
+        "BNK-1041"
+      ],
+      "ledger_ids": [
+        "GL-2041"
+      ],
+      "kind": "date_lag"
+    },
+    {
+      "bank_ids": [
+        "BNK-1042"
+      ],
+      "ledger_ids": [
+        "GL-2042"
+      ],
+      "kind": "date_lag"
+    },
+    {
+      "bank_ids": [
+        "BNK-1043"
+      ],
+      "ledger_ids": [
+        "GL-2043"
+      ],
+      "kind": "date_lag"
+    },
+    {
+      "bank_ids": [
+        "BNK-1044"
+      ],
+      "ledger_ids": [
+        "GL-2044"
+      ],
+      "kind": "date_lag"
+    },
+    {
+      "bank_ids": [
+        "BNK-1045"
+      ],
+      "ledger_ids": [
+        "GL-2045"
+      ],
+      "kind": "date_lag"
+    },
+    {
+      "bank_ids": [
+        "BNK-1046"
+      ],
+      "ledger_ids": [
+        "GL-2046"
+      ],
+      "kind": "date_lag"
+    },
+    {
+      "bank_ids": [
+        "BNK-1047"
+      ],
+      "ledger_ids": [
+        "GL-2047"
+      ],
+      "kind": "date_lag"
+    },
+    {
+      "bank_ids": [
+        "BNK-1048"
+      ],
+      "ledger_ids": [
+        "GL-2048"
+      ],
+      "kind": "date_lag"
+    },
+    {
+      "bank_ids": [
+        "BNK-1049"
+      ],
+      "ledger_ids": [
+        "GL-2049"
+      ],
+      "kind": "date_lag"
+    },
+    {
+      "bank_ids": [
+        "BNK-1050"
+      ],
+      "ledger_ids": [
+        "GL-2050"
+      ],
+      "kind": "exact"
+    },
+    {
+      "bank_ids": [
+        "BNK-1051"
+      ],
+      "ledger_ids": [
+        "GL-2052"
+      ],
+      "kind": "exact"
+    }
+  ],
+  "reconciling_items": [
+    {
+      "item_id": "GL-2050",
+      "side": "ledger",
+      "category": "transposition_error",
+      "amount_cents": 9000,
+      "needs_journal_entry": true
+    },
+    {
+      "item_id": "GL-2051",
+      "side": "ledger",
+      "category": "duplicate_ledger",
+      "amount_cents": 12000,
+      "needs_journal_entry": true
+    },
+    {
+      "item_id": "GL-2052",
+      "side": "ledger",
+      "category": "sign_error",
+      "amount_cents": 50000,
+      "needs_journal_entry": true
+    }
+  ],
+  "ambiguous_groups": [],
+  "tie_out": {
+    "adjusted_bank_cents": 7900575,
+    "adjusted_book_cents": 7900575,
+    "difference_cents": 0
+  }
+}

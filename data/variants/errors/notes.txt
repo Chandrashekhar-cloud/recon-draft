@@ -1,0 +1,4 @@
+Brightloop Inc - September 2026 Reconciliation Notes.
+An invoice on Sep 14 was recorded with transposed digits ($1,540.00 vs $1,450.00 actual).
+A duplicate entry was accidentally posted for the monthly Figma subscription.
+A vendor rebate received on Sep 22 was mistakenly entered as an expense rather than a cash receipt.

@@ -9,3 +9,9 @@ What happened: Ran `pytest tests/test_money.py` and encountered an import error 
 Error text: ModuleNotFoundError: No module named 'src'
 Fix: Added pytest.ini configuring `pythonpath = .` and added src/__init__.py and tests/__init__.py. All 7 tests passed.
 
+## [2026-10-01 23:29:00] What I did / What happened / Error text (if any) / Fix
+What I did: Created src/generate_data.py to generate synthetic bank reconciliation datasets across 6 variants (clean, timing, fees, errors, tricky, full) with tie-out validation, and added tests/test_generate_data.py. Ran `python -m src.generate_data`.
+What happened: All 6 variants were generated and verified with tie-out assertions (adjusted_bank == adjusted_book). All 10 tests in pytest passed.
+Error text (if any): None
+Fix: N/A
+

@@ -1,0 +1,53 @@
+ledger_id,date,memo,amount_cents,reference,type
+GL-2001,2026-09-01,Soma Office Suites Rent Check #401,-450000,401,check
+GL-2031,2026-09-02,Stripe Payout Daily Batch,142000,STRIPE-0902,deposit
+GL-2012,2026-09-03,Amazon Web Services Cloud Hosting,-184050,AWS-SEP26,card
+GL-2032,2026-09-03,Stripe Payout Daily Batch,89000,STRIPE-0903,deposit
+GL-2013,2026-09-04,Google Workspace Enterprise Email,-24000,GSUITE-09,card
+GL-2026,2026-09-04,Acme Corp Annual SaaS License,1200000,INV-801,ach
+GL-2002,2026-09-05,BlueShield Employee Health Plan,-240000,ACH-HLTH-09,ach
+GL-2033,2026-09-05,Stripe Payout Daily Batch,215000,STRIPE-0905,deposit
+GL-2014,2026-09-06,Slack Technologies Subscription,-18000,SLACK-09,card
+GL-2034,2026-09-06,Stripe Payout Daily Batch,175000,STRIPE-0906,deposit
+GL-2015,2026-09-07,GitHub Team Subscription,-8400,GH-SEP,card
+GL-2003,2026-09-08,Comcast Business Fiber Internet,-35000,COMCAST-882,ach
+GL-2035,2026-09-08,Stripe Payout Daily Batch,98000,STRIPE-0908,deposit
+GL-2004,2026-09-09,Pillsbury Legal Advisory Retainer,-220000,INV-7712,ach
+GL-2036,2026-09-09,Stripe Payout Daily Batch,320000,STRIPE-0909,deposit
+GL-2016,2026-09-10,Datadog Cloud Monitoring,-65000,DDOG-09,card
+GL-2027,2026-09-10,TechFlow Systems Enterprise Retainer,850000,INV-802,ach
+GL-2005,2026-09-11,GrowthMetrics Marketing Agency,-350000,ACH-GM-09,ach
+GL-2037,2026-09-11,Stripe Payout Daily Batch,164000,STRIPE-0911,deposit
+GL-2006,2026-09-12,PG&E Electric Utility Service,-42000,PGE-SEP,ach
+GL-2038,2026-09-12,Stripe Payout Daily Batch,280000,STRIPE-0912,deposit
+GL-2017,2026-09-13,Apple Store Developer MacBooks,-289900,APL-3329,card
+GL-2018,2026-09-14,HubSpot Marketing Hub,-89000,HUBSPOT-09,card
+GL-2039,2026-09-14,Stripe Payout Daily Batch,110000,STRIPE-0914,deposit
+GL-2050,2026-09-14,Office Supplies Depot,-154000,INV-1450,card
+GL-2007,2026-09-15,Gusto Payroll Run 1 (1st-15th),-1850000,GUSTO-PAY-01,ach
+GL-2019,2026-09-16,Figma Enterprise License,-12000,FIGMA-09,card
+GL-2040,2026-09-16,Stripe Payout Daily Batch,450000,STRIPE-0916,deposit
+GL-2051,2026-09-16,Figma Enterprise License - Duplicate Entry,-12000,FIGMA-09-DUP,card
+GL-2008,2026-09-17,Contract UI/UX Designer Payment,-125000,ACH-DESIGN-09,ach
+GL-2041,2026-09-17,Stripe Payout Daily Batch,185000,STRIPE-0917,deposit
+GL-2020,2026-09-18,Chipotle Executive Team Catering,-27550,CHP-883,card
+GL-2028,2026-09-18,Apex Global Multi-Seat Subscription,1500000,INV-803,ach
+GL-2021,2026-09-19,Zoom Video Communications,-7500,ZOOM-09,card
+GL-2042,2026-09-19,Stripe Payout Daily Batch,230000,STRIPE-0919,deposit
+GL-2022,2026-09-20,United Airlines SaaS Conference Flight,-58000,UA-993,card
+GL-2043,2026-09-20,Stripe Payout Daily Batch,145000,STRIPE-0920,deposit
+GL-2009,2026-09-21,BDO Accounting & Tax Retainer,-150000,ACH-BDO-09,ach
+GL-2023,2026-09-21,Hyatt Regency Conference Hotel,-41000,HYATT-74,card
+GL-2024,2026-09-22,OpenAI API Usage Billing,-43025,OPENAI-09,card
+GL-2044,2026-09-22,Stripe Payout Daily Batch,310000,STRIPE-0922,deposit
+GL-2052,2026-09-22,Datadog Rebate Erroneous Expense Entry,-25000,REB-991,card
+GL-2010,2026-09-23,Sparkle Office Cleaning Check #402,-40000,402,check
+GL-2045,2026-09-23,Stripe Payout Daily Batch,205000,STRIPE-0923,deposit
+GL-2029,2026-09-24,Nexus Security Enterprise Deployment,620000,INV-804,ach
+GL-2025,2026-09-25,Notion Labs Team Workspace,-15000,NOTION-09,card
+GL-2046,2026-09-25,Stripe Payout Daily Batch,192000,STRIPE-0925,deposit
+GL-2047,2026-09-26,Stripe Payout Daily Batch,275000,STRIPE-0926,deposit
+GL-2030,2026-09-27,Quantum Dynamics Annual Contract,940000,INV-805,ach
+GL-2048,2026-09-28,Stripe Payout Daily Batch,340000,STRIPE-0928,deposit
+GL-2049,2026-09-29,Stripe Payout Daily Batch,220000,STRIPE-0929,deposit
+GL-2011,2026-09-30,Gusto Payroll Run 2 (16th-30th),-1850000,GUSTO-PAY-02,ach
