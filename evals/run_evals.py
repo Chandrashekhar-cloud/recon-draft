@@ -23,6 +23,7 @@ from typing import Any, Dict, List, Optional, Set, Tuple
 
 import src.runners as runners_module
 from src.scoring import score_reconciliation
+from evals.edge_cases import EDGE_CASE_NAMES, run_edge_case
 
 
 # ==============================================================================
@@ -31,7 +32,8 @@ from src.scoring import score_reconciliation
 INPUT_PRICE_PER_M = 3.00    # Claude 3.5 / 4.5 Sonnet: $3.00 / 1M input tokens
 OUTPUT_PRICE_PER_M = 15.00  # Claude 3.5 / 4.5 Sonnet: $15.00 / 1M output tokens
 
-ALL_VARIANTS = ["clean", "timing", "fees", "errors", "tricky", "full"]
+BASE_VARIANTS = ["clean", "timing", "fees", "errors", "tricky", "full"]
+ALL_VARIANTS = BASE_VARIANTS + EDGE_CASE_NAMES
 DEFAULT_VERSIONS = ["v0", "v1", "v2"]
 
 
@@ -62,6 +64,27 @@ def run_evaluation(
     for version in versions:
         runner_fn = getattr(runners_module, f"run_{version}", None)
 
+        # Check if version runner is implemented
+        if runner_fn is None:
+            for variant in variants:
+                matrix_results[variant][version] = {
+                    "status": "NOT_IMPLEMENTED",
+                    "display": "SKIP",
+                }
+            version_totals[version] = {
+                "implemented": False,
+                "total_tested": 0,
+                "passed": 0,
+                "pass_rate": 0.0,
+                "false_matches": 0,
+                "hallucinated_ids": 0,
+                "input_tokens": 0,
+                "output_tokens": 0,
+                "total_tokens": 0,
+                "total_cost_usd": 0.0,
+            }
+            continue
+
         version_dir = results_base_dir / version
         version_dir.mkdir(parents=True, exist_ok=True)
 
@@ -73,6 +96,35 @@ def run_evaluation(
         v_output_tokens = 0
 
         for variant in variants:
+            # Check if this is an edge case
+            if variant in EDGE_CASE_NAMES:
+                ec_res = run_edge_case(
+                    case_name=variant,
+                    runner_fn=runner_fn,
+                    version=version,
+                    force=force,
+                    mock=mock,
+                )
+                matrix_results[variant][version] = {
+                    "status": ec_res["status"],
+                    "display": ec_res["display"],
+                    "case_pass": ec_res["case_pass"],
+                    "check_pass": ec_res.get("check_pass", False),
+                    "check_reason": ec_res.get("check_reason", ""),
+                    "false_matches": ec_res["false_matches"],
+                    "hallucinated_ids": ec_res["hallucinated_ids"],
+                    "tokens": ec_res["tokens"],
+                }
+                if ec_res["status"] != "NOT_IMPLEMENTED":
+                    v_total_tested += 1
+                    if ec_res["case_pass"]:
+                        v_passed += 1
+                    v_false_matches += ec_res["false_matches"]
+                    v_hallucinated += ec_res["hallucinated_ids"]
+                    v_input_tokens += ec_res["tokens"]["input_tokens"]
+                    v_output_tokens += ec_res["tokens"]["output_tokens"]
+                continue
+
             variant_dir = variants_base_dir / variant
             answer_key_path = variant_dir / "answer_key.json"
             result_file = version_dir / f"{variant}.json"
@@ -86,14 +138,6 @@ def run_evaluation(
 
             with open(answer_key_path, "r", encoding="utf-8") as f:
                 answer_key = json.load(f)
-
-            # Check if version runner is implemented
-            if runner_fn is None:
-                matrix_results[variant][version] = {
-                    "status": "NOT_IMPLEMENTED",
-                    "display": "SKIP",
-                }
-                continue
 
             # Resumable execution: reuse existing result unless --force is specified
             parsed_output = None
@@ -111,12 +155,35 @@ def run_evaluation(
             # Run if not loaded from cache
             if parsed_output is None:
                 try:
-                    parsed_output = runner_fn(variant_dir, save_results=True, mock=mock)
-                    # Re-read saved file for token info
-                    if result_file.is_file():
+                    import inspect
+                    sig = inspect.signature(runner_fn)
+                    call_kwargs = {}
+                    if "save_results" in sig.parameters:
+                        call_kwargs["save_results"] = True
+                    if "mock" in sig.parameters:
+                        call_kwargs["mock"] = mock
+
+                    raw_result = runner_fn(variant_dir, **call_kwargs)
+
+                    if isinstance(raw_result, tuple) and len(raw_result) == 2:
+                        parsed_output, tokens_info = raw_result
+                    elif isinstance(raw_result, dict) and "parsed_output" in raw_result:
+                        parsed_output = raw_result["parsed_output"]
+                        tokens_info = raw_result.get("tokens", tokens_info)
+                    else:
+                        parsed_output = raw_result
+
+                    # Re-read saved file for token info if not populated
+                    if result_file.is_file() and (tokens_info.get("input_tokens", 0) == 0):
                         with open(result_file, "r", encoding="utf-8") as f:
                             saved_record = json.load(f)
                         tokens_info = saved_record.get("tokens", tokens_info)
+                except NotImplementedError:
+                    matrix_results[variant][version] = {
+                        "status": "NOT_IMPLEMENTED",
+                        "display": "SKIP",
+                    }
+                    continue
                 except Exception as err:
                     # Fallback to simulation if live LLM execution encounters an error (credit balance, network, or memory)
                     print(f"[{version}/{variant}] Live execution failed ({type(err).__name__}: {err}). Falling back to unassisted simulation...")
@@ -136,6 +203,25 @@ def run_evaluation(
 
             # Score result
             report = score_reconciliation(parsed_output, answer_key, variant_dir=variant_dir)
+
+            # Ensure results/<version>/<variant>.json is saved / updated with score
+            try:
+                record_to_save = {}
+                if result_file.is_file():
+                    with open(result_file, "r", encoding="utf-8") as f:
+                        record_to_save = json.load(f)
+                record_to_save.update({
+                    "variant": variant,
+                    "runner": version,
+                    "timestamp": record_to_save.get("timestamp", datetime.now(timezone.utc).isoformat()),
+                    "tokens": tokens_info,
+                    "parsed_output": parsed_output,
+                    "score": report.to_dict(),
+                })
+                with open(result_file, "w", encoding="utf-8") as f:
+                    json.dump(record_to_save, f, indent=2)
+            except Exception as save_err:
+                print(f"Warning: Could not save results to {result_file}: {save_err}")
 
             in_tok = int(tokens_info.get("input_tokens", 0))
             out_tok = int(tokens_info.get("output_tokens", 0))
@@ -230,7 +316,7 @@ def print_summary_table(summary_data: Dict[str, Any]) -> None:
     totals = summary_data["totals"]
 
     col_width = 24
-    variant_col_width = 14
+    variant_col_width = max(max(len(v) for v in variants) + 2, 16)
 
     print("\n" + "=" * (variant_col_width + 3 + (col_width + 3) * len(versions)))
     header = f"{'Variant':<{variant_col_width}} | " + " | ".join(f"{v:<{col_width}}" for v in versions)
@@ -238,8 +324,10 @@ def print_summary_table(summary_data: Dict[str, Any]) -> None:
     print(header)
     print(sep)
 
-    # Variant rows
-    for variant in variants:
+    # Variant rows (with section separator for edge cases if both base variants and edge cases present)
+    for i, variant in enumerate(variants):
+        if i > 0 and variant in EDGE_CASE_NAMES and variants[i - 1] in BASE_VARIANTS:
+            print(sep)
         row_str = f"{variant:<{variant_col_width}} | "
         cells = []
         for v in versions:
@@ -348,18 +436,30 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    # Expand variants
-    if "all" in args.variants:
+    target_variants = []
+    for item in args.variants:
+        for v in item.split(","):
+            v = v.strip()
+            if v:
+                target_variants.append(v)
+    if "all" in target_variants or not target_variants:
         target_variants = ALL_VARIANTS
-    else:
-        target_variants = args.variants
 
-    print(f"Starting reconciliation evals across versions: {args.versions}")
+    target_versions = []
+    for item in args.versions:
+        for v in item.split(","):
+            v = v.strip()
+            if v:
+                target_versions.append(v)
+    if not target_versions:
+        target_versions = DEFAULT_VERSIONS
+
+    print(f"Starting reconciliation evals across versions: {target_versions}")
     print(f"Target variants ({len(target_variants)}): {target_variants}")
     print(f"Resumable mode: {'OFF (forced re-run)' if args.force else 'ON (reusing existing results)'}")
 
     summary_data = run_evaluation(
-        versions=args.versions,
+        versions=target_versions,
         variants=target_variants,
         force=args.force,
         mock=args.mock,

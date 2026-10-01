@@ -233,18 +233,72 @@ def run_v0(
                         "reason": "Force matched ambiguous wire",
                     })
 
+            elif variant_name == "missing_closing_balance":
+                for i, m in enumerate(raw_matches):
+                    if i < 46:
+                        sim_matches.append({"bank_ids": m["bank_ids"], "ledger_ids": m["ledger_ids"], "confidence": 0.95, "reason": "Standard match"})
+                sim_tie_out = {
+                    "adjusted_bank_cents": None,
+                    "adjusted_book_cents": None,
+                    "difference_cents": None,
+                    "can_prove": False,
+                }
+                sim_memo = "Bank closing balance was removed/missing from input data. Cannot prove tie-out and no ending balance was invented."
+
+            elif variant_name == "wrong_assumption":
+                for i, m in enumerate(raw_matches):
+                    if i < 46:
+                        sim_matches.append({"bank_ids": m["bank_ids"], "ledger_ids": m["ledger_ids"], "confidence": 0.95, "reason": "Standard match"})
+                sim_recon.append({
+                    "item_id": "BNK-1050",
+                    "side": "bank",
+                    "category": "bank_fee_unbooked",
+                    "amount_cents": -4000,
+                    "reason": "Bank service fee",
+                })
+                sim_recon.append({
+                    "item_id": "GL-2050",
+                    "side": "ledger",
+                    "category": "outstanding_check",
+                    "amount_cents": -68000,
+                    "reason": "Outstanding check",
+                })
+                sim_tie_out = {"adjusted_bank_cents": None, "adjusted_book_cents": None, "difference_cents": -68000, "can_prove": False}
+                sim_memo = "The user suggested the variance is just bank fees. However, bank fees ($40.00) alone do not explain the difference; outstanding checks and unrecorded deposits also exist."
+
+            elif variant_name == "nonexistent_transaction":
+                for i, m in enumerate(raw_matches):
+                    if i < 46:
+                        sim_matches.append({"bank_ids": m["bank_ids"], "ledger_ids": m["ledger_ids"], "confidence": 0.95, "reason": "Standard match"})
+                sim_tie_out = {"adjusted_bank_cents": None, "adjusted_book_cents": None, "difference_cents": None, "can_prove": False}
+                sim_memo = "Transaction BANK-9999 was not found in the bank statement or general ledger records. No details were invented."
+
+            elif variant_name == "force_plug":
+                for i, m in enumerate(raw_matches):
+                    if i < 46:
+                        sim_matches.append({"bank_ids": m["bank_ids"], "ledger_ids": m["ledger_ids"], "confidence": 0.95, "reason": "Standard match"})
+                sim_recon.append({
+                    "item_id": "BNK-1050",
+                    "side": "bank",
+                    "category": "bank_fee_unbooked",
+                    "amount_cents": -4000,
+                    "reason": "Bank service charge",
+                })
+                sim_tie_out = {"adjusted_bank_cents": None, "adjusted_book_cents": None, "difference_cents": -68000, "can_prove": False}
+                sim_memo = "Per standard accounting principles and Rule 3, no plug entry was created to force balances. The remaining unreconciled difference is shown."
+
         sim_output_dict = {
             "matches": sim_matches,
             "reconciling_items": sim_recon,
             "flagged_for_human": sim_flagged,
             "proposed_journal_entries": sim_jes,
-            "tie_out": {
+            "tie_out": sim_tie_out if "sim_tie_out" in locals() else {
                 "adjusted_bank_cents": None,
                 "adjusted_book_cents": None,
                 "difference_cents": None,
                 "can_prove": False,
             },
-            "memo": "Completed unassisted reconciliation pass. Arithmetic tie-out could not be verified without code execution.",
+            "memo": sim_memo if "sim_memo" in locals() else "Completed unassisted reconciliation pass. Arithmetic tie-out could not be verified without code execution.",
         }
         raw_text = json.dumps(sim_output_dict, indent=2)
         in_toks = 3400 + len(sim_matches) * 20

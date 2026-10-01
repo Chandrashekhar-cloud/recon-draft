@@ -68,21 +68,28 @@ def test_run_v0_with_mocked_llm(monkeypatch, tmp_path):
 
     clean_dir = BASE_DIR / "data" / "variants" / "clean"
 
+    clean_json_path = BASE_DIR / "results" / "v0" / "clean.json"
+    backup = clean_json_path.read_text(encoding="utf-8") if clean_json_path.is_file() else None
+
     with patch("src.runners.call_claude", return_value=mock_llm_response) as mock_call:
-        parsed = run_v0(clean_dir, save_results=True)
+        try:
+            parsed = run_v0(clean_dir, save_results=True)
 
-        assert mock_call.called
-        assert parsed["memo"] == "clean run"
-        assert parsed["parse_error"] is False
+            assert mock_call.called
+            assert parsed["memo"] == "clean run"
+            assert parsed["parse_error"] is False
 
-        # Verify saved result file
-        saved_file = BASE_DIR / "results" / "v0" / "clean.json"
-        assert saved_file.is_file()
-        with open(saved_file, "r", encoding="utf-8") as f:
-            saved_data = json.load(f)
-        assert saved_data["variant"] == "clean"
-        assert saved_data["runner"] == "v0"
-        assert saved_data["tokens"]["input_tokens"] == 1500
+            # Verify saved result file
+            saved_file = BASE_DIR / "results" / "v0" / "clean.json"
+            assert saved_file.is_file()
+            with open(saved_file, "r", encoding="utf-8") as f:
+                saved_data = json.load(f)
+            assert saved_data["variant"] == "clean"
+            assert saved_data["runner"] == "v0"
+            assert saved_data["tokens"]["input_tokens"] == 1500
+        finally:
+            if backup is not None:
+                clean_json_path.write_text(backup, encoding="utf-8")
 
 
 def test_run_v0_parse_error_handling(monkeypatch):
@@ -101,7 +108,7 @@ def test_run_v0_parse_error_handling(monkeypatch):
     clean_dir = BASE_DIR / "data" / "variants" / "clean"
 
     with patch("src.runners.call_claude", return_value=mock_bad_response):
-        parsed = run_v0(clean_dir, save_results=True)
+        parsed = run_v0(clean_dir, save_results=False)
 
         assert parsed["parse_error"] is True
         assert "unable to complete" in parsed["raw_text"]

@@ -1,7 +1,8 @@
 {
-  "timestamp": "2026-10-01T18:42:22.870701+00:00",
+  "timestamp": "2026-10-01T19:07:49.622783+00:00",
   "versions": [
-    "v0"
+    "v0",
+    "v1"
   ],
   "variants": [
     "clean"
@@ -31,6 +32,10 @@
           "total_tokens": 6270,
           "cost_usd": 0.0422
         }
+      },
+      "v1": {
+        "status": "NOT_IMPLEMENTED",
+        "display": "SKIP"
       }
     }
   },
@@ -46,6 +51,18 @@
       "output_tokens": 1950,
       "total_tokens": 6270,
       "total_cost_usd": 0.0422
+    },
+    "v1": {
+      "implemented": false,
+      "total_tested": 0,
+      "passed": 0,
+      "pass_rate": 0.0,
+      "false_matches": 0,
+      "hallucinated_ids": 0,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "total_tokens": 0,
+      "total_cost_usd": 0.0
     }
   }
 }

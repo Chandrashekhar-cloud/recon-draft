@@ -1,0 +1,6 @@
+Brightloop Inc - September 2026 Full Variant Reconciliation Notes.
+Stripe payouts arrive net of processing fees.
+Multiple checks were mailed near month-end and a customer deposit was made after banking hours on Sep 30.
+Monthly bank service fee and earned interest post on the final business day.
+A customer check was returned unpaid (NSF).
+Clerical anomalies include transposed digits on repair services, duplicate backup posting, and an inverted rebate sign.
