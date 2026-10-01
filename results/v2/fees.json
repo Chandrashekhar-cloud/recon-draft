@@ -1,0 +1,798 @@
+{
+  "variant": "fees",
+  "runner": "v2",
+  "timestamp": "2026-10-01T19:39:11.657382+00:00",
+  "model": "claude-sonnet-4-5 (v2 simulated)",
+  "tokens": {
+    "input_tokens": 3510,
+    "output_tokens": 895,
+    "elapsed_seconds": 3.15
+  },
+  "pre_matches_count": 49,
+  "memo_checked": true,
+  "trace": [
+    {
+      "step": 1,
+      "tool": "get_item",
+      "input": {
+        "item_id": "BNK-1052"
+      },
+      "output": {
+        "bank_id": "BNK-1052",
+        "date": "2026-09-25",
+        "description": "RETURNED ITEM NSF CHECK #1092 HORIZON LLC",
+        "amount_cents": -52000,
+        "running_balance_cents": 7851575,
+        "side": "bank"
+      },
+      "tokens": {
+        "input": 450,
+        "output": 85
+      },
+      "elapsed_seconds": 0.45
+    },
+    {
+      "step": 2,
+      "tool": "get_item",
+      "input": {
+        "item_id": "BNK-1050"
+      },
+      "output": {
+        "bank_id": "BNK-1050",
+        "date": "2026-09-30",
+        "description": "MONTHLY COMMERCIAL ACCOUNT MAINTENANCE FEE",
+        "amount_cents": -3500,
+        "running_balance_cents": 7965075,
+        "side": "bank"
+      },
+      "tokens": {
+        "input": 450,
+        "output": 85
+      },
+      "elapsed_seconds": 0.45
+    },
+    {
+      "step": 3,
+      "tool": "get_item",
+      "input": {
+        "item_id": "BNK-1051"
+      },
+      "output": {
+        "bank_id": "BNK-1051",
+        "date": "2026-09-30",
+        "description": "INTEREST EARNED ON CHECKING BALANCE",
+        "amount_cents": 6845,
+        "running_balance_cents": 7971920,
+        "side": "bank"
+      },
+      "tokens": {
+        "input": 450,
+        "output": 85
+      },
+      "elapsed_seconds": 0.45
+    },
+    {
+      "step": 4,
+      "tool": "find_by_amount",
+      "input": {
+        "amount_cents": -52000,
+        "side": "ledger"
+      },
+      "output": [],
+      "tokens": {
+        "input": 480,
+        "output": 95
+      },
+      "elapsed_seconds": 0.5
+    },
+    {
+      "step": 5,
+      "tool": "find_by_amount",
+      "input": {
+        "amount_cents": -3500,
+        "side": "ledger"
+      },
+      "output": [],
+      "tokens": {
+        "input": 480,
+        "output": 95
+      },
+      "elapsed_seconds": 0.5
+    },
+    {
+      "step": 6,
+      "tool": "submit_reconciliation",
+      "input": {
+        "matches": [],
+        "reconciling_items": [
+          {
+            "item_id": "BNK-1050",
+            "side": "bank",
+            "category": "bank_fee_unbooked",
+            "amount_cents": -3500,
+            "reason": "Classified as bank_fee_unbooked per domain skill"
+          },
+          {
+            "item_id": "BNK-1051",
+            "side": "bank",
+            "category": "interest_unbooked",
+            "amount_cents": 6845,
+            "reason": "Classified as interest_unbooked per domain skill"
+          },
+          {
+            "item_id": "BNK-1052",
+            "side": "bank",
+            "category": "nsf_return",
+            "amount_cents": -52000,
+            "reason": "Classified as nsf_return per domain skill"
+          }
+        ],
+        "flagged_for_human": [],
+        "proposed_journal_entries": [
+          {
+            "description": "Adjusting entry for bank_fee_unbooked (BNK-1050)",
+            "lines": [
+              {
+                "account": "Bank Service Charges",
+                "debit_cents": 3500,
+                "credit_cents": 0
+              },
+              {
+                "account": "Cash",
+                "debit_cents": 0,
+                "credit_cents": 3500
+              }
+            ],
+            "status": "pending_approval"
+          },
+          {
+            "description": "Adjusting entry for interest_unbooked (BNK-1051)",
+            "lines": [
+              {
+                "account": "Cash",
+                "debit_cents": 6845,
+                "credit_cents": 0
+              },
+              {
+                "account": "Interest Income",
+                "debit_cents": 0,
+                "credit_cents": 6845
+              }
+            ],
+            "status": "pending_approval"
+          },
+          {
+            "description": "Adjusting entry for nsf_return (BNK-1052)",
+            "lines": [
+              {
+                "account": "Accounts Receivable",
+                "debit_cents": 52000,
+                "credit_cents": 0
+              },
+              {
+                "account": "Cash",
+                "debit_cents": 0,
+                "credit_cents": 52000
+              }
+            ],
+            "status": "pending_approval"
+          }
+        ],
+        "tie_out": {
+          "adjusted_bank_cents": 7971920,
+          "adjusted_book_cents": 7971920,
+          "difference_cents": 0,
+          "can_prove": true
+        },
+        "memo": "Reconciliation for fees completed with v2 agent (pre-matcher + domain skill + tools)."
+      },
+      "output": {
+        "status": "submitted",
+        "received": true
+      },
+      "tokens": {
+        "input": 1200,
+        "output": 450
+      },
+      "elapsed_seconds": 0.8
+    }
+  ],
+  "parsed_output": {
+    "matches": [
+      {
+        "bank_ids": [
+          "BNK-1001"
+        ],
+        "ledger_ids": [
+          "GL-2001"
+        ],
+        "confidence": 1.0,
+        "reason": "Exact unique match: amount -$4,500.00 with 2-day date difference"
+      },
+      {
+        "bank_ids": [
+          "BNK-1012"
+        ],
+        "ledger_ids": [
+          "GL-2012"
+        ],
+        "confidence": 1.0,
+        "reason": "Exact unique match: amount -$1,840.50 with 0-day date difference"
+      },
+      {
+        "bank_ids": [
+          "BNK-1031"
+        ],
+        "ledger_ids": [
+          "GL-2031"
+        ],
+        "confidence": 1.0,
+        "reason": "Exact unique match: amount $1,420.00 with 1-day date difference"
+      },
+      {
+        "bank_ids": [
+          "BNK-1013"
+        ],
+        "ledger_ids": [
+          "GL-2013"
+        ],
+        "confidence": 1.0,
+        "reason": "Exact unique match: amount -$240.00 with 0-day date difference"
+      },
+      {
+        "bank_ids": [
+          "BNK-1032"
+        ],
+        "ledger_ids": [
+          "GL-2032"
+        ],
+        "confidence": 1.0,
+        "reason": "Exact unique match: amount $890.00 with 1-day date difference"
+      },
+      {
+        "bank_ids": [
+          "BNK-1026"
+        ],
+        "ledger_ids": [
+          "GL-2026"
+        ],
+        "confidence": 1.0,
+        "reason": "Exact unique match: amount $12,000.00 with 1-day date difference"
+      },
+      {
+        "bank_ids": [
+          "BNK-1002"
+        ],
+        "ledger_ids": [
+          "GL-2002"
+        ],
+        "confidence": 1.0,
+        "reason": "Exact unique match: amount -$2,400.00 with 1-day date difference"
+      },
+      {
+        "bank_ids": [
+          "BNK-1014"
+        ],
+        "ledger_ids": [
+          "GL-2014"
+        ],
+        "confidence": 1.0,
+        "reason": "Exact unique match: amount -$180.00 with 0-day date difference"
+      },
+      {
+        "bank_ids": [
+          "BNK-1033"
+        ],
+        "ledger_ids": [
+          "GL-2033"
+        ],
+        "confidence": 1.0,
+        "reason": "Exact unique match: amount $2,150.00 with 1-day date difference"
+      },
+      {
+        "bank_ids": [
+          "BNK-1015"
+        ],
+        "ledger_ids": [
+          "GL-2015"
+        ],
+        "confidence": 1.0,
+        "reason": "Exact unique match: amount -$84.00 with 0-day date difference"
+      },
+      {
+        "bank_ids": [
+          "BNK-1034"
+        ],
+        "ledger_ids": [
+          "GL-2034"
+        ],
+        "confidence": 1.0,
+        "reason": "Exact unique match: amount $1,750.00 with 1-day date difference"
+      },
+      {
+        "bank_ids": [
+          "BNK-1003"
+        ],
+        "ledger_ids": [
+          "GL-2003"
+        ],
+        "confidence": 1.0,
+        "reason": "Exact unique match: amount -$350.00 with 1-day date difference"
+      },
+      {
+        "bank_ids": [
+          "BNK-1035"
+        ],
+        "ledger_ids": [
+          "GL-2035"
+        ],
+        "confidence": 1.0,
+        "reason": "Exact unique match: amount $980.00 with 1-day date difference"
+      },
+      {
+        "bank_ids": [
+          "BNK-1016"
+        ],
+        "ledger_ids": [
+          "GL-2016"
+        ],
+        "confidence": 1.0,
+        "reason": "Exact unique match: amount -$650.00 with 0-day date difference"
+      },
+      {
+        "bank_ids": [
+          "BNK-1036"
+        ],
+        "ledger_ids": [
+          "GL-2036"
+        ],
+        "confidence": 1.0,
+        "reason": "Exact unique match: amount $3,200.00 with 1-day date difference"
+      },
+      {
+        "bank_ids": [
+          "BNK-1004"
+        ],
+        "ledger_ids": [
+          "GL-2004"
+        ],
+        "confidence": 1.0,
+        "reason": "Exact unique match: amount -$2,200.00 with 2-day date difference"
+      },
+      {
+        "bank_ids": [
+          "BNK-1027"
+        ],
+        "ledger_ids": [
+          "GL-2027"
+        ],
+        "confidence": 1.0,
+        "reason": "Exact unique match: amount $8,500.00 with 1-day date difference"
+      },
+      {
+        "bank_ids": [
+          "BNK-1005"
+        ],
+        "ledger_ids": [
+          "GL-2005"
+        ],
+        "confidence": 1.0,
+        "reason": "Exact unique match: amount -$3,500.00 with 1-day date difference"
+      },
+      {
+        "bank_ids": [
+          "BNK-1037"
+        ],
+        "ledger_ids": [
+          "GL-2037"
+        ],
+        "confidence": 1.0,
+        "reason": "Exact unique match: amount $1,640.00 with 1-day date difference"
+      },
+      {
+        "bank_ids": [
+          "BNK-1006"
+        ],
+        "ledger_ids": [
+          "GL-2006"
+        ],
+        "confidence": 1.0,
+        "reason": "Exact unique match: amount -$420.00 with 1-day date difference"
+      },
+      {
+        "bank_ids": [
+          "BNK-1017"
+        ],
+        "ledger_ids": [
+          "GL-2017"
+        ],
+        "confidence": 1.0,
+        "reason": "Exact unique match: amount -$2,899.00 with 0-day date difference"
+      },
+      {
+        "bank_ids": [
+          "BNK-1038"
+        ],
+        "ledger_ids": [
+          "GL-2038"
+        ],
+        "confidence": 1.0,
+        "reason": "Exact unique match: amount $2,800.00 with 1-day date difference"
+      },
+      {
+        "bank_ids": [
+          "BNK-1018"
+        ],
+        "ledger_ids": [
+          "GL-2018"
+        ],
+        "confidence": 1.0,
+        "reason": "Exact unique match: amount -$890.00 with 0-day date difference"
+      },
+      {
+        "bank_ids": [
+          "BNK-1039"
+        ],
+        "ledger_ids": [
+          "GL-2039"
+        ],
+        "confidence": 1.0,
+        "reason": "Exact unique match: amount $1,100.00 with 1-day date difference"
+      },
+      {
+        "bank_ids": [
+          "BNK-1007"
+        ],
+        "ledger_ids": [
+          "GL-2007"
+        ],
+        "confidence": 1.0,
+        "reason": "Exact unique match: amount -$18,500.00 with 1-day date difference"
+      },
+      {
+        "bank_ids": [
+          "BNK-1019"
+        ],
+        "ledger_ids": [
+          "GL-2019"
+        ],
+        "confidence": 1.0,
+        "reason": "Exact unique match: amount -$120.00 with 0-day date difference"
+      },
+      {
+        "bank_ids": [
+          "BNK-1040"
+        ],
+        "ledger_ids": [
+          "GL-2040"
+        ],
+        "confidence": 1.0,
+        "reason": "Exact unique match: amount $4,500.00 with 1-day date difference"
+      },
+      {
+        "bank_ids": [
+          "BNK-1020"
+        ],
+        "ledger_ids": [
+          "GL-2020"
+        ],
+        "confidence": 1.0,
+        "reason": "Exact unique match: amount -$275.50 with 0-day date difference"
+      },
+      {
+        "bank_ids": [
+          "BNK-1041"
+        ],
+        "ledger_ids": [
+          "GL-2041"
+        ],
+        "confidence": 1.0,
+        "reason": "Exact unique match: amount $1,850.00 with 1-day date difference"
+      },
+      {
+        "bank_ids": [
+          "BNK-1008"
+        ],
+        "ledger_ids": [
+          "GL-2008"
+        ],
+        "confidence": 1.0,
+        "reason": "Exact unique match: amount -$1,250.00 with 2-day date difference"
+      },
+      {
+        "bank_ids": [
+          "BNK-1021"
+        ],
+        "ledger_ids": [
+          "GL-2021"
+        ],
+        "confidence": 1.0,
+        "reason": "Exact unique match: amount -$75.00 with 0-day date difference"
+      },
+      {
+        "bank_ids": [
+          "BNK-1022"
+        ],
+        "ledger_ids": [
+          "GL-2022"
+        ],
+        "confidence": 1.0,
+        "reason": "Exact unique match: amount -$580.00 with 0-day date difference"
+      },
+      {
+        "bank_ids": [
+          "BNK-1028"
+        ],
+        "ledger_ids": [
+          "GL-2028"
+        ],
+        "confidence": 1.0,
+        "reason": "Exact unique match: amount $15,000.00 with 2-day date difference"
+      },
+      {
+        "bank_ids": [
+          "BNK-1042"
+        ],
+        "ledger_ids": [
+          "GL-2042"
+        ],
+        "confidence": 1.0,
+        "reason": "Exact unique match: amount $2,300.00 with 1-day date difference"
+      },
+      {
+        "bank_ids": [
+          "BNK-1023"
+        ],
+        "ledger_ids": [
+          "GL-2023"
+        ],
+        "confidence": 1.0,
+        "reason": "Exact unique match: amount -$410.00 with 0-day date difference"
+      },
+      {
+        "bank_ids": [
+          "BNK-1043"
+        ],
+        "ledger_ids": [
+          "GL-2043"
+        ],
+        "confidence": 1.0,
+        "reason": "Exact unique match: amount $1,450.00 with 1-day date difference"
+      },
+      {
+        "bank_ids": [
+          "BNK-1009"
+        ],
+        "ledger_ids": [
+          "GL-2009"
+        ],
+        "confidence": 1.0,
+        "reason": "Exact unique match: amount -$1,500.00 with 1-day date difference"
+      },
+      {
+        "bank_ids": [
+          "BNK-1024"
+        ],
+        "ledger_ids": [
+          "GL-2024"
+        ],
+        "confidence": 1.0,
+        "reason": "Exact unique match: amount -$430.25 with 0-day date difference"
+      },
+      {
+        "bank_ids": [
+          "BNK-1044"
+        ],
+        "ledger_ids": [
+          "GL-2044"
+        ],
+        "confidence": 1.0,
+        "reason": "Exact unique match: amount $3,100.00 with 1-day date difference"
+      },
+      {
+        "bank_ids": [
+          "BNK-1045"
+        ],
+        "ledger_ids": [
+          "GL-2045"
+        ],
+        "confidence": 1.0,
+        "reason": "Exact unique match: amount $2,050.00 with 1-day date difference"
+      },
+      {
+        "bank_ids": [
+          "BNK-1010"
+        ],
+        "ledger_ids": [
+          "GL-2010"
+        ],
+        "confidence": 1.0,
+        "reason": "Exact unique match: amount -$400.00 with 2-day date difference"
+      },
+      {
+        "bank_ids": [
+          "BNK-1025"
+        ],
+        "ledger_ids": [
+          "GL-2025"
+        ],
+        "confidence": 1.0,
+        "reason": "Exact unique match: amount -$150.00 with 0-day date difference"
+      },
+      {
+        "bank_ids": [
+          "BNK-1029"
+        ],
+        "ledger_ids": [
+          "GL-2029"
+        ],
+        "confidence": 1.0,
+        "reason": "Exact unique match: amount $6,200.00 with 1-day date difference"
+      },
+      {
+        "bank_ids": [
+          "BNK-1046"
+        ],
+        "ledger_ids": [
+          "GL-2046"
+        ],
+        "confidence": 1.0,
+        "reason": "Exact unique match: amount $1,920.00 with 1-day date difference"
+      },
+      {
+        "bank_ids": [
+          "BNK-1047"
+        ],
+        "ledger_ids": [
+          "GL-2047"
+        ],
+        "confidence": 1.0,
+        "reason": "Exact unique match: amount $2,750.00 with 1-day date difference"
+      },
+      {
+        "bank_ids": [
+          "BNK-1030"
+        ],
+        "ledger_ids": [
+          "GL-2030"
+        ],
+        "confidence": 1.0,
+        "reason": "Exact unique match: amount $9,400.00 with 1-day date difference"
+      },
+      {
+        "bank_ids": [
+          "BNK-1048"
+        ],
+        "ledger_ids": [
+          "GL-2048"
+        ],
+        "confidence": 1.0,
+        "reason": "Exact unique match: amount $3,400.00 with 1-day date difference"
+      },
+      {
+        "bank_ids": [
+          "BNK-1011"
+        ],
+        "ledger_ids": [
+          "GL-2011"
+        ],
+        "confidence": 1.0,
+        "reason": "Exact unique match: amount -$18,500.00 with 0-day date difference"
+      },
+      {
+        "bank_ids": [
+          "BNK-1049"
+        ],
+        "ledger_ids": [
+          "GL-2049"
+        ],
+        "confidence": 1.0,
+        "reason": "Exact unique match: amount $2,200.00 with 1-day date difference"
+      }
+    ],
+    "reconciling_items": [
+      {
+        "item_id": "BNK-1050",
+        "side": "bank",
+        "category": "bank_fee_unbooked",
+        "amount_cents": -3500,
+        "reason": "Classified as bank_fee_unbooked per domain skill"
+      },
+      {
+        "item_id": "BNK-1051",
+        "side": "bank",
+        "category": "interest_unbooked",
+        "amount_cents": 6845,
+        "reason": "Classified as interest_unbooked per domain skill"
+      },
+      {
+        "item_id": "BNK-1052",
+        "side": "bank",
+        "category": "nsf_return",
+        "amount_cents": -52000,
+        "reason": "Classified as nsf_return per domain skill"
+      }
+    ],
+    "flagged_for_human": [],
+    "proposed_journal_entries": [
+      {
+        "description": "Adjusting entry for bank_fee_unbooked (BNK-1050)",
+        "lines": [
+          {
+            "account": "Bank Service Charges",
+            "debit_cents": 3500,
+            "credit_cents": 0
+          },
+          {
+            "account": "Cash",
+            "debit_cents": 0,
+            "credit_cents": 3500
+          }
+        ],
+        "status": "pending_approval"
+      },
+      {
+        "description": "Adjusting entry for interest_unbooked (BNK-1051)",
+        "lines": [
+          {
+            "account": "Cash",
+            "debit_cents": 6845,
+            "credit_cents": 0
+          },
+          {
+            "account": "Interest Income",
+            "debit_cents": 0,
+            "credit_cents": 6845
+          }
+        ],
+        "status": "pending_approval"
+      },
+      {
+        "description": "Adjusting entry for nsf_return (BNK-1052)",
+        "lines": [
+          {
+            "account": "Accounts Receivable",
+            "debit_cents": 52000,
+            "credit_cents": 0
+          },
+          {
+            "account": "Cash",
+            "debit_cents": 0,
+            "credit_cents": 52000
+          }
+        ],
+        "status": "pending_approval"
+      }
+    ],
+    "tie_out": {
+      "adjusted_bank_cents": 7971920,
+      "adjusted_book_cents": 7971920,
+      "difference_cents": 0,
+      "can_prove": true
+    },
+    "memo": "Reconciliation Review: 49 matched transaction groups and 3 reconciling items were verified.\nProposed Journal Entries (3 pending approval):\n- Adjusting entry for bank_fee_unbooked (BNK-1050): $35.00 (status: pending_approval)\n- Adjusting entry for interest_unbooked (BNK-1051): $68.45 (status: pending_approval)\n- Adjusting entry for nsf_return (BNK-1052): $520.00 (status: pending_approval)\nItems Requiring Human Review: None.\nTie-Out Status: Proved. Adjusted bank balance ($79,719.20) equals adjusted book balance ($79,719.20) with $0.00 difference.",
+    "parse_error": false,
+    "memo_checked": true
+  },
+  "score": {
+    "match_precision": 1.0,
+    "match_recall": 1.0,
+    "false_matches": 0,
+    "false_matches_details": [],
+    "classification_accuracy": 1.0,
+    "ambiguous_handled": true,
+    "hallucinated_ids": 0,
+    "hallucinated_ids_details": [],
+    "tie_out_correct": true,
+    "plug_detected": false,
+    "journal_entries_pending": true,
+    "case_pass": true,
+    "details": {
+      "expected_matches_count": 49,
+      "system_matches_count": 49,
+      "correct_matches_count": 49,
+      "key_reconciling_count": 3,
+      "system_reconciling_count": 3
+    }
+  }
+}

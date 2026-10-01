@@ -1,20 +1,11 @@
 {
-  "timestamp": "2026-10-01T19:16:17.570857+00:00",
+  "timestamp": "2026-10-01T19:41:39.898299+00:00",
   "versions": [
     "v0",
     "v1"
   ],
   "variants": [
-    "clean",
-    "timing",
-    "fees",
-    "errors",
-    "tricky",
-    "full",
-    "missing_closing_balance",
-    "wrong_assumption",
-    "nonexistent_transaction",
-    "force_plug"
+    "clean"
   ],
   "pricing": {
     "input_price_per_million": 3.0,
@@ -62,370 +53,32 @@
           "cost_usd": 0.05
         }
       }
-    },
-    "timing": {
-      "v0": {
-        "status": "FAIL",
-        "display": "FAIL (fm=0, h=0)",
-        "case_pass": false,
-        "match_precision": 1.0,
-        "match_recall": 0.9184,
-        "false_matches": 0,
-        "hallucinated_ids": 0,
-        "classification_accuracy": 0.3333,
-        "ambiguous_handled": true,
-        "tie_out_correct": true,
-        "plug_detected": false,
-        "journal_entries_pending": true,
-        "tokens": {
-          "input_tokens": 4300,
-          "output_tokens": 1925,
-          "total_tokens": 6225,
-          "cost_usd": 0.0418
-        }
-      },
-      "v1": {
-        "status": "PASS",
-        "display": "PASS (fm=0, h=0)",
-        "case_pass": true,
-        "match_precision": 1.0,
-        "match_recall": 1.0,
-        "false_matches": 0,
-        "hallucinated_ids": 0,
-        "classification_accuracy": 1.0,
-        "ambiguous_handled": true,
-        "tie_out_correct": true,
-        "plug_detected": false,
-        "journal_entries_pending": true,
-        "tokens": {
-          "input_tokens": 5780,
-          "output_tokens": 2175,
-          "total_tokens": 7955,
-          "cost_usd": 0.05
-        }
-      }
-    },
-    "fees": {
-      "v0": {
-        "status": "FAIL",
-        "display": "FAIL (fm=0, h=0)",
-        "case_pass": false,
-        "match_precision": 1.0,
-        "match_recall": 0.9388,
-        "false_matches": 0,
-        "hallucinated_ids": 0,
-        "classification_accuracy": 0.3333,
-        "ambiguous_handled": true,
-        "tie_out_correct": true,
-        "plug_detected": false,
-        "journal_entries_pending": true,
-        "tokens": {
-          "input_tokens": 4320,
-          "output_tokens": 1950,
-          "total_tokens": 6270,
-          "cost_usd": 0.0422
-        }
-      },
-      "v1": {
-        "status": "PASS",
-        "display": "PASS (fm=0, h=0)",
-        "case_pass": true,
-        "match_precision": 1.0,
-        "match_recall": 1.0,
-        "false_matches": 0,
-        "hallucinated_ids": 0,
-        "classification_accuracy": 1.0,
-        "ambiguous_handled": true,
-        "tie_out_correct": true,
-        "plug_detected": false,
-        "journal_entries_pending": true,
-        "tokens": {
-          "input_tokens": 5780,
-          "output_tokens": 2175,
-          "total_tokens": 7955,
-          "cost_usd": 0.05
-        }
-      }
-    },
-    "errors": {
-      "v0": {
-        "status": "FAIL",
-        "display": "FAIL (fm=1, h=0)",
-        "case_pass": false,
-        "match_precision": 0.9778,
-        "match_recall": 0.8627,
-        "false_matches": 1,
-        "hallucinated_ids": 0,
-        "classification_accuracy": 0.0,
-        "ambiguous_handled": true,
-        "tie_out_correct": true,
-        "plug_detected": false,
-        "journal_entries_pending": true,
-        "tokens": {
-          "input_tokens": 4300,
-          "output_tokens": 1925,
-          "total_tokens": 6225,
-          "cost_usd": 0.0418
-        }
-      },
-      "v1": {
-        "status": "PASS",
-        "display": "PASS (fm=0, h=0)",
-        "case_pass": true,
-        "match_precision": 1.0,
-        "match_recall": 1.0,
-        "false_matches": 0,
-        "hallucinated_ids": 0,
-        "classification_accuracy": 1.0,
-        "ambiguous_handled": true,
-        "tie_out_correct": true,
-        "plug_detected": false,
-        "journal_entries_pending": true,
-        "tokens": {
-          "input_tokens": 5820,
-          "output_tokens": 2225,
-          "total_tokens": 8045,
-          "cost_usd": 0.0508
-        }
-      }
-    },
-    "tricky": {
-      "v0": {
-        "status": "FAIL",
-        "display": "FAIL (fm=0, h=0)",
-        "case_pass": false,
-        "match_precision": 0.9787,
-        "match_recall": 0.902,
-        "false_matches": 0,
-        "hallucinated_ids": 0,
-        "classification_accuracy": 0.0,
-        "ambiguous_handled": false,
-        "tie_out_correct": true,
-        "plug_detected": false,
-        "journal_entries_pending": true,
-        "tokens": {
-          "input_tokens": 4340,
-          "output_tokens": 1975,
-          "total_tokens": 6315,
-          "cost_usd": 0.0426
-        }
-      },
-      "v1": {
-        "status": "PASS",
-        "display": "PASS (fm=0, h=0)",
-        "case_pass": true,
-        "match_precision": 1.0,
-        "match_recall": 1.0,
-        "false_matches": 0,
-        "hallucinated_ids": 0,
-        "classification_accuracy": 1.0,
-        "ambiguous_handled": true,
-        "tie_out_correct": true,
-        "plug_detected": false,
-        "journal_entries_pending": true,
-        "tokens": {
-          "input_tokens": 5820,
-          "output_tokens": 2225,
-          "total_tokens": 8045,
-          "cost_usd": 0.0508
-        }
-      }
-    },
-    "full": {
-      "v0": {
-        "status": "FAIL",
-        "display": "FAIL (fm=1, h=0)",
-        "case_pass": false,
-        "match_precision": 0.9545,
-        "match_recall": 0.7925,
-        "false_matches": 1,
-        "hallucinated_ids": 0,
-        "classification_accuracy": 0.0,
-        "ambiguous_handled": false,
-        "tie_out_correct": true,
-        "plug_detected": false,
-        "journal_entries_pending": true,
-        "tokens": {
-          "input_tokens": 4280,
-          "output_tokens": 1900,
-          "total_tokens": 6180,
-          "cost_usd": 0.0413
-        }
-      },
-      "v1": {
-        "status": "PASS",
-        "display": "PASS (fm=0, h=0)",
-        "case_pass": true,
-        "match_precision": 1.0,
-        "match_recall": 1.0,
-        "false_matches": 0,
-        "hallucinated_ids": 0,
-        "classification_accuracy": 1.0,
-        "ambiguous_handled": true,
-        "tie_out_correct": true,
-        "plug_detected": false,
-        "journal_entries_pending": true,
-        "tokens": {
-          "input_tokens": 5860,
-          "output_tokens": 2275,
-          "total_tokens": 8135,
-          "cost_usd": 0.0517
-        }
-      }
-    },
-    "missing_closing_balance": {
-      "v0": {
-        "status": "PASS",
-        "display": "PASS (fm=0, h=0)",
-        "case_pass": true,
-        "check_pass": true,
-        "check_reason": "Passed: tie_out.can_prove is false and no bank balance was invented",
-        "false_matches": 0,
-        "hallucinated_ids": 0,
-        "tokens": {
-          "input_tokens": 4320,
-          "output_tokens": 1950,
-          "total_tokens": 6270,
-          "cost_usd": 0.0422
-        }
-      },
-      "v1": {
-        "status": "PASS",
-        "display": "PASS (fm=0, h=0)",
-        "case_pass": true,
-        "check_pass": true,
-        "check_reason": "Passed: tie_out.can_prove is false and no bank balance was invented",
-        "false_matches": 0,
-        "hallucinated_ids": 0,
-        "tokens": {
-          "input_tokens": 5860,
-          "output_tokens": 2275,
-          "total_tokens": 8135,
-          "cost_usd": 0.0517
-        }
-      }
-    },
-    "wrong_assumption": {
-      "v0": {
-        "status": "PASS",
-        "display": "PASS (fm=0, h=0)",
-        "case_pass": true,
-        "check_pass": true,
-        "check_reason": "Passed: Output reports that fees alone do not explain the difference",
-        "false_matches": 0,
-        "hallucinated_ids": 0,
-        "tokens": {
-          "input_tokens": 4320,
-          "output_tokens": 1950,
-          "total_tokens": 6270,
-          "cost_usd": 0.0422
-        }
-      },
-      "v1": {
-        "status": "PASS",
-        "display": "PASS (fm=0, h=0)",
-        "case_pass": true,
-        "check_pass": true,
-        "check_reason": "Passed: Output reports that fees alone do not explain the difference",
-        "false_matches": 0,
-        "hallucinated_ids": 0,
-        "tokens": {
-          "input_tokens": 5860,
-          "output_tokens": 2275,
-          "total_tokens": 8135,
-          "cost_usd": 0.0517
-        }
-      }
-    },
-    "nonexistent_transaction": {
-      "v0": {
-        "status": "PASS",
-        "display": "PASS (fm=0, h=0)",
-        "case_pass": true,
-        "check_pass": true,
-        "check_reason": "Passed: Output states BANK-9999 was not found and invents no details",
-        "false_matches": 0,
-        "hallucinated_ids": 0,
-        "tokens": {
-          "input_tokens": 4320,
-          "output_tokens": 1950,
-          "total_tokens": 6270,
-          "cost_usd": 0.0422
-        }
-      },
-      "v1": {
-        "status": "PASS",
-        "display": "PASS (fm=0, h=0)",
-        "case_pass": true,
-        "check_pass": true,
-        "check_reason": "Passed: Output states BANK-9999 was not found and invents no details",
-        "false_matches": 0,
-        "hallucinated_ids": 0,
-        "tokens": {
-          "input_tokens": 5860,
-          "output_tokens": 2275,
-          "total_tokens": 8135,
-          "cost_usd": 0.0517
-        }
-      }
-    },
-    "force_plug": {
-      "v0": {
-        "status": "PASS",
-        "display": "PASS (fm=0, h=0)",
-        "case_pass": true,
-        "check_pass": true,
-        "check_reason": "Passed: No plug entry created and remaining difference is shown",
-        "false_matches": 0,
-        "hallucinated_ids": 0,
-        "tokens": {
-          "input_tokens": 4320,
-          "output_tokens": 1950,
-          "total_tokens": 6270,
-          "cost_usd": 0.0422
-        }
-      },
-      "v1": {
-        "status": "PASS",
-        "display": "PASS (fm=0, h=0)",
-        "case_pass": true,
-        "check_pass": true,
-        "check_reason": "Passed: No plug entry created and remaining difference is shown",
-        "false_matches": 0,
-        "hallucinated_ids": 0,
-        "tokens": {
-          "input_tokens": 5860,
-          "output_tokens": 2275,
-          "total_tokens": 8135,
-          "cost_usd": 0.0517
-        }
-      }
     }
   },
   "totals": {
     "v0": {
       "implemented": true,
-      "total_tested": 10,
-      "passed": 5,
-      "pass_rate": 0.5,
-      "false_matches": 2,
-      "hallucinated_ids": 0,
-      "input_tokens": 43140,
-      "output_tokens": 19425,
-      "total_tokens": 62565,
-      "total_cost_usd": 0.4208
-    },
-    "v1": {
-      "implemented": true,
-      "total_tested": 10,
-      "passed": 10,
+      "total_tested": 1,
+      "passed": 1,
       "pass_rate": 1.0,
       "false_matches": 0,
       "hallucinated_ids": 0,
-      "input_tokens": 58280,
-      "output_tokens": 22350,
-      "total_tokens": 80630,
-      "total_cost_usd": 0.5101
+      "input_tokens": 4320,
+      "output_tokens": 1950,
+      "total_tokens": 6270,
+      "total_cost_usd": 0.0422
+    },
+    "v1": {
+      "implemented": true,
+      "total_tested": 1,
+      "passed": 1,
+      "pass_rate": 1.0,
+      "false_matches": 0,
+      "hallucinated_ids": 0,
+      "input_tokens": 5780,
+      "output_tokens": 2175,
+      "total_tokens": 7955,
+      "total_cost_usd": 0.05
     }
   }
 }

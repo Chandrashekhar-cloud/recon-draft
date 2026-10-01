@@ -161,3 +161,38 @@ def test_run_v1_with_mocked_llm(monkeypatch):
             if backup is not None:
                 clean_json_path.write_text(backup, encoding="utf-8")
 
+
+def test_run_v2_execution_and_trace(monkeypatch):
+    """Verify run_v2 executes pre-matcher, tool loop, verification, and saves trace in results/v2/."""
+    from src.runners import run_v2, get_system_prompt_v2
+
+    sys_prompt = get_system_prompt_v2()
+    assert "AGENTIC RECONCILIATION INSTRUCTIONS" in sys_prompt
+    assert "submit_reconciliation" in sys_prompt
+    assert "get_item" in sys_prompt
+
+    clean_dir = BASE_DIR / "data" / "variants" / "clean"
+    clean_v2_path = BASE_DIR / "results" / "v2" / "clean.json"
+    backup = clean_v2_path.read_text(encoding="utf-8") if clean_v2_path.is_file() else None
+
+    try:
+        parsed = run_v2(clean_dir, save_results=True, mock=True)
+        assert len(parsed["matches"]) > 0
+        assert parsed["tie_out"]["can_prove"] is True
+
+        # Check saved result
+        assert clean_v2_path.is_file()
+        with open(clean_v2_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+
+        assert data["runner"] == "v2"
+        assert data["variant"] == "clean"
+        assert "trace" in data
+        assert len(data["trace"]) > 0
+        assert any(t["tool"] == "submit_reconciliation" for t in data["trace"])
+        assert data["pre_matches_count"] > 0
+    finally:
+        if backup is not None:
+            clean_v2_path.write_text(backup, encoding="utf-8")
+
+

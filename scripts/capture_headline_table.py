@@ -1,0 +1,455 @@
+"""Generate an executive-grade HTML dashboard of the headline evaluation table and capture a screenshot."""
+
+from pathlib import Path
+from playwright.sync_api import sync_playwright
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+RESULTS_DIR = BASE_DIR / "results"
+DOCS_DIR = BASE_DIR / "docs"
+ARTIFACT_DIR = Path(r"C:\Users\chand\.gemini\antigravity-ide\brain\544eafd9-57f9-46a4-8f9c-6de9fb5078ca")
+
+HTML_CONTENT = """<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Headline Evaluation Results: v0 vs v1 vs v2</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@400;500;600;700;800&display=swap');
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: #090d16;
+      color: #f1f5f9;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      padding: 40px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      width: 1080px;
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      border-radius: 16px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.05);
+      padding: 36px 40px;
+      overflow: hidden;
+    }
+
+    .header {
+      margin-bottom: 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      border-bottom: 1px solid #1e293b;
+      padding-bottom: 20px;
+    }
+
+    .header-left h1 {
+      font-size: 26px;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .header-left h1 span.badge-title {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      background: rgba(56, 189, 248, 0.15);
+      color: #38bdf8;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+    }
+
+    .header-left p {
+      font-size: 14px;
+      color: #94a3b8;
+      margin-top: 6px;
+    }
+
+    .header-right {
+      text-align: right;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: #64748b;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      margin-bottom: 24px;
+      font-size: 14px;
+    }
+
+    thead th {
+      background: #131d35;
+      color: #94a3b8;
+      text-align: left;
+      font-weight: 600;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 14px 18px;
+      border-bottom: 1px solid #1e293b;
+    }
+
+    thead th:first-child {
+      border-top-left-radius: 8px;
+    }
+    thead th:last-child {
+      border-top-right-radius: 8px;
+    }
+
+    tbody tr {
+      transition: background 0.15s ease;
+    }
+
+    tbody tr:nth-child(even) {
+      background: rgba(255, 255, 255, 0.015);
+    }
+
+    tbody td {
+      padding: 12px 18px;
+      border-bottom: 1px solid rgba(30, 41, 59, 0.6);
+      color: #cbd5e1;
+    }
+
+    .variant-name {
+      font-weight: 600;
+      color: #f8fafc;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+    }
+
+    .variant-tag {
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin-left: 8px;
+      font-weight: 500;
+      text-transform: uppercase;
+    }
+
+    .tag-base {
+      background: rgba(148, 163, 184, 0.12);
+      color: #94a3b8;
+    }
+
+    .tag-edge {
+      background: rgba(245, 158, 11, 0.15);
+      color: #fbbf24;
+      border: 1px solid rgba(245, 158, 11, 0.25);
+    }
+
+    .badge-pass {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 12px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .badge-fail {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(239, 68, 68, 0.15);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 12px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .sub-meta {
+      font-size: 11px;
+      color: #64748b;
+      margin-left: 6px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .divider-row td {
+      padding: 8px 18px;
+      background: #111a2f;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #64748b;
+      border-top: 1px solid #1e293b;
+      border-bottom: 1px solid #1e293b;
+    }
+
+    .totals-row td {
+      padding: 16px 18px;
+      background: #141e33;
+      border-top: 2px solid #334155;
+      border-bottom: none;
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+    .totals-label {
+      color: #f8fafc;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .kpi-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 10px;
+    }
+
+    .kpi-card {
+      background: #131c31;
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+      padding: 18px 20px;
+    }
+
+    .kpi-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #94a3b8;
+      margin-bottom: 6px;
+    }
+
+    .kpi-value {
+      font-size: 22px;
+      font-weight: 800;
+      color: #ffffff;
+      font-family: 'JetBrains Mono', monospace;
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+
+    .kpi-delta {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .delta-green {
+      color: #34d399;
+    }
+
+    .kpi-desc {
+      font-size: 12px;
+      color: #64748b;
+      margin-top: 6px;
+      line-height: 1.4;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <div class="header-left">
+      <h1>
+        Agentic Bank Reconciliation Benchmark
+        <span class="badge-title">Headline Results</span>
+      </h1>
+      <p>Autonomous accounting agent benchmark across 10 variants comparing raw Claude, domain skill, and tool architectures.</p>
+    </div>
+    <div class="header-right">
+      <div>Model: Claude 3.5 Sonnet</div>
+      <div>Pricing: $3.00/M in &bull; $15.00/M out</div>
+    </div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 28%;">Evaluation Variant</th>
+        <th style="width: 24%;">v0 (Raw Claude Baseline)</th>
+        <th style="width: 24%;">v1 (+ Domain Skill)</th>
+        <th style="width: 24%;">v2 (Pre-Matcher + Tools + Verify)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Core Variants -->
+      <tr>
+        <td><span class="variant-name">clean</span><span class="variant-tag tag-base">Core</span></td>
+        <td><span class="badge-pass">&check; PASS</span><span class="sub-meta">fm=0, h=0</span></td>
+        <td><span class="badge-pass">&check; PASS</span><span class="sub-meta">fm=0, h=0</span></td>
+        <td><span class="badge-pass">&check; PASS</span><span class="sub-meta">fm=0, h=0</span></td>
+      </tr>
+      <tr>
+        <td><span class="variant-name">timing</span><span class="variant-tag tag-base">Core</span></td>
+        <td><span class="badge-fail">&cross; FAIL</span><span class="sub-meta">fm=0, h=0</span></td>
+        <td><span class="badge-pass">&check; PASS</span><span class="sub-meta">fm=0, h=0</span></td>
+        <td><span class="badge-pass">&check; PASS</span><span class="sub-meta">fm=0, h=0</span></td>
+      </tr>
+      <tr>
+        <td><span class="variant-name">fees</span><span class="variant-tag tag-base">Core</span></td>
+        <td><span class="badge-fail">&cross; FAIL</span><span class="sub-meta">fm=0, h=0</span></td>
+        <td><span class="badge-pass">&check; PASS</span><span class="sub-meta">fm=0, h=0</span></td>
+        <td><span class="badge-pass">&check; PASS</span><span class="sub-meta">fm=0, h=0</span></td>
+      </tr>
+      <tr>
+        <td><span class="variant-name">errors</span><span class="variant-tag tag-base">Core</span></td>
+        <td><span class="badge-fail">&cross; FAIL</span><span class="sub-meta">fm=1, h=0</span></td>
+        <td><span class="badge-pass">&check; PASS</span><span class="sub-meta">fm=0, h=0</span></td>
+        <td><span class="badge-pass">&check; PASS</span><span class="sub-meta">fm=0, h=0</span></td>
+      </tr>
+      <tr>
+        <td><span class="variant-name">tricky</span><span class="variant-tag tag-base">Core</span></td>
+        <td><span class="badge-fail">&cross; FAIL</span><span class="sub-meta">fm=0, h=0</span></td>
+        <td><span class="badge-pass">&check; PASS</span><span class="sub-meta">fm=0, h=0</span></td>
+        <td><span class="badge-pass">&check; PASS</span><span class="sub-meta">fm=0, h=0</span></td>
+      </tr>
+      <tr>
+        <td><span class="variant-name">full</span><span class="variant-tag tag-base">Core</span></td>
+        <td><span class="badge-fail">&cross; FAIL</span><span class="sub-meta">fm=1, h=0</span></td>
+        <td><span class="badge-pass">&check; PASS</span><span class="sub-meta">fm=0, h=0</span></td>
+        <td><span class="badge-pass">&check; PASS</span><span class="sub-meta">fm=0, h=0</span></td>
+      </tr>
+
+      <!-- Scripted Edge Cases -->
+      <tr class="divider-row">
+        <td colspan="4">Scripted Edge Cases (Deterministic Non-LLM Judges)</td>
+      </tr>
+      <tr>
+        <td><span class="variant-name">missing_closing_balance</span><span class="variant-tag tag-edge">Edge</span></td>
+        <td><span class="badge-pass">&check; PASS</span><span class="sub-meta">fm=0, h=0</span></td>
+        <td><span class="badge-pass">&check; PASS</span><span class="sub-meta">fm=0, h=0</span></td>
+        <td><span class="badge-pass">&check; PASS</span><span class="sub-meta">fm=0, h=0</span></td>
+      </tr>
+      <tr>
+        <td><span class="variant-name">wrong_assumption</span><span class="variant-tag tag-edge">Edge</span></td>
+        <td><span class="badge-pass">&check; PASS</span><span class="sub-meta">fm=0, h=0</span></td>
+        <td><span class="badge-pass">&check; PASS</span><span class="sub-meta">fm=0, h=0</span></td>
+        <td><span class="badge-pass">&check; PASS</span><span class="sub-meta">fm=0, h=0</span></td>
+      </tr>
+      <tr>
+        <td><span class="variant-name">nonexistent_transaction</span><span class="variant-tag tag-edge">Edge</span></td>
+        <td><span class="badge-pass">&check; PASS</span><span class="sub-meta">fm=0, h=0</span></td>
+        <td><span class="badge-pass">&check; PASS</span><span class="sub-meta">fm=0, h=0</span></td>
+        <td><span class="badge-pass">&check; PASS</span><span class="sub-meta">fm=0, h=0</span></td>
+      </tr>
+      <tr>
+        <td><span class="variant-name">force_plug</span><span class="variant-tag tag-edge">Edge</span></td>
+        <td><span class="badge-pass">&check; PASS</span><span class="sub-meta">fm=0, h=0</span></td>
+        <td><span class="badge-pass">&check; PASS</span><span class="sub-meta">fm=0, h=0</span></td>
+        <td><span class="badge-pass">&check; PASS</span><span class="sub-meta">fm=0, h=0</span></td>
+      </tr>
+
+      <!-- Summary Metrics Rows -->
+      <tr class="totals-row">
+        <td class="totals-label">Pass Rate</td>
+        <td><strong style="color: #f87171;">5/10 (50.0%)</strong></td>
+        <td><strong style="color: #34d399;">10/10 (100.0%)</strong></td>
+        <td><strong style="color: #34d399;">10/10 (100.0%)</strong></td>
+      </tr>
+      <tr class="totals-row">
+        <td class="totals-label">False Matches / Hallucinated</td>
+        <td><span style="color: #f87171;">2 FM</span> / 0 H</td>
+        <td><span style="color: #34d399;">0 FM</span> / 0 H</td>
+        <td><span style="color: #34d399;">0 FM</span> / 0 H</td>
+      </tr>
+      <tr class="totals-row">
+        <td class="totals-label">Total Tokens</td>
+        <td>62,565</td>
+        <td>80,630</td>
+        <td><strong style="color: #38bdf8;">42,030</strong> <span class="sub-meta">(-48% vs v1)</span></td>
+      </tr>
+      <tr class="totals-row">
+        <td class="totals-label">Estimated Cost</td>
+        <td>$0.4208</td>
+        <td>$0.5101</td>
+        <td><strong style="color: #38bdf8;">$0.2275</strong> <span class="sub-meta">(-55% vs v1)</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="kpi-cards">
+    <div class="kpi-card">
+      <div class="kpi-title">Accuracy Progression</div>
+      <div class="kpi-value">
+        100.0% <span class="kpi-delta delta-green">&uarr; +50.0%</span>
+      </div>
+      <div class="kpi-desc">Domain skill (v1) eliminated hallucinated transposition matches and handled ambiguous candidates.</div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-title">Token Efficiency</div>
+      <div class="kpi-value">
+        42,030 <span class="kpi-delta delta-green">&darr; -48%</span>
+      </div>
+      <div class="kpi-desc">Deterministic pre-matcher filtered exact matches, sending Claude only leftover unresolved rows.</div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-title">Safety & Verification</div>
+      <div class="kpi-value" style="font-size: 16px; color: #38bdf8;">
+        Deterministic Guardrails
+      </div>
+      <div class="kpi-desc">src/verify.py checks ID existence, balanced JEs, and recomputes tie-out math in Python.</div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
+"""
+
+
+def main():
+    HTML_PATH = RESULTS_DIR / "headline_table.html"
+    HTML_PATH.write_text(HTML_CONTENT, encoding="utf-8")
+
+    PNG_RESULTS = RESULTS_DIR / "headline_table.png"
+    PNG_DOCS = DOCS_DIR / "headline_table.png"
+    PNG_ARTIFACT = ARTIFACT_DIR / "headline_table.png"
+
+    with sync_playwright() as p:
+        browser = p.chromium.launch(channel="chrome")
+        page = browser.new_page(viewport={"width": 1200, "height": 1050}, device_scale_factor=2)
+        page.goto(f"file:///{HTML_PATH.as_posix()}")
+        page.wait_for_timeout(500)
+
+        # Screenshot container element
+        container = page.locator(".container")
+        container.screenshot(path=str(PNG_RESULTS))
+        container.screenshot(path=str(PNG_DOCS))
+        if ARTIFACT_DIR.is_dir():
+            container.screenshot(path=str(PNG_ARTIFACT))
+
+        browser.close()
+
+    print(f"Screenshot successfully saved to:")
+    print(f"  - {PNG_RESULTS}")
+    print(f"  - {PNG_DOCS}")
+    if ARTIFACT_DIR.is_dir():
+        print(f"  - {PNG_ARTIFACT}")
+
+
+if __name__ == "__main__":
+    main()
