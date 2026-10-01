@@ -20,3 +20,9 @@ What I did: Implemented src/matcher.py (deterministic pre-matcher using pandas) 
 What happened: Ran `pytest` across all 17 tests; all passed. Ran `python -m src.matcher`; printed row resolution breakdown across all 6 variants.
 Error text (if any): None
 Fix: N/A
+
+## [2026-10-01 23:38:00] What I did / What happened / Error text (if any) / Fix
+What I did: Implemented src/scoring.py (deterministic metrics evaluator comparing system output against answer_key.json) and tests/test_scoring.py.
+What happened: Ran `pytest`; all 23 tests passed, verifying perfect output scoring (100% on all metrics) and error catching for false matches, hallucinated IDs, and plug entries.
+Error text (if any): None
+Fix: N/A
