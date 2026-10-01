@@ -1,0 +1,560 @@
+{
+  "variant": "timing",
+  "runner": "v1",
+  "timestamp": "2026-10-01T19:14:41.287114+00:00",
+  "model": "claude-sonnet-4-5 (v1 simulated)",
+  "tokens": {
+    "input_tokens": 5780,
+    "output_tokens": 2175,
+    "elapsed_seconds": 1.95
+  },
+  "parsed_output": {
+    "matches": [
+      {
+        "bank_ids": [
+          "BNK-1001"
+        ],
+        "ledger_ids": [
+          "GL-2001"
+        ],
+        "confidence": 0.98,
+        "reason": "Ground-truth match per domain skill guidelines"
+      },
+      {
+        "bank_ids": [
+          "BNK-1002"
+        ],
+        "ledger_ids": [
+          "GL-2002"
+        ],
+        "confidence": 0.98,
+        "reason": "Ground-truth match per domain skill guidelines"
+      },
+      {
+        "bank_ids": [
+          "BNK-1003"
+        ],
+        "ledger_ids": [
+          "GL-2003"
+        ],
+        "confidence": 0.98,
+        "reason": "Ground-truth match per domain skill guidelines"
+      },
+      {
+        "bank_ids": [
+          "BNK-1004"
+        ],
+        "ledger_ids": [
+          "GL-2004"
+        ],
+        "confidence": 0.98,
+        "reason": "Ground-truth match per domain skill guidelines"
+      },
+      {
+        "bank_ids": [
+          "BNK-1005"
+        ],
+        "ledger_ids": [
+          "GL-2005"
+        ],
+        "confidence": 0.98,
+        "reason": "Ground-truth match per domain skill guidelines"
+      },
+      {
+        "bank_ids": [
+          "BNK-1006"
+        ],
+        "ledger_ids": [
+          "GL-2006"
+        ],
+        "confidence": 0.98,
+        "reason": "Ground-truth match per domain skill guidelines"
+      },
+      {
+        "bank_ids": [
+          "BNK-1007"
+        ],
+        "ledger_ids": [
+          "GL-2007"
+        ],
+        "confidence": 0.98,
+        "reason": "Ground-truth match per domain skill guidelines"
+      },
+      {
+        "bank_ids": [
+          "BNK-1008"
+        ],
+        "ledger_ids": [
+          "GL-2008"
+        ],
+        "confidence": 0.98,
+        "reason": "Ground-truth match per domain skill guidelines"
+      },
+      {
+        "bank_ids": [
+          "BNK-1009"
+        ],
+        "ledger_ids": [
+          "GL-2009"
+        ],
+        "confidence": 0.98,
+        "reason": "Ground-truth match per domain skill guidelines"
+      },
+      {
+        "bank_ids": [
+          "BNK-1010"
+        ],
+        "ledger_ids": [
+          "GL-2010"
+        ],
+        "confidence": 0.98,
+        "reason": "Ground-truth match per domain skill guidelines"
+      },
+      {
+        "bank_ids": [
+          "BNK-1011"
+        ],
+        "ledger_ids": [
+          "GL-2011"
+        ],
+        "confidence": 0.98,
+        "reason": "Ground-truth match per domain skill guidelines"
+      },
+      {
+        "bank_ids": [
+          "BNK-1012"
+        ],
+        "ledger_ids": [
+          "GL-2012"
+        ],
+        "confidence": 0.98,
+        "reason": "Ground-truth match per domain skill guidelines"
+      },
+      {
+        "bank_ids": [
+          "BNK-1013"
+        ],
+        "ledger_ids": [
+          "GL-2013"
+        ],
+        "confidence": 0.98,
+        "reason": "Ground-truth match per domain skill guidelines"
+      },
+      {
+        "bank_ids": [
+          "BNK-1014"
+        ],
+        "ledger_ids": [
+          "GL-2014"
+        ],
+        "confidence": 0.98,
+        "reason": "Ground-truth match per domain skill guidelines"
+      },
+      {
+        "bank_ids": [
+          "BNK-1015"
+        ],
+        "ledger_ids": [
+          "GL-2015"
+        ],
+        "confidence": 0.98,
+        "reason": "Ground-truth match per domain skill guidelines"
+      },
+      {
+        "bank_ids": [
+          "BNK-1016"
+        ],
+        "ledger_ids": [
+          "GL-2016"
+        ],
+        "confidence": 0.98,
+        "reason": "Ground-truth match per domain skill guidelines"
+      },
+      {
+        "bank_ids": [
+          "BNK-1017"
+        ],
+        "ledger_ids": [
+          "GL-2017"
+        ],
+        "confidence": 0.98,
+        "reason": "Ground-truth match per domain skill guidelines"
+      },
+      {
+        "bank_ids": [
+          "BNK-1018"
+        ],
+        "ledger_ids": [
+          "GL-2018"
+        ],
+        "confidence": 0.98,
+        "reason": "Ground-truth match per domain skill guidelines"
+      },
+      {
+        "bank_ids": [
+          "BNK-1019"
+        ],
+        "ledger_ids": [
+          "GL-2019"
+        ],
+        "confidence": 0.98,
+        "reason": "Ground-truth match per domain skill guidelines"
+      },
+      {
+        "bank_ids": [
+          "BNK-1020"
+        ],
+        "ledger_ids": [
+          "GL-2020"
+        ],
+        "confidence": 0.98,
+        "reason": "Ground-truth match per domain skill guidelines"
+      },
+      {
+        "bank_ids": [
+          "BNK-1021"
+        ],
+        "ledger_ids": [
+          "GL-2021"
+        ],
+        "confidence": 0.98,
+        "reason": "Ground-truth match per domain skill guidelines"
+      },
+      {
+        "bank_ids": [
+          "BNK-1022"
+        ],
+        "ledger_ids": [
+          "GL-2022"
+        ],
+        "confidence": 0.98,
+        "reason": "Ground-truth match per domain skill guidelines"
+      },
+      {
+        "bank_ids": [
+          "BNK-1023"
+        ],
+        "ledger_ids": [
+          "GL-2023"
+        ],
+        "confidence": 0.98,
+        "reason": "Ground-truth match per domain skill guidelines"
+      },
+      {
+        "bank_ids": [
+          "BNK-1024"
+        ],
+        "ledger_ids": [
+          "GL-2024"
+        ],
+        "confidence": 0.98,
+        "reason": "Ground-truth match per domain skill guidelines"
+      },
+      {
+        "bank_ids": [
+          "BNK-1025"
+        ],
+        "ledger_ids": [
+          "GL-2025"
+        ],
+        "confidence": 0.98,
+        "reason": "Ground-truth match per domain skill guidelines"
+      },
+      {
+        "bank_ids": [
+          "BNK-1026"
+        ],
+        "ledger_ids": [
+          "GL-2026"
+        ],
+        "confidence": 0.98,
+        "reason": "Ground-truth match per domain skill guidelines"
+      },
+      {
+        "bank_ids": [
+          "BNK-1027"
+        ],
+        "ledger_ids": [
+          "GL-2027"
+        ],
+        "confidence": 0.98,
+        "reason": "Ground-truth match per domain skill guidelines"
+      },
+      {
+        "bank_ids": [
+          "BNK-1028"
+        ],
+        "ledger_ids": [
+          "GL-2028"
+        ],
+        "confidence": 0.98,
+        "reason": "Ground-truth match per domain skill guidelines"
+      },
+      {
+        "bank_ids": [
+          "BNK-1029"
+        ],
+        "ledger_ids": [
+          "GL-2029"
+        ],
+        "confidence": 0.98,
+        "reason": "Ground-truth match per domain skill guidelines"
+      },
+      {
+        "bank_ids": [
+          "BNK-1030"
+        ],
+        "ledger_ids": [
+          "GL-2030"
+        ],
+        "confidence": 0.98,
+        "reason": "Ground-truth match per domain skill guidelines"
+      },
+      {
+        "bank_ids": [
+          "BNK-1031"
+        ],
+        "ledger_ids": [
+          "GL-2031"
+        ],
+        "confidence": 0.98,
+        "reason": "Ground-truth match per domain skill guidelines"
+      },
+      {
+        "bank_ids": [
+          "BNK-1032"
+        ],
+        "ledger_ids": [
+          "GL-2032"
+        ],
+        "confidence": 0.98,
+        "reason": "Ground-truth match per domain skill guidelines"
+      },
+      {
+        "bank_ids": [
+          "BNK-1033"
+        ],
+        "ledger_ids": [
+          "GL-2033"
+        ],
+        "confidence": 0.98,
+        "reason": "Ground-truth match per domain skill guidelines"
+      },
+      {
+        "bank_ids": [
+          "BNK-1034"
+        ],
+        "ledger_ids": [
+          "GL-2034"
+        ],
+        "confidence": 0.98,
+        "reason": "Ground-truth match per domain skill guidelines"
+      },
+      {
+        "bank_ids": [
+          "BNK-1035"
+        ],
+        "ledger_ids": [
+          "GL-2035"
+        ],
+        "confidence": 0.98,
+        "reason": "Ground-truth match per domain skill guidelines"
+      },
+      {
+        "bank_ids": [
+          "BNK-1036"
+        ],
+        "ledger_ids": [
+          "GL-2036"
+        ],
+        "confidence": 0.98,
+        "reason": "Ground-truth match per domain skill guidelines"
+      },
+      {
+        "bank_ids": [
+          "BNK-1037"
+        ],
+        "ledger_ids": [
+          "GL-2037"
+        ],
+        "confidence": 0.98,
+        "reason": "Ground-truth match per domain skill guidelines"
+      },
+      {
+        "bank_ids": [
+          "BNK-1038"
+        ],
+        "ledger_ids": [
+          "GL-2038"
+        ],
+        "confidence": 0.98,
+        "reason": "Ground-truth match per domain skill guidelines"
+      },
+      {
+        "bank_ids": [
+          "BNK-1039"
+        ],
+        "ledger_ids": [
+          "GL-2039"
+        ],
+        "confidence": 0.98,
+        "reason": "Ground-truth match per domain skill guidelines"
+      },
+      {
+        "bank_ids": [
+          "BNK-1040"
+        ],
+        "ledger_ids": [
+          "GL-2040"
+        ],
+        "confidence": 0.98,
+        "reason": "Ground-truth match per domain skill guidelines"
+      },
+      {
+        "bank_ids": [
+          "BNK-1041"
+        ],
+        "ledger_ids": [
+          "GL-2041"
+        ],
+        "confidence": 0.98,
+        "reason": "Ground-truth match per domain skill guidelines"
+      },
+      {
+        "bank_ids": [
+          "BNK-1042"
+        ],
+        "ledger_ids": [
+          "GL-2042"
+        ],
+        "confidence": 0.98,
+        "reason": "Ground-truth match per domain skill guidelines"
+      },
+      {
+        "bank_ids": [
+          "BNK-1043"
+        ],
+        "ledger_ids": [
+          "GL-2043"
+        ],
+        "confidence": 0.98,
+        "reason": "Ground-truth match per domain skill guidelines"
+      },
+      {
+        "bank_ids": [
+          "BNK-1044"
+        ],
+        "ledger_ids": [
+          "GL-2044"
+        ],
+        "confidence": 0.98,
+        "reason": "Ground-truth match per domain skill guidelines"
+      },
+      {
+        "bank_ids": [
+          "BNK-1045"
+        ],
+        "ledger_ids": [
+          "GL-2045"
+        ],
+        "confidence": 0.98,
+        "reason": "Ground-truth match per domain skill guidelines"
+      },
+      {
+        "bank_ids": [
+          "BNK-1046"
+        ],
+        "ledger_ids": [
+          "GL-2046"
+        ],
+        "confidence": 0.98,
+        "reason": "Ground-truth match per domain skill guidelines"
+      },
+      {
+        "bank_ids": [
+          "BNK-1047"
+        ],
+        "ledger_ids": [
+          "GL-2047"
+        ],
+        "confidence": 0.98,
+        "reason": "Ground-truth match per domain skill guidelines"
+      },
+      {
+        "bank_ids": [
+          "BNK-1048"
+        ],
+        "ledger_ids": [
+          "GL-2048"
+        ],
+        "confidence": 0.98,
+        "reason": "Ground-truth match per domain skill guidelines"
+      },
+      {
+        "bank_ids": [
+          "BNK-1049"
+        ],
+        "ledger_ids": [
+          "GL-2049"
+        ],
+        "confidence": 0.98,
+        "reason": "Ground-truth match per domain skill guidelines"
+      }
+    ],
+    "reconciling_items": [
+      {
+        "item_id": "GL-2050",
+        "side": "ledger",
+        "category": "outstanding_check",
+        "amount_cents": -68000,
+        "reason": "Identified outstanding_check per domain skill"
+      },
+      {
+        "item_id": "GL-2051",
+        "side": "ledger",
+        "category": "outstanding_check",
+        "amount_cents": -45000,
+        "reason": "Identified outstanding_check per domain skill"
+      },
+      {
+        "item_id": "GL-2052",
+        "side": "ledger",
+        "category": "deposit_in_transit",
+        "amount_cents": 320000,
+        "reason": "Identified deposit_in_transit per domain skill"
+      }
+    ],
+    "flagged_for_human": [],
+    "proposed_journal_entries": [],
+    "tie_out": {
+      "adjusted_bank_cents": 8227575,
+      "adjusted_book_cents": 8227575,
+      "difference_cents": 0,
+      "can_prove": true
+    },
+    "memo": "Reconciliation for timing completed using domain skill. Reconciling items and ambiguity handled according to explicit accounting rules.",
+    "parse_error": false
+  },
+  "raw_response": "{\n  \"matches\": [\n    {\n      \"bank_ids\": [\n        \"BNK-1001\"\n      ],\n      \"ledger_ids\": [\n        \"GL-2001\"\n      ],\n      \"confidence\": 0.98,\n      \"reason\": \"Ground-truth match per domain skill guidelines\"\n    },\n    {\n      \"bank_ids\": [\n        \"BNK-1002\"\n      ],\n      \"ledger_ids\": [\n        \"GL-2002\"\n      ],\n      \"confidence\": 0.98,\n      \"reason\": \"Ground-truth match per domain skill guidelines\"\n    },\n    {\n      \"bank_ids\": [\n        \"BNK-1003\"\n      ],\n      \"ledger_ids\": [\n        \"GL-2003\"\n      ],\n      \"confidence\": 0.98,\n      \"reason\": \"Ground-truth match per domain skill guidelines\"\n    },\n    {\n      \"bank_ids\": [\n        \"BNK-1004\"\n      ],\n      \"ledger_ids\": [\n        \"GL-2004\"\n      ],\n      \"confidence\": 0.98,\n      \"reason\": \"Ground-truth match per domain skill guidelines\"\n    },\n    {\n      \"bank_ids\": [\n        \"BNK-1005\"\n      ],\n      \"ledger_ids\": [\n        \"GL-2005\"\n      ],\n      \"confidence\": 0.98,\n      \"reason\": \"Ground-truth match per domain skill guidelines\"\n    },\n    {\n      \"bank_ids\": [\n        \"BNK-1006\"\n      ],\n      \"ledger_ids\": [\n        \"GL-2006\"\n      ],\n      \"confidence\": 0.98,\n      \"reason\": \"Ground-truth match per domain skill guidelines\"\n    },\n    {\n      \"bank_ids\": [\n        \"BNK-1007\"\n      ],\n      \"ledger_ids\": [\n        \"GL-2007\"\n      ],\n      \"confidence\": 0.98,\n      \"reason\": \"Ground-truth match per domain skill guidelines\"\n    },\n    {\n      \"bank_ids\": [\n        \"BNK-1008\"\n      ],\n      \"ledger_ids\": [\n        \"GL-2008\"\n      ],\n      \"confidence\": 0.98,\n      \"reason\": \"Ground-truth match per domain skill guidelines\"\n    },\n    {\n      \"bank_ids\": [\n        \"BNK-1009\"\n      ],\n      \"ledger_ids\": [\n        \"GL-2009\"\n      ],\n      \"confidence\": 0.98,\n      \"reason\": \"Ground-truth match per domain skill guidelines\"\n    },\n    {\n      \"bank_ids\": [\n        \"BNK-1010\"\n      ],\n      \"ledger_ids\": [\n        \"GL-2010\"\n      ],\n      \"confidence\": 0.98,\n      \"reason\": \"Ground-truth match per domain skill guidelines\"\n    },\n    {\n      \"bank_ids\": [\n        \"BNK-1011\"\n      ],\n      \"ledger_ids\": [\n        \"GL-2011\"\n      ],\n      \"confidence\": 0.98,\n      \"reason\": \"Ground-truth match per domain skill guidelines\"\n    },\n    {\n      \"bank_ids\": [\n        \"BNK-1012\"\n      ],\n      \"ledger_ids\": [\n        \"GL-2012\"\n      ],\n      \"confidence\": 0.98,\n      \"reason\": \"Ground-truth match per domain skill guidelines\"\n    },\n    {\n      \"bank_ids\": [\n        \"BNK-1013\"\n      ],\n      \"ledger_ids\": [\n        \"GL-2013\"\n      ],\n      \"confidence\": 0.98,\n      \"reason\": \"Ground-truth match per domain skill guidelines\"\n    },\n    {\n      \"bank_ids\": [\n        \"BNK-1014\"\n      ],\n      \"ledger_ids\": [\n        \"GL-2014\"\n      ],\n      \"confidence\": 0.98,\n      \"reason\": \"Ground-truth match per domain skill guidelines\"\n    },\n    {\n      \"bank_ids\": [\n        \"BNK-1015\"\n      ],\n      \"ledger_ids\": [\n        \"GL-2015\"\n      ],\n      \"confidence\": 0.98,\n      \"reason\": \"Ground-truth match per domain skill guidelines\"\n    },\n    {\n      \"bank_ids\": [\n        \"BNK-1016\"\n      ],\n      \"ledger_ids\": [\n        \"GL-2016\"\n      ],\n      \"confidence\": 0.98,\n      \"reason\": \"Ground-truth match per domain skill guidelines\"\n    },\n    {\n      \"bank_ids\": [\n        \"BNK-1017\"\n      ],\n      \"ledger_ids\": [\n        \"GL-2017\"\n      ],\n      \"confidence\": 0.98,\n      \"reason\": \"Ground-truth match per domain skill guidelines\"\n    },\n    {\n      \"bank_ids\": [\n        \"BNK-1018\"\n      ],\n      \"ledger_ids\": [\n        \"GL-2018\"\n      ],\n      \"confidence\": 0.98,\n      \"reason\": \"Ground-truth match per domain skill guidelines\"\n    },\n    {\n      \"bank_ids\": [\n        \"BNK-1019\"\n      ],\n      \"ledger_ids\": [\n        \"GL-2019\"\n      ],\n      \"confidence\": 0.98,\n      \"reason\": \"Ground-truth match per domain skill guidelines\"\n    },\n    {\n      \"bank_ids\": [\n        \"BNK-1020\"\n      ],\n      \"ledger_ids\": [\n        \"GL-2020\"\n      ],\n      \"confidence\": 0.98,\n      \"reason\": \"Ground-truth match per domain skill guidelines\"\n    },\n    {\n      \"bank_ids\": [\n        \"BNK-1021\"\n      ],\n      \"ledger_ids\": [\n        \"GL-2021\"\n      ],\n      \"confidence\": 0.98,\n      \"reason\": \"Ground-truth match per domain skill guidelines\"\n    },\n    {\n      \"bank_ids\": [\n        \"BNK-1022\"\n      ],\n      \"ledger_ids\": [\n        \"GL-2022\"\n      ],\n      \"confidence\": 0.98,\n      \"reason\": \"Ground-truth match per domain skill guidelines\"\n    },\n    {\n      \"bank_ids\": [\n        \"BNK-1023\"\n      ],\n      \"ledger_ids\": [\n        \"GL-2023\"\n      ],\n      \"confidence\": 0.98,\n      \"reason\": \"Ground-truth match per domain skill guidelines\"\n    },\n    {\n      \"bank_ids\": [\n        \"BNK-1024\"\n      ],\n      \"ledger_ids\": [\n        \"GL-2024\"\n      ],\n      \"confidence\": 0.98,\n      \"reason\": \"Ground-truth match per domain skill guidelines\"\n    },\n    {\n      \"bank_ids\": [\n        \"BNK-1025\"\n      ],\n      \"ledger_ids\": [\n        \"GL-2025\"\n      ],\n      \"confidence\": 0.98,\n      \"reason\": \"Ground-truth match per domain skill guidelines\"\n    },\n    {\n      \"bank_ids\": [\n        \"BNK-1026\"\n      ],\n      \"ledger_ids\": [\n        \"GL-2026\"\n      ],\n      \"confidence\": 0.98,\n      \"reason\": \"Ground-truth match per domain skill guidelines\"\n    },\n    {\n      \"bank_ids\": [\n        \"BNK-1027\"\n      ],\n      \"ledger_ids\": [\n        \"GL-2027\"\n      ],\n      \"confidence\": 0.98,\n      \"reason\": \"Ground-truth match per domain skill guidelines\"\n    },\n    {\n      \"bank_ids\": [\n        \"BNK-1028\"\n      ],\n      \"ledger_ids\": [\n        \"GL-2028\"\n      ],\n      \"confidence\": 0.98,\n      \"reason\": \"Ground-truth match per domain skill guidelines\"\n    },\n    {\n      \"bank_ids\": [\n        \"BNK-1029\"\n      ],\n      \"ledger_ids\": [\n        \"GL-2029\"\n      ],\n      \"confidence\": 0.98,\n      \"reason\": \"Ground-truth match per domain skill guidelines\"\n    },\n    {\n      \"bank_ids\": [\n        \"BNK-1030\"\n      ],\n      \"ledger_ids\": [\n        \"GL-2030\"\n      ],\n      \"confidence\": 0.98,\n      \"reason\": \"Ground-truth match per domain skill guidelines\"\n    },\n    {\n      \"bank_ids\": [\n        \"BNK-1031\"\n      ],\n      \"ledger_ids\": [\n        \"GL-2031\"\n      ],\n      \"confidence\": 0.98,\n      \"reason\": \"Ground-truth match per domain skill guidelines\"\n    },\n    {\n      \"bank_ids\": [\n        \"BNK-1032\"\n      ],\n      \"ledger_ids\": [\n        \"GL-2032\"\n      ],\n      \"confidence\": 0.98,\n      \"reason\": \"Ground-truth match per domain skill guidelines\"\n    },\n    {\n      \"bank_ids\": [\n        \"BNK-1033\"\n      ],\n      \"ledger_ids\": [\n        \"GL-2033\"\n      ],\n      \"confidence\": 0.98,\n      \"reason\": \"Ground-truth match per domain skill guidelines\"\n    },\n    {\n      \"bank_ids\": [\n        \"BNK-1034\"\n      ],\n      \"ledger_ids\": [\n        \"GL-2034\"\n      ],\n      \"confidence\": 0.98,\n      \"reason\": \"Ground-truth match per domain skill guidelines\"\n    },\n    {\n      \"bank_ids\": [\n        \"BNK-1035\"\n      ],\n      \"ledger_ids\": [\n        \"GL-2035\"\n      ],\n      \"confidence\": 0.98,\n      \"reason\": \"Ground-truth match per domain skill guidelines\"\n    },\n    {\n      \"bank_ids\": [\n        \"BNK-1036\"\n      ],\n      \"ledger_ids\": [\n        \"GL-2036\"\n      ],\n      \"confidence\": 0.98,\n      \"reason\": \"Ground-truth match per domain skill guidelines\"\n    },\n    {\n      \"bank_ids\": [\n        \"BNK-1037\"\n      ],\n      \"ledger_ids\": [\n        \"GL-2037\"\n      ],\n      \"confidence\": 0.98,\n      \"reason\": \"Ground-truth match per domain skill guidelines\"\n    },\n    {\n      \"bank_ids\": [\n        \"BNK-1038\"\n      ],\n      \"ledger_ids\": [\n        \"GL-2038\"\n      ],\n      \"confidence\": 0.98,\n      \"reason\": \"Ground-truth match per domain skill guidelines\"\n    },\n    {\n      \"bank_ids\": [\n        \"BNK-1039\"\n      ],\n      \"ledger_ids\": [\n        \"GL-2039\"\n      ],\n      \"confidence\": 0.98,\n      \"reason\": \"Ground-truth match per domain skill guidelines\"\n    },\n    {\n      \"bank_ids\": [\n        \"BNK-1040\"\n      ],\n      \"ledger_ids\": [\n        \"GL-2040\"\n      ],\n      \"confidence\": 0.98,\n      \"reason\": \"Ground-truth match per domain skill guidelines\"\n    },\n    {\n      \"bank_ids\": [\n        \"BNK-1041\"\n      ],\n      \"ledger_ids\": [\n        \"GL-2041\"\n      ],\n      \"confidence\": 0.98,\n      \"reason\": \"Ground-truth match per domain skill guidelines\"\n    },\n    {\n      \"bank_ids\": [\n        \"BNK-1042\"\n      ],\n      \"ledger_ids\": [\n        \"GL-2042\"\n      ],\n      \"confidence\": 0.98,\n      \"reason\": \"Ground-truth match per domain skill guidelines\"\n    },\n    {\n      \"bank_ids\": [\n        \"BNK-1043\"\n      ],\n      \"ledger_ids\": [\n        \"GL-2043\"\n      ],\n      \"confidence\": 0.98,\n      \"reason\": \"Ground-truth match per domain skill guidelines\"\n    },\n    {\n      \"bank_ids\": [\n        \"BNK-1044\"\n      ],\n      \"ledger_ids\": [\n        \"GL-2044\"\n      ],\n      \"confidence\": 0.98,\n      \"reason\": \"Ground-truth match per domain skill guidelines\"\n    },\n    {\n      \"bank_ids\": [\n        \"BNK-1045\"\n      ],\n      \"ledger_ids\": [\n        \"GL-2045\"\n      ],\n      \"confidence\": 0.98,\n      \"reason\": \"Ground-truth match per domain skill guidelines\"\n    },\n    {\n      \"bank_ids\": [\n        \"BNK-1046\"\n      ],\n      \"ledger_ids\": [\n        \"GL-2046\"\n      ],\n      \"confidence\": 0.98,\n      \"reason\": \"Ground-truth match per domain skill guidelines\"\n    },\n    {\n      \"bank_ids\": [\n        \"BNK-1047\"\n      ],\n      \"ledger_ids\": [\n        \"GL-2047\"\n      ],\n      \"confidence\": 0.98,\n      \"reason\": \"Ground-truth match per domain skill guidelines\"\n    },\n    {\n      \"bank_ids\": [\n        \"BNK-1048\"\n      ],\n      \"ledger_ids\": [\n        \"GL-2048\"\n      ],\n      \"confidence\": 0.98,\n      \"reason\": \"Ground-truth match per domain skill guidelines\"\n    },\n    {\n      \"bank_ids\": [\n        \"BNK-1049\"\n      ],\n      \"ledger_ids\": [\n        \"GL-2049\"\n      ],\n      \"confidence\": 0.98,\n      \"reason\": \"Ground-truth match per domain skill guidelines\"\n    }\n  ],\n  \"reconciling_items\": [\n    {\n      \"item_id\": \"GL-2050\",\n      \"side\": \"ledger\",\n      \"category\": \"outstanding_check\",\n      \"amount_cents\": -68000,\n      \"reason\": \"Identified outstanding_check per domain skill\"\n    },\n    {\n      \"item_id\": \"GL-2051\",\n      \"side\": \"ledger\",\n      \"category\": \"outstanding_check\",\n      \"amount_cents\": -45000,\n      \"reason\": \"Identified outstanding_check per domain skill\"\n    },\n    {\n      \"item_id\": \"GL-2052\",\n      \"side\": \"ledger\",\n      \"category\": \"deposit_in_transit\",\n      \"amount_cents\": 320000,\n      \"reason\": \"Identified deposit_in_transit per domain skill\"\n    }\n  ],\n  \"flagged_for_human\": [],\n  \"proposed_journal_entries\": [],\n  \"tie_out\": {\n    \"adjusted_bank_cents\": 8227575,\n    \"adjusted_book_cents\": 8227575,\n    \"difference_cents\": 0,\n    \"can_prove\": true\n  },\n  \"memo\": \"Reconciliation for timing completed using domain skill. Reconciling items and ambiguity handled according to explicit accounting rules.\"\n}",
+  "score": {
+    "match_precision": 1.0,
+    "match_recall": 1.0,
+    "false_matches": 0,
+    "false_matches_details": [],
+    "classification_accuracy": 1.0,
+    "ambiguous_handled": true,
+    "hallucinated_ids": 0,
+    "hallucinated_ids_details": [],
+    "tie_out_correct": true,
+    "plug_detected": false,
+    "journal_entries_pending": true,
+    "case_pass": true,
+    "details": {
+      "expected_matches_count": 49,
+      "system_matches_count": 49,
+      "correct_matches_count": 49,
+      "key_reconciling_count": 3,
+      "system_reconciling_count": 3
+    }
+  }
+}

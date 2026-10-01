@@ -113,3 +113,51 @@ def test_run_v0_parse_error_handling(monkeypatch):
         assert parsed["parse_error"] is True
         assert "unable to complete" in parsed["raw_text"]
         assert parsed["tie_out"]["can_prove"] is False
+
+
+def test_run_v1_with_mocked_llm(monkeypatch):
+    """Verify run_v1 loads SKILL.md into the system prompt and saves results to results/v1/."""
+    from src.runners import run_v1, get_system_prompt_v1
+
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "test-api-key")
+    monkeypatch.setenv("CLAUDE_MODEL", "claude-3-5-sonnet-20241022")
+
+    sys_prompt = get_system_prompt_v1()
+    assert "Bank Reconciliation Skill" in sys_prompt or "bank-reconciliation" in sys_prompt.lower()
+    assert "Hard rules" in sys_prompt or "Hard Rules" in sys_prompt or "Never create a plug" in sys_prompt
+
+    mock_llm_response = LLMResponse(
+        content='```json\n{"matches": [], "reconciling_items": [], "flagged_for_human": [], "proposed_journal_entries": [], "tie_out": {"can_prove": true}, "memo": "v1 run"}\n```',
+        input_tokens=2200,
+        output_tokens=350,
+        elapsed_seconds=1.45,
+        model="claude-3-5-sonnet-20241022",
+    )
+
+    clean_dir = BASE_DIR / "data" / "variants" / "clean"
+    clean_json_path = BASE_DIR / "results" / "v1" / "clean.json"
+    backup = clean_json_path.read_text(encoding="utf-8") if clean_json_path.is_file() else None
+
+    with patch("src.runners.call_claude", return_value=mock_llm_response) as mock_call:
+        try:
+            parsed = run_v1(clean_dir, save_results=True)
+
+            assert mock_call.called
+            # Verify system prompt passed to call_claude contains skill content
+            call_kwargs = mock_call.call_args[1]
+            assert "Bank Reconciliation" in call_kwargs["system"]
+
+            assert parsed["memo"] == "v1 run"
+            assert parsed["parse_error"] is False
+
+            # Verify saved result file in results/v1/
+            saved_file = BASE_DIR / "results" / "v1" / "clean.json"
+            assert saved_file.is_file()
+            with open(saved_file, "r", encoding="utf-8") as f:
+                saved_data = json.load(f)
+            assert saved_data["variant"] == "clean"
+            assert saved_data["runner"] == "v1"
+        finally:
+            if backup is not None:
+                clean_json_path.write_text(backup, encoding="utf-8")
+
