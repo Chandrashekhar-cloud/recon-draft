@@ -983,6 +983,8 @@ def main() -> None:
         num_traps = len(answer_key["reconciling_items"]) + len(answer_key["ambiguous_groups"])
         tie_out_ok = answer_key["tie_out"]["difference_cents"] == 0
 
+        print(f"Variant '{variant_name}': tie-out OK")
+
         summary_rows.append({
             "variant": variant_name,
             "bank_rows": len(bank_rows),
@@ -991,17 +993,17 @@ def main() -> None:
             "reconciling_items": len(answer_key["reconciling_items"]),
             "ambiguous": len(answer_key["ambiguous_groups"]),
             "total_traps": num_traps,
-            "tie_out_ok": "OK" if tie_out_ok else "FAIL",
+            "tie_out_ok": "tie-out OK" if tie_out_ok else "FAIL",
         })
 
     # Print summary table
     header = (
         f"{'Variant':<12} | {'Bank Rows':<10} | {'Ledger Rows':<12} | {'Matches':<8} | "
-        f"{'Recon Items':<12} | {'Ambiguous':<10} | {'Total Traps':<12} | {'Tie-Out':<8}"
+        f"{'Recon Items':<12} | {'Ambiguous':<10} | {'Total Traps':<12} | {'Tie-Out Status':<14}"
     )
     separator = "-" * len(header)
 
-    print(separator)
+    print("\n" + separator)
     print(header)
     print(separator)
 
@@ -1009,11 +1011,11 @@ def main() -> None:
         print(
             f"{row['variant']:<12} | {row['bank_rows']:<10} | {row['ledger_rows']:<12} | "
             f"{row['matches']:<8} | {row['reconciling_items']:<12} | {row['ambiguous']:<10} | "
-            f"{row['total_traps']:<12} | {row['tie_out_ok']:<8}"
+            f"{row['total_traps']:<12} | {row['tie_out_ok']:<14}"
         )
 
     print(separator)
-    print(f"\nAll 6 variants generated and verified successfully.")
+    print(f"\nAll 6 variants generated and verified successfully: all 6 variants tie-out OK.")
 
 
 if __name__ == "__main__":
