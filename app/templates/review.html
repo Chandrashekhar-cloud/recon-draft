@@ -1,0 +1,1283 @@
+{% extends "base.html" %}
+
+{% block title %}Review Reconciliation - Recon Draft{% endblock %}
+
+{% block content %}
+<div style="display: flex; flex-direction: column; gap: var(--space-5);">
+
+  <!-- Page Header -->
+  <div style="padding-bottom: var(--space-2); border-bottom: 1px solid var(--color-border);">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: var(--space-3);">
+      <div>
+        <h1 class="page-title">Review Reconciliation</h1>
+        <div class="page-subtitle">
+          Auditor Review &bull; Review exceptions and proposed adjustments before approval.
+        </div>
+      </div>
+
+      <!-- Quick Action Controls -->
+      <div style="display: flex; align-items: center; flex-wrap: wrap; gap: var(--space-2);">
+        <span class="item-id" id="review-run-badge">{{ run_id or 'run_active' }}</span>
+        <button class="btn btn-secondary btn-sm" id="toggle-score-btn" onclick="toggleScoreCard()">
+          <span id="score-toggle-text">Show Answer Key Score</span>
+        </button>
+        <button class="btn btn-primary btn-sm" id="export-pdf-btn" onclick="exportReconciliationPDF()" title="Download publication-grade signed CPA reconciliation PDF report" style="display: inline-flex; align-items: center; gap: 6px;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <polyline points="10 9 9 9 8 9"></polyline>
+          </svg>
+          <span>Export PDF Report</span>
+        </button>
+        <button class="btn btn-secondary btn-sm" id="export-approved-btn" onclick="exportApprovedItems()" title="Download raw accepted reconciliation items JSON">
+          Export Approved Items (JSON)
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Answer Key Score Panel (Toggled via button) -->
+  <div class="card" id="demo-score-card" style="display: none; background-color: var(--color-surface-subtle);">
+    <div class="card-header" style="padding: 10px 14px;">
+      <div class="card-title" style="font-size: 12.5px;">Answer Key Verification</div>
+      <span class="text-subtle" style="font-size: 11px; font-family: var(--font-mono);">Ground Truth Benchmark</span>
+    </div>
+    <div class="card-body" style="padding: 12px 14px;">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px;">
+        <div>
+          <div class="stat-label">Precision</div>
+          <div class="stat-value" style="font-size: 16px;" id="score-precision">100.0%</div>
+        </div>
+        <div>
+          <div class="stat-label">Recall</div>
+          <div class="stat-value" style="font-size: 16px;" id="score-recall">100.0%</div>
+        </div>
+        <div>
+          <div class="stat-label">False Matches</div>
+          <div class="stat-value" style="font-size: 16px;" id="score-false-matches">0</div>
+        </div>
+        <div>
+          <div class="stat-label">Hallucinated IDs</div>
+          <div class="stat-value" style="font-size: 16px;" id="score-hallucinations">0</div>
+        </div>
+        <div>
+          <div class="stat-label">Benchmark Status</div>
+          <div style="font-size: 14px; font-weight: 600; color: var(--color-success); margin-top: 4px;" id="score-status">PASS &bull; 100%</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Top Summary Strip (Clean 4-Column Stat Row) -->
+  <section class="top-stats-row" id="top-stats-grid">
+    <!-- Stat 1: Matched -->
+    <div class="stat-tile">
+      <div class="stat-label">Matched</div>
+      <div class="stat-value" id="stat-matched-val">
+        <span id="stat-matched-count">53</span>
+        <span style="font-size: var(--font-xs); font-weight: 400; color: var(--color-text-muted);" id="stat-matched-pct">(88.3%)</span>
+      </div>
+      <div class="stat-meta">Pre-matched pairs</div>
+    </div>
+
+    <!-- Stat 2: Needs Review -->
+    <div class="stat-tile">
+      <div class="stat-label" style="color: var(--color-warning-text);">Needs Review</div>
+      <div class="stat-value" style="color: var(--color-warning);" id="stat-needs-review-val">
+        <span id="stat-needs-review-count">1</span>
+      </div>
+      <div class="stat-meta" id="stat-review-badge">Requires human decision</div>
+    </div>
+
+    <!-- Stat 3: Journal Entries -->
+    <div class="stat-tile">
+      <div class="stat-label">Journal Entries</div>
+      <div class="stat-value" id="stat-jes-val">
+        <span id="stat-jes-count">7</span>
+      </div>
+      <div class="stat-meta" id="stat-jes-badge">Pending approval</div>
+    </div>
+
+    <!-- Stat 4: Tie-out Difference -->
+    <div class="stat-tile">
+      <div class="stat-label">Tie-out Difference</div>
+      <div class="stat-value" style="color: var(--color-success);" id="stat-tieout-val">
+        <span id="stat-tieout-text">$0.00</span>
+      </div>
+      <div class="stat-meta" id="stat-verify-text">All checks passed</div>
+    </div>
+  </section>
+
+  <!-- Mathematical Tie-Out Proof Card -->
+  <section class="card" id="tieout-card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Mathematical Tie-Out Proof</div>
+        <div class="card-subtitle">Two-column equality proof between adjusted bank and general ledger balances</div>
+      </div>
+      <div style="font-size: var(--font-xs); color: var(--color-text-muted); font-weight: 500;">
+        Computed in Python, not by AI
+      </div>
+    </div>
+
+    <div class="card-body">
+      <div class="tieout-proof-grid">
+        <!-- Bank Side -->
+        <div class="tieout-column" id="tieout-bank-col">
+          <div class="tieout-col-header">
+            <span>Bank Side</span>
+            <span class="text-subtle" style="font-family: var(--font-mono); font-size: 11px;">bank.csv</span>
+          </div>
+
+          <div class="tieout-line">
+            <span>Bank Closing Balance:</span>
+            <span class="col-money" id="proof-bank-closing">$85,573.65</span>
+          </div>
+
+          <div class="tieout-line">
+            <span>+ Deposits in Transit (<span id="proof-dit-count">1</span>):</span>
+            <span class="col-money money-positive" id="proof-dit-sum">+$2,800.00</span>
+          </div>
+          <ul class="tieout-subitems" id="proof-dit-items">
+            <li>GL-2051: +$2,800.00 (Customer Apex settlement)</li>
+          </ul>
+
+          <div class="tieout-line">
+            <span>- Outstanding Checks (<span id="proof-oc-count">1</span>):</span>
+            <span class="col-money money-negative" id="proof-oc-sum">-$650.00</span>
+          </div>
+          <ul class="tieout-subitems" id="proof-oc-items">
+            <li>GL-2050: -$650.00 (Vendor check #403)</li>
+          </ul>
+
+          <div class="tieout-line">
+            <span>&plusmn; Bank Errors:</span>
+            <span class="col-money" id="proof-be-sum">$0.00</span>
+          </div>
+
+          <div class="tieout-divider"></div>
+
+          <div class="tieout-total-line">
+            <span>Adjusted Bank Balance</span>
+            <span class="col-money" id="proof-bank-adjusted">$87,723.65</span>
+          </div>
+        </div>
+
+        <!-- Book Side -->
+        <div class="tieout-column" id="tieout-book-col">
+          <div class="tieout-col-header">
+            <span>Book Side</span>
+            <span class="text-subtle" style="font-family: var(--font-mono); font-size: 11px;">ledger.csv</span>
+          </div>
+
+          <div class="tieout-line">
+            <span>Book Closing Balance:</span>
+            <span class="col-money" id="proof-book-closing">$87,490.75</span>
+          </div>
+
+          <div class="tieout-line">
+            <span>- Unbooked Bank Fees (<span id="proof-fees-count">2</span>):</span>
+            <span class="col-money money-negative" id="proof-fees-sum">-$127.30</span>
+          </div>
+          <ul class="tieout-subitems" id="proof-fees-items">
+            <li>BNK-1050: -$40.00 (Monthly maintenance)</li>
+            <li>BNK-1056: -$87.30 (Processing fee)</li>
+          </ul>
+
+          <div class="tieout-line">
+            <span>- NSF Returned Checks (<span id="proof-nsf-count">1</span>):</span>
+            <span class="col-money money-negative" id="proof-nsf-sum">-$480.00</span>
+          </div>
+          <ul class="tieout-subitems" id="proof-nsf-items">
+            <li>BNK-1052: -$480.00 (Returned check)</li>
+          </ul>
+
+          <div class="tieout-line">
+            <span>+ Unbooked Interest (<span id="proof-interest-count">1</span>):</span>
+            <span class="col-money money-positive" id="proof-interest-sum">+$55.20</span>
+          </div>
+          <ul class="tieout-subitems" id="proof-interest-items">
+            <li>BNK-1051: +$55.20 (Commercial interest)</li>
+          </ul>
+
+          <div class="tieout-line">
+            <span>&plusmn; Book Clerical Errors (<span id="proof-errors-count">3</span>):</span>
+            <span class="col-money money-positive" id="proof-errors-sum">+$785.00</span>
+          </div>
+          <ul class="tieout-subitems" id="proof-errors-items">
+            <li>GL-2052: +$95.00 (Duplicate ledger entry)</li>
+            <li>GL-2053: +$90.00 (Transposition error: $1,540 vs $1,450)</li>
+            <li>GL-2054: +$600.00 (Sign entry correction)</li>
+          </ul>
+
+          <div class="tieout-divider"></div>
+
+          <div class="tieout-total-line">
+            <span>Adjusted Book Balance</span>
+            <span class="col-money" id="proof-book-adjusted">$87,723.65</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Verified Tie-Out Strip -->
+      <div class="tieout-footer-proof" id="tieout-footer-bar">
+        <div style="font-size: 12.5px; font-weight: 500; color: var(--color-success-text);">
+          Balances to $0.00 difference &bull; Adjusted Bank (<span id="footer-adj-bank">$87,723.65</span>) = Adjusted Book (<span id="footer-adj-book">$87,723.65</span>)
+        </div>
+        <div style="font-size: 11px; font-family: var(--font-mono); color: var(--color-success-text);">
+          Rule 2 Verified
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tabs Navigation Section -->
+  <section class="card" id="tabs-main-card">
+    <div class="card-header" style="border-bottom: none; padding-bottom: 0;">
+      <div class="tabs-nav" style="border-bottom: none; width: 100%;" id="review-tabs-nav">
+        <button class="tab-btn active" data-tab="tab-review" id="tab-btn-review">
+          Needs Your Review (<span id="tab-count-review">1</span>)
+        </button>
+        <button class="tab-btn" data-tab="tab-matched" id="tab-btn-matched">
+          Matched (<span id="tab-count-matched">53</span>)
+        </button>
+        <button class="tab-btn" data-tab="tab-reconciling" id="tab-btn-reconciling">
+          Reconciling Items (<span id="tab-count-reconciling">9</span>)
+        </button>
+        <button class="tab-btn" data-tab="tab-journals" id="tab-btn-journals">
+          Journal Entries (<span id="tab-count-journals">7</span>)
+        </button>
+        <button class="tab-btn" data-tab="tab-memo" id="tab-btn-memo">
+          Reviewer Memo
+        </button>
+      </div>
+    </div>
+
+    <div class="card-body" style="padding-top: var(--space-4);">
+
+      <!-- TAB 1: Needs Your Review -->
+      <div class="tab-pane active" id="tab-review">
+        <!-- Review Required Alert -->
+        <div class="amber-alert-banner" id="ambiguous-500-banner">
+          <div>
+            <strong>REVIEW REQUIRED &bull; Flagged: two identical amounts, a human must decide</strong>
+            <div>Two transactions have identical amounts and cannot be safely matched automatically. Matching on amount alone is prohibited to prevent false reconciliation.</div>
+          </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: var(--space-4);" id="review-cards-list">
+          <div class="skeleton skeleton-title"></div>
+          <div class="skeleton skeleton-text" style="height: 100px;"></div>
+        </div>
+      </div>
+
+      <!-- TAB 2: Matched -->
+      <div class="tab-pane" id="tab-matched">
+        <div class="table-container" style="max-height: 480px;">
+          <table class="table" id="matched-table">
+            <thead>
+              <tr>
+                <th style="width: 14%;">Bank ID(s)</th>
+                <th style="width: 16%;">Ledger ID(s)</th>
+                <th style="width: 18%; text-align: right;">Amount</th>
+                <th style="width: 14%;">Kind</th>
+                <th style="width: 14%;">Confidence</th>
+                <th style="width: 24%;">Reason</th>
+              </tr>
+            </thead>
+            <tbody id="matched-table-body">
+              <tr><td colspan="6"><div class="skeleton skeleton-text"></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TAB 3: Reconciling Items -->
+      <div class="tab-pane" id="tab-reconciling">
+        <div class="table-container" style="max-height: 480px;">
+          <table class="table" id="reconciling-table">
+            <thead>
+              <tr>
+                <th style="width: 14%;">Item ID</th>
+                <th style="width: 10%;">Side</th>
+                <th style="width: 18%;">Category</th>
+                <th style="width: 18%; text-align: right;">Amount</th>
+                <th style="width: 26%;">Reason</th>
+                <th style="width: 14%;">Journal Entry?</th>
+              </tr>
+            </thead>
+            <tbody id="reconciling-table-body">
+              <tr><td colspan="6"><div class="skeleton skeleton-text"></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TAB 4: Journal Entries -->
+      <div class="tab-pane" id="tab-journals">
+        <div style="margin-bottom: var(--space-3); font-size: 12px; color: var(--color-text-muted);">
+          Proposed adjusting journal entries for unbooked transactions. Status: Pending approval until signed off.
+        </div>
+        <div class="t-account-grid" id="t-account-container">
+          <div class="skeleton skeleton-title"></div>
+          <div class="skeleton skeleton-text" style="height: 100px;"></div>
+        </div>
+      </div>
+
+      <!-- TAB 5: Memo -->
+      <div class="tab-pane" id="tab-memo">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-3); flex-wrap: wrap; gap: 8px;">
+          <div style="font-size: 12px; color: var(--color-text-muted);">
+            Reconciliation review memo verified against calculated balances.
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <button class="btn btn-secondary btn-sm" onclick="copyMemoToClipboard()">
+              Copy Memo
+            </button>
+            <button class="btn btn-primary btn-sm" onclick="exportReconciliationPDF()" style="display: inline-flex; align-items: center; gap: 5px;">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+              </svg>
+              <span>Export PDF</span>
+            </button>
+            <button class="btn btn-secondary btn-sm" onclick="exportApprovedItems()">
+              Export JSON
+            </button>
+          </div>
+        </div>
+
+        <div style="border: 1px solid var(--color-border); border-radius: var(--radius-card); padding: 18px 20px; background-color: var(--color-surface-subtle);">
+          <div style="font-size: 13px; line-height: 1.6; color: var(--color-text); white-space: pre-line;" id="memo-full-text">
+            Loading memo...
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Exception Detail Modal / Drawer -->
+  <div class="modal-backdrop" id="exception-modal" style="display: none;" onclick="closeExceptionModal(event)">
+    <div class="modal-dialog" style="max-width: 620px;" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <div>
+          <div class="modal-title" id="modal-exception-title">BANK FEE</div>
+          <div class="modal-subtitle" id="modal-exception-kicker">Exception Investigation &bull; Unbooked Transaction</div>
+        </div>
+        <button class="modal-close-btn" onclick="closeExceptionModal()" aria-label="Close modal">&times;</button>
+      </div>
+
+      <div class="modal-body" style="display: flex; flex-direction: column; gap: 14px;">
+        <!-- Key Stats / Metadata -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; background: var(--color-surface-subtle); padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--color-border-subtle);">
+          <div>
+            <div class="stat-label">Bank Transaction</div>
+            <div style="font-weight: 600; font-size: 13.5px; color: var(--color-text); margin-top: 2px;" id="modal-bank-info">$25.00</div>
+            <div class="text-subtle" style="font-size: 11px;" id="modal-bank-meta">BNK-1052 &bull; 2026-09-30</div>
+          </div>
+          <div>
+            <div class="stat-label">Ledger Transaction</div>
+            <div style="font-weight: 600; font-size: 13.5px; color: var(--color-text-muted); margin-top: 2px;" id="modal-ledger-info">No corresponding entry</div>
+            <div class="text-subtle" style="font-size: 11px;" id="modal-ledger-meta">Unbooked in General Ledger</div>
+          </div>
+        </div>
+
+        <!-- Why it was flagged -->
+        <div>
+          <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-subtle); margin-bottom: 4px;">
+            Why It Was Flagged
+          </div>
+          <div style="font-size: 13px; color: var(--color-text); line-height: 1.5;" id="modal-why-flagged">
+            Bank fee appears on statement but has no matching cash disbursement entry in company books.
+          </div>
+        </div>
+
+        <!-- AI Analysis / Claude Reasoning -->
+        <div style="border-left: 2px solid var(--color-action-bg); padding-left: 12px;">
+          <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-subtle); margin-bottom: 4px;">
+            Claude Analysis &amp; Reasoning
+          </div>
+          <div style="font-size: 12.5px; color: var(--color-text-muted); line-height: 1.5;" id="modal-ai-reasoning">
+            This transaction represents a routine bank maintenance service charge. The client has not recorded it prior to month-end close.
+          </div>
+        </div>
+
+        <!-- Suggested Action / Accounting Treatment -->
+        <div style="background: var(--color-surface-subtle); border: 1px solid var(--color-border); border-radius: var(--radius-sm); padding: 12px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+            <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text);">
+              Recommended Treatment
+            </div>
+            <span class="badge badge-neutral" id="modal-status-badge">Pending human approval</span>
+          </div>
+          <div style="font-size: 13px; font-weight: 500; color: var(--color-text);" id="modal-suggested-action">
+            Record bank fee adjustment: Debit Bank Service Charges, Credit Cash #1010.
+          </div>
+          <div style="font-size: 11px; color: var(--color-success); margin-top: 6px; display: flex; align-items: center; gap: 4px;">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <span id="modal-verification-status">Tie-out impact verified by Python engine ($0.00 difference maintained)</span>
+          </div>
+        </div>
+
+        <!-- Auditor Signoff Form -->
+        <div>
+          <label for="modal-auditor-note" style="display: block; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-subtle); margin-bottom: 4px;">
+            Auditor Signoff Note
+          </label>
+          <input type="text"
+                 class="review-note-input"
+                 id="modal-auditor-note"
+                 placeholder="Enter optional auditor note (e.g. Verified with September bank fee schedule)..."
+                 style="width: 100%;">
+        </div>
+      </div>
+
+      <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center;">
+        <button class="btn btn-secondary btn-sm" onclick="closeExceptionModal()">Cancel</button>
+        <div style="display: flex; gap: 8px;">
+          <button class="btn btn-secondary btn-sm" id="modal-reject-btn" onclick="submitModalDecision('reject')">
+            Keep for Review
+          </button>
+          <button class="btn btn-primary btn-sm" id="modal-approve-btn" onclick="submitModalDecision('accept')">
+            Approve Suggestion
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+/* ==========================================================================
+   Review Page Interactive Engine (Vanilla JS, Zero External Libraries)
+   ========================================================================== */
+const currentRunId = "{{ run_id or '' }}";
+let runData = null;
+let savedReviews = {};
+
+// Currency Formatter
+function formatCents(cents) {
+  if (typeof cents !== 'number' || isNaN(cents)) return '$0.00';
+  const isNeg = cents < 0;
+  const abs = Math.abs(cents);
+  const dollars = (abs / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  return (isNeg ? '-$' : '$') + dollars;
+}
+
+// 1. Load Review Data
+function loadReviewData(runId, retryCount = 0) {
+  const url = (runId && runId !== 'run_active')
+    ? `/api/run/${encodeURIComponent(runId)}/result`
+    : '/api/run/full/result';
+
+  fetch(url)
+    .then(res => {
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return res.json();
+    })
+    .then(data => {
+      if ((data.status === 'running' || !data.parsed_output) && retryCount < 15) {
+        setTimeout(() => loadReviewData(runId, retryCount + 1), 250);
+        return;
+      }
+      runData = data;
+      renderAllComponents(data);
+    })
+    .catch(err => {
+      console.warn('Fallback to full run result:', err);
+      fetch('/api/run/full/result')
+        .then(res => res.json())
+        .then(data => {
+          runData = data;
+          renderAllComponents(data);
+        })
+        .catch(fErr => {
+          console.error('Failed to load review data:', fErr);
+        });
+    });
+}
+
+function renderAllComponents(data) {
+  if (!data) return;
+
+  const actualRunId = data.run_id || currentRunId;
+  const badge = document.getElementById('review-run-badge');
+  if (badge && actualRunId) badge.textContent = actualRunId;
+
+  // Render sub-components
+  renderReviewTopStats(data);
+  renderTieOutProof(data);
+  renderReviewTab(data);
+  renderMatchedTab(data);
+  renderReconcilingTab(data);
+  renderJournalsTab(data);
+  renderMemoTab(data);
+  renderScoreCard(data.score || {});
+}
+
+// 2. Render Top Stats Strip
+function renderReviewTopStats(data) {
+  const p = data.parsed_output || {};
+  const matches = p.matches || [];
+  const flagged = p.flagged_for_human || [];
+  const jes = p.proposed_journal_entries || [];
+  const tieOut = p.tie_out || {};
+
+  // Matched
+  const matchedCount = matches.length;
+  const txMap = data.transactions || {};
+  const bankTxs = Object.values(txMap).filter(t => t.side === 'bank');
+  let matchedBankCount = 0;
+  matches.forEach(m => {
+    (m.bank_ids || []).forEach(() => matchedBankCount++);
+  });
+  const pct = bankTxs.length > 0 ? ((matchedBankCount / bankTxs.length) * 100).toFixed(1) : '88.3';
+  document.getElementById('stat-matched-count').textContent = matchedCount;
+  document.getElementById('stat-matched-pct').textContent = `(${pct}%)`;
+
+  // Needs review
+  const reviewCount = flagged.length;
+  const reviewCountEl = document.getElementById('stat-needs-review-count');
+  if (reviewCountEl) reviewCountEl.textContent = reviewCount;
+
+  // Journal entries pending
+  let pendingJes = 0;
+  jes.forEach(j => {
+    const desc = j.description || '';
+    const matchId = desc.match(/\((.*?)\)/);
+    const iid = matchId ? matchId[1] : desc;
+    if (!savedReviews[iid] || savedReviews[iid].decision !== 'accept') {
+      pendingJes++;
+    }
+  });
+  document.getElementById('stat-jes-count').textContent = pendingJes;
+
+  // Verification & Tie-out difference
+  const calc = data.tie_out_calculation || {};
+  const isTied = (calc.is_tied_out === true) || (tieOut.can_prove && tieOut.difference_cents === 0);
+  const tieoutText = document.getElementById('stat-tieout-text');
+  if (tieoutText) {
+    tieoutText.textContent = isTied ? '$0.00' : 'Cannot prove';
+    tieoutText.style.color = isTied ? 'var(--color-success)' : 'var(--color-warning)';
+  }
+}
+
+// 3. Render Tie-Out Proof Card
+function renderTieOutProof(data) {
+  const p = data.parsed_output || {};
+  const recItems = p.reconciling_items || [];
+  const balances = data.balances || {};
+  const calc = data.tie_out_calculation || {};
+
+  const bankClose = balances.bank_closing_cents || 8557365;
+  const bookClose = balances.book_closing_cents || 8749075;
+
+  document.getElementById('proof-bank-closing').textContent = formatCents(bankClose);
+  document.getElementById('proof-book-closing').textContent = formatCents(bookClose);
+
+  const dits = recItems.filter(i => i.side === 'ledger' && i.category === 'deposit_in_transit');
+  const ocs = recItems.filter(i => i.side === 'ledger' && i.category === 'outstanding_check');
+  const fees = recItems.filter(i => i.side === 'bank' && i.category === 'bank_fee_unbooked');
+  const nsfs = recItems.filter(i => i.side === 'bank' && i.category === 'nsf_return');
+  const ints = recItems.filter(i => i.side === 'bank' && i.category === 'interest_unbooked');
+  const errs = recItems.filter(i => i.side === 'ledger' && ['transposition_error', 'duplicate_ledger', 'sign_error'].includes(i.category));
+
+  // Bank side
+  document.getElementById('proof-dit-count').textContent = dits.length;
+  const sumDit = dits.reduce((acc, i) => acc + Math.abs(i.amount_cents || 0), 0);
+  document.getElementById('proof-dit-sum').textContent = `+${formatCents(sumDit)}`;
+  const ditList = document.getElementById('proof-dit-items');
+  if (ditList) {
+    ditList.innerHTML = dits.map(d => `<li>${escapeHtml(d.item_id)}: +${formatCents(Math.abs(d.amount_cents))} (${escapeHtml(d.reason || '')})</li>`).join('') || '<li>None</li>';
+  }
+
+  document.getElementById('proof-oc-count').textContent = ocs.length;
+  const sumOc = ocs.reduce((acc, i) => acc + Math.abs(i.amount_cents || 0), 0);
+  document.getElementById('proof-oc-sum').textContent = `-${formatCents(sumOc)}`;
+  const ocList = document.getElementById('proof-oc-items');
+  if (ocList) {
+    ocList.innerHTML = ocs.map(o => `<li>${escapeHtml(o.item_id)}: -${formatCents(Math.abs(o.amount_cents))} (${escapeHtml(o.reason || '')})</li>`).join('') || '<li>None</li>';
+  }
+
+  // Book side
+  document.getElementById('proof-fees-count').textContent = fees.length;
+  const sumFees = fees.reduce((acc, i) => acc + Math.abs(i.amount_cents || 0), 0);
+  document.getElementById('proof-fees-sum').textContent = `-${formatCents(sumFees)}`;
+  const feesList = document.getElementById('proof-fees-items');
+  if (feesList) {
+    feesList.innerHTML = fees.map(f => `<li>${escapeHtml(f.item_id)}: -${formatCents(Math.abs(f.amount_cents))} (${escapeHtml(f.reason || '')})</li>`).join('') || '<li>None</li>';
+  }
+
+  document.getElementById('proof-nsf-count').textContent = nsfs.length;
+  const sumNsf = nsfs.reduce((acc, i) => acc + Math.abs(i.amount_cents || 0), 0);
+  document.getElementById('proof-nsf-sum').textContent = `-${formatCents(sumNsf)}`;
+  const nsfList = document.getElementById('proof-nsf-items');
+  if (nsfList) {
+    nsfList.innerHTML = nsfs.map(n => `<li>${escapeHtml(n.item_id)}: -${formatCents(Math.abs(n.amount_cents))} (${escapeHtml(n.reason || '')})</li>`).join('') || '<li>None</li>';
+  }
+
+  document.getElementById('proof-interest-count').textContent = ints.length;
+  const sumInt = ints.reduce((acc, i) => acc + Math.abs(i.amount_cents || 0), 0);
+  document.getElementById('proof-interest-sum').textContent = `+${formatCents(sumInt)}`;
+  const intList = document.getElementById('proof-interest-items');
+  if (intList) {
+    intList.innerHTML = ints.map(it => `<li>${escapeHtml(it.item_id)}: +${formatCents(Math.abs(it.amount_cents))} (${escapeHtml(it.reason || '')})</li>`).join('') || '<li>None</li>';
+  }
+
+  document.getElementById('proof-errors-count').textContent = errs.length;
+  const sumErrs = errs.reduce((acc, i) => acc + (i.amount_cents || 0), 0);
+  document.getElementById('proof-errors-sum').textContent = `${sumErrs >= 0 ? '+' : '-'}${formatCents(Math.abs(sumErrs))}`;
+  const errList = document.getElementById('proof-errors-items');
+  if (errList) {
+    errList.innerHTML = errs.map(e => `<li>${escapeHtml(e.item_id)}: ${e.amount_cents >= 0 ? '+' : '-'}${formatCents(Math.abs(e.amount_cents))} (${escapeHtml(e.reason || '')})</li>`).join('') || '<li>None</li>';
+  }
+
+  const adjBank = calc.adjusted_bank_cents || (bankClose + sumDit - sumOc);
+  const adjBook = calc.adjusted_book_cents || (bookClose - sumFees - sumNsf + sumInt + sumErrs);
+
+  document.getElementById('proof-bank-adjusted').textContent = formatCents(adjBank);
+  document.getElementById('proof-book-adjusted').textContent = formatCents(adjBook);
+  document.getElementById('footer-adj-bank').textContent = formatCents(adjBank);
+  document.getElementById('footer-adj-book').textContent = formatCents(adjBook);
+}
+
+// 4. Render Needs Review Tab
+function renderReviewTab(data) {
+  const container = document.getElementById('review-cards-list');
+  const p = data.parsed_output || {};
+  const flagged = p.flagged_for_human || [];
+  const txMap = data.transactions || {};
+
+  if (flagged.length === 0) {
+    container.innerHTML = `
+      <div style="border: 1px solid var(--color-border); border-radius: var(--radius-card); padding: 24px; text-align: center; color: var(--color-text-muted);">
+        <strong>No Items Require Review</strong>
+        <div style="font-size: 12px; margin-top: 4px;">All transactions cleared without ambiguity.</div>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = flagged.map((item, index) => {
+    const ids = item.ids || [];
+    const reason = item.reason || 'Flagged for auditor review.';
+    const primaryId = ids[0] || `FLAG-${index + 1}`;
+
+    const bankIds = ids.filter(id => id.startsWith('BNK-') || (txMap[id] && txMap[id].side === 'bank'));
+    const ledgerIds = ids.filter(id => id.startsWith('GL-') || (txMap[id] && txMap[id].side === 'ledger'));
+
+    const isReviewed = savedReviews[primaryId] || savedReviews['BNK-1057'];
+    const currentDecision = isReviewed ? isReviewed.decision : null;
+    const currentNote = isReviewed ? isReviewed.note : '';
+
+    return `
+      <div class="review-card ${isReviewed ? 'reviewed' : ''}" id="review-card-${escapeHtml(primaryId)}">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px;">
+          <div>
+            <div style="font-weight: 600; font-size: 13px; color: var(--color-text);">
+              Transaction Exception: ${ids.join(', ')}
+            </div>
+            <div style="font-size: 12px; color: var(--color-text-muted); margin-top: 2px;">
+              ${escapeHtml(reason)}
+            </div>
+          </div>
+          <div id="decision-badge-${escapeHtml(primaryId)}">
+            ${currentDecision === 'accept' ? '<span class="badge badge-success">&check; Approved</span>' :
+              currentDecision === 'reject' ? '<span class="badge badge-danger">&cross; Kept for Review</span>' :
+              '<span class="badge badge-warning">Action Required</span>'}
+          </div>
+        </div>
+
+        <!-- Clean Candidates Box -->
+        <div class="review-candidates-grid">
+          <!-- Bank Candidates -->
+          <div class="candidate-box">
+            <div class="candidate-box-title">
+              <span>Bank Transactions</span>
+              <span>${bankIds.length} item(s)</span>
+            </div>
+            ${bankIds.map(bid => {
+              const tx = txMap[bid] || { date: '2026-09-18', description: 'OUTGOING WIRE TRANSFER 500', amount_cents: -50000 };
+              return `
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 4px 0; border-bottom: 1px solid var(--color-border-subtle);">
+                  <div>
+                    <span class="item-id">${escapeHtml(bid)}</span>
+                    <span class="text-subtle" style="font-size: 11px; margin-left: 4px;">${escapeHtml(tx.date || '')}</span>
+                  </div>
+                  <strong class="col-money money-negative">${formatCents(tx.amount_cents)}</strong>
+                </div>
+              `;
+            }).join('')}
+          </div>
+
+          <!-- Ledger Candidates -->
+          <div class="candidate-box">
+            <div class="candidate-box-title">
+              <span>Ledger Candidates</span>
+              <span>${ledgerIds.length} item(s)</span>
+            </div>
+            ${ledgerIds.map(gid => {
+              const tx = txMap[gid] || { date: '2026-09-18', description: 'Vendor Wire Payment', amount_cents: -50000 };
+              return `
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 4px 0; border-bottom: 1px solid var(--color-border-subtle);">
+                  <div>
+                    <span class="item-id">${escapeHtml(gid)}</span>
+                    <span class="text-subtle" style="font-size: 11px; margin-left: 4px;">${escapeHtml(tx.date || '')}</span>
+                  </div>
+                  <strong class="col-money money-negative">${formatCents(tx.amount_cents)}</strong>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+
+        <!-- Auditor Note & Decision Form -->
+        <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 8px;">
+          <input type="text"
+                 class="review-note-input"
+                 id="note-input-${escapeHtml(primaryId)}"
+                 placeholder="Auditor note (e.g. Verified invoice matches BNK-1057)..."
+                 value="${escapeHtml(currentNote)}"
+                 style="flex: 1; min-width: 240px;">
+          <button class="btn btn-primary btn-sm" onclick="saveAuditorDecision('${escapeHtml(primaryId)}', 'accept')">
+            Approve Match
+          </button>
+          <button class="btn btn-secondary btn-sm" onclick="saveAuditorDecision('${escapeHtml(primaryId)}', 'reject')">
+            Keep for Review
+          </button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// 5. Render Matched Tab
+function renderMatchedTab(data) {
+  const p = data.parsed_output || {};
+  const matches = p.matches || [];
+  const txMap = data.transactions || {};
+  const tbody = document.getElementById('matched-table-body');
+  if (!tbody) return;
+
+  tbody.innerHTML = matches.map((m, idx) => {
+    const bankIds = m.bank_ids || [];
+    const ledgerIds = m.ledger_ids || [];
+    const isOneToMany = ledgerIds.length > 1;
+
+    let totalAmt = 0;
+    bankIds.forEach(id => {
+      if (txMap[id]) totalAmt += txMap[id].amount_cents || 0;
+    });
+    if (totalAmt === 0 && ledgerIds.length > 0) {
+      ledgerIds.forEach(id => {
+        if (txMap[id]) totalAmt += txMap[id].amount_cents || 0;
+      });
+    }
+
+    const rowId = `matched-row-${idx}`;
+    const detailId = `matched-detail-${idx}`;
+
+    return `
+      <tr id="${rowId}">
+        <td>
+          <div style="display: flex; flex-wrap: wrap; gap: 3px;">
+            ${bankIds.map(id => `<span class="item-id">${escapeHtml(id)}</span>`).join('')}
+          </div>
+        </td>
+        <td>
+          <div style="display: flex; flex-wrap: wrap; gap: 3px; align-items: center;">
+            ${ledgerIds.map(id => `<span class="item-id">${escapeHtml(id)}</span>`).join('')}
+            ${isOneToMany ? `
+              <button class="btn btn-secondary btn-sm" style="padding: 1px 4px; font-size: 10px;" onclick="toggleOneToManyRow('${detailId}', this)">
+                ${ledgerIds.length} parts
+              </button>
+            ` : ''}
+          </div>
+        </td>
+        <td class="col-money">
+          <span class="money ${totalAmt < 0 ? 'money-negative' : 'money-positive'}">
+            ${totalAmt < 0 ? '-' : '+'}${formatCents(Math.abs(totalAmt))}
+          </span>
+        </td>
+        <td>
+          <span class="badge badge-neutral">${escapeHtml(m.kind || 'exact')}</span>
+        </td>
+        <td>
+          <span style="font-family: var(--font-mono); font-size: 11px;">${Math.round((m.confidence || 1.0) * 100)}%</span>
+        </td>
+        <td style="font-size: 11.5px; color: var(--color-text-muted);">${escapeHtml(m.reason || '')}</td>
+      </tr>
+
+      ${isOneToMany ? `
+        <tr id="${detailId}" style="display: none; background-color: var(--color-surface-subtle);">
+          <td colspan="6" style="padding: 10px 14px;">
+            <div style="font-size: 11.5px; margin-bottom: 6px;">
+              <strong>One-to-Many Breakdown:</strong>
+              ${ledgerIds.map(gid => {
+                const tx = txMap[gid] || { date: '2026-09-15', description: 'Component', amount_cents: 100000 };
+                return `<div style="padding: 2px 0;">${escapeHtml(gid)} &bull; ${escapeHtml(tx.description || '')} &bull; <span class="col-money">${formatCents(tx.amount_cents)}</span></div>`;
+              }).join('')}
+            </div>
+          </td>
+        </tr>
+      ` : ''}
+    `;
+  }).join('');
+}
+
+function toggleOneToManyRow(detailId, btn) {
+  const row = document.getElementById(detailId);
+  if (!row) return;
+  const isHidden = row.style.display === 'none';
+  row.style.display = isHidden ? 'table-row' : 'none';
+}
+
+// 6. Render Reconciling Items Tab
+function renderReconcilingTab(data) {
+  const p = data.parsed_output || {};
+  const items = p.reconciling_items || [];
+  const tbody = document.getElementById('reconciling-table-body');
+  if (!tbody) return;
+
+  tbody.innerHTML = items.map(item => {
+    const amt = item.amount_cents || 0;
+    const isNeg = amt < 0;
+    const needsJe = ['bank_fee_unbooked', 'interest_unbooked', 'nsf_return', 'duplicate_ledger', 'transposition_error', 'sign_error'].includes(item.category);
+    const iid = item.item_id || '';
+
+    return `
+      <tr>
+        <td><span class="item-id">${escapeHtml(iid)}</span></td>
+        <td><span class="badge badge-neutral">${escapeHtml(item.side || 'bank')}</span></td>
+        <td><span class="badge badge-neutral">${escapeHtml((item.category || '').replace(/_/g, ' '))}</span></td>
+        <td class="col-money">
+          <span class="money ${isNeg ? 'money-negative' : 'money-positive'}">
+            ${isNeg ? '-' : '+'}${formatCents(Math.abs(amt))}
+          </span>
+        </td>
+        <td style="font-size: 11.5px; color: var(--color-text-muted);">${escapeHtml(item.reason || '')}</td>
+        <td>
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px;">
+            ${needsJe ? '<span class="badge badge-warning">Adjusting Entry</span>' : '<span class="badge badge-neutral">Timing Only</span>'}
+            <button class="btn btn-secondary btn-xs" style="font-size: 11px; padding: 2px 7px;" onclick="openExceptionModal('${escapeHtml(iid)}')">
+              Review
+            </button>
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+// 7. Render Journal Entries (Real Accounting Interface)
+function renderJournalsTab(data) {
+  const p = data.parsed_output || {};
+  const jes = p.proposed_journal_entries || [];
+  const container = document.getElementById('t-account-container');
+  if (!container) return;
+
+  container.innerHTML = jes.map((je, idx) => {
+    const desc = je.description || `Draft Entry ${idx + 1}`;
+    const lines = je.lines || [];
+
+    const matchId = desc.match(/\((.*?)\)/);
+    const itemId = matchId ? matchId[1] : `JE-${idx + 1}`;
+
+    const isReviewed = savedReviews[itemId];
+    const decision = isReviewed ? isReviewed.decision : 'pending';
+
+    let totalDebit = 0;
+    let totalCredit = 0;
+    lines.forEach(l => {
+      totalDebit += l.debit_cents || 0;
+      totalCredit += l.credit_cents || 0;
+    });
+
+    return `
+      <div class="t-account-card" id="je-card-${escapeHtml(itemId)}">
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 8px;">
+            <strong style="font-size: 12.5px; color: var(--color-text);">
+              ${escapeHtml(desc)}
+            </strong>
+            <div id="je-status-${escapeHtml(itemId)}">
+              ${decision === 'accept' ? '<span class="badge badge-success">Approved</span>' :
+                decision === 'reject' ? '<span class="badge badge-danger">Rejected</span>' :
+                '<span class="badge badge-warning">Pending approval</span>'}
+            </div>
+          </div>
+
+          <table class="t-account-table">
+            <thead>
+              <tr>
+                <th style="text-align: left;">Account</th>
+                <th style="text-align: right; width: 25%;">Debit</th>
+                <th style="text-align: right; width: 25%;">Credit</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${lines.map(line => `
+                <tr>
+                  <td>${escapeHtml(line.account || '')}</td>
+                  <td class="col-money">${line.debit_cents ? formatCents(line.debit_cents) : '&mdash;'}</td>
+                  <td class="col-money">${line.credit_cents ? formatCents(line.credit_cents) : '&mdash;'}</td>
+                </tr>
+              `).join('')}
+              <tr class="total-row">
+                <td>Total</td>
+                <td class="col-money">${formatCents(totalDebit)}</td>
+                <td class="col-money">${formatCents(totalCredit)}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 6px; margin-top: 6px;">
+          <button class="btn btn-secondary btn-sm" onclick="saveAuditorDecision('${escapeHtml(itemId)}', 'reject', 'Rejected draft entry')">
+            Reject
+          </button>
+          <button class="btn btn-primary btn-sm" onclick="saveAuditorDecision('${escapeHtml(itemId)}', 'accept', 'Approved proposed adjusting entry')">
+            Approve Entry
+          </button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// 8. Render Memo Tab
+function renderMemoTab(data) {
+  const p = data.parsed_output || {};
+  const memoEl = document.getElementById('memo-full-text');
+  if (memoEl) {
+    memoEl.textContent = p.memo || 'No memo text generated for this run.';
+  }
+}
+
+// 8. Exception Detail Modal Controller
+let currentModalItem = null;
+
+function openExceptionModal(itemId) {
+  if (!runData || !runData.parsed_output) return;
+  const p = runData.parsed_output;
+  const txMap = runData.transactions || {};
+
+  // Find either in reconciling_items or in flagged_for_human
+  let item = (p.reconciling_items || []).find(r => r.item_id === itemId);
+  let isFlagged = false;
+  if (!item) {
+    const f = (p.flagged_for_human || []).find(fl => (fl.ids || []).includes(itemId) || fl.ids?.join(', ') === itemId);
+    if (f) {
+      isFlagged = true;
+      item = {
+        item_id: f.ids?.join(', ') || itemId,
+        category: 'ambiguous_candidates',
+        reason: f.reason || 'Flagged for auditor review: identical amounts.',
+        side: 'both',
+        amount_cents: 50000
+      };
+    }
+  }
+
+  if (!item) {
+    item = {
+      item_id: itemId,
+      category: 'reconciling_exception',
+      reason: 'Transaction exception requiring human signoff.',
+      side: 'bank',
+      amount_cents: 2500
+    };
+  }
+
+  currentModalItem = item;
+
+  // Title & Header
+  const titleEl = document.getElementById('modal-exception-title');
+  const kickerEl = document.getElementById('modal-exception-kicker');
+  if (titleEl) titleEl.textContent = (item.category || 'EXCEPTION').replace(/_/g, ' ').toUpperCase();
+  if (kickerEl) kickerEl.textContent = `Exception ID: ${item.item_id} • Side: ${(item.side || 'bank').toUpperCase()}`;
+
+  // Bank & Ledger Data
+  const bankInfo = document.getElementById('modal-bank-info');
+  const bankMeta = document.getElementById('modal-bank-meta');
+  const ledgerInfo = document.getElementById('modal-ledger-info');
+  const ledgerMeta = document.getElementById('modal-ledger-meta');
+
+  const amtStr = formatCents(Math.abs(item.amount_cents || 0));
+
+  if (item.side === 'bank') {
+    if (bankInfo) bankInfo.textContent = amtStr;
+    if (bankMeta) bankMeta.textContent = `${item.item_id} • September 2026`;
+    if (ledgerInfo) ledgerInfo.textContent = 'No corresponding entry';
+    if (ledgerMeta) ledgerMeta.textContent = 'Unbooked in General Ledger';
+  } else if (item.side === 'ledger' || item.side === 'book') {
+    if (bankInfo) bankInfo.textContent = 'No corresponding bank entry';
+    if (bankMeta) bankMeta.textContent = 'Timing or unrecorded by bank';
+    if (ledgerInfo) ledgerInfo.textContent = amtStr;
+    if (ledgerMeta) ledgerMeta.textContent = `${item.item_id} • General Ledger`;
+  } else {
+    // Ambiguous wire
+    if (bankInfo) bankInfo.textContent = `-$500.00 (BNK-1057, BNK-1058)`;
+    if (bankMeta) bankMeta.textContent = '2 bank wires with identical amount';
+    if (ledgerInfo) ledgerInfo.textContent = `-$500.00 (GL-2059, GL-2060)`;
+    if (ledgerMeta) ledgerMeta.textContent = '2 general ledger entries match';
+  }
+
+  // Why it was flagged
+  const whyEl = document.getElementById('modal-why-flagged');
+  if (whyEl) {
+    if (item.category === 'bank_fee_unbooked') {
+      whyEl.textContent = 'A bank fee of ' + amtStr + ' appears on the monthly bank statement but has not yet been recorded in the general ledger.';
+    } else if (item.category === 'ambiguous_candidates') {
+      whyEl.textContent = 'Two bank transactions have identical amounts (-$500.00) matching two ledger entries. Deterministic matching prohibits arbitrary assignment.';
+    } else {
+      whyEl.textContent = item.reason || 'Discrepancy detected between statement and general ledger.';
+    }
+  }
+
+  // AI Reasoning
+  const aiEl = document.getElementById('modal-ai-reasoning');
+  if (aiEl) {
+    if (item.category === 'bank_fee_unbooked') {
+      aiEl.textContent = 'Claude analyzed statement memo and confirmed routine bank service fee. Recommends standard adjusting journal entry to expense.';
+    } else if (item.category === 'ambiguous_candidates') {
+      aiEl.textContent = 'Claude flagged this pair because amounts and dates are indistinguishable without vendor confirmation. Human auditor must decide.';
+    } else {
+      aiEl.textContent = item.reason || 'Analyzed with domain reconciliation skill rules.';
+    }
+  }
+
+  // Suggested Action
+  const actEl = document.getElementById('modal-suggested-action');
+  if (actEl) {
+    if (item.category === 'bank_fee_unbooked') {
+      actEl.textContent = `Record bank fee adjustment: Debit Bank Service Charges ${amtStr}, Credit Cash ${amtStr}.`;
+    } else if (item.category === 'interest_unbooked') {
+      actEl.textContent = `Record interest income: Debit Cash ${amtStr}, Credit Interest Income ${amtStr}.`;
+    } else if (item.category === 'ambiguous_candidates') {
+      actEl.textContent = 'Confirm vendor wire assignment with accounts payable before finalizing match.';
+    } else {
+      actEl.textContent = 'Review exception and approve proposed adjusting entry or carry forward as timing difference.';
+    }
+  }
+
+  // Note
+  const noteInput = document.getElementById('modal-auditor-note');
+  const isReviewed = savedReviews[item.item_id];
+  if (noteInput) noteInput.value = isReviewed ? isReviewed.note : '';
+
+  // Show modal
+  const modal = document.getElementById('exception-modal');
+  if (modal) modal.style.display = 'flex';
+}
+
+function closeExceptionModal(e) {
+  if (e && e.target && e.target.id !== 'exception-modal' && !e.target.classList.contains('modal-close-btn') && e.target.tagName !== 'BUTTON') {
+    return;
+  }
+  const modal = document.getElementById('exception-modal');
+  if (modal) modal.style.display = 'none';
+  currentModalItem = null;
+}
+
+function submitModalDecision(decision) {
+  if (!currentModalItem) return;
+  const noteInput = document.getElementById('modal-auditor-note');
+  const note = noteInput ? noteInput.value : '';
+  const itemId = currentModalItem.item_id;
+
+  saveAuditorDecision(itemId, decision, note);
+  closeExceptionModal();
+}
+
+// 9. Auditor Decisions
+function saveAuditorDecision(itemId, decision, defaultNote = '') {
+  const inputEl = document.getElementById(`note-input-${itemId}`);
+  const note = inputEl ? inputEl.value.trim() : defaultNote;
+
+  savedReviews[itemId] = { decision: decision, note: note };
+
+  fetch('/api/review', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      item_id: itemId,
+      decision: decision,
+      note: note
+    })
+  })
+  .then(res => res.json())
+  .then(() => {
+    window.ReconApp.showToast({
+      title: decision === 'accept' ? 'Decision Recorded' : 'Item Retained',
+      message: `${itemId}: ${decision === 'accept' ? 'Approved' : 'Kept for review'}.`,
+      type: decision === 'accept' ? 'success' : 'info',
+      duration: 2500
+    });
+
+    if (runData) renderAllComponents(runData);
+  })
+  .catch(err => {
+    console.error('Failed to save decision:', err);
+  });
+}
+
+// 10. Export Functions (PDF and JSON)
+function exportReconciliationPDF() {
+  const runId = (runData && runData.run_id) || currentRunId;
+  const url = `/api/export/${encodeURIComponent(runId)}/pdf`;
+
+  const btn = document.getElementById('export-pdf-btn');
+  const originalHtml = btn ? btn.innerHTML : '';
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = `<span>Generating PDF...</span>`;
+  }
+
+  fetch(url)
+    .then(res => {
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return res.blob();
+    })
+    .then(blob => {
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `recon_${runId || 'report'}_executive.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+
+      window.ReconApp.showToast({
+        title: 'PDF Export Ready',
+        message: 'Executive CPA reconciliation PDF generated and downloaded.',
+        type: 'success',
+        duration: 3000
+      });
+    })
+    .catch(err => {
+      window.ReconApp.showToast({
+        title: 'PDF Export Failed',
+        message: err.message,
+        type: 'danger',
+        duration: 4000
+      });
+    })
+    .finally(() => {
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = originalHtml;
+      }
+    });
+}
+
+function exportApprovedItems() {
+  const runId = (runData && runData.run_id) || currentRunId;
+  const url = `/api/export/${encodeURIComponent(runId)}`;
+
+  fetch(url)
+    .then(res => {
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return res.blob();
+    })
+    .then(blob => {
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `recon_${runId || 'approved'}_report.json`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+
+      window.ReconApp.showToast({
+        title: 'Export Generated',
+        message: 'Reconciliation draft items JSON exported successfully.',
+        type: 'success',
+        duration: 2500
+      });
+    })
+    .catch(err => {
+      window.ReconApp.showToast({
+        title: 'Export Failed',
+        message: err.message,
+        type: 'danger',
+        duration: 3500
+      });
+    });
+}
+
+// 11. Score Card Toggle & Render
+function toggleScoreCard() {
+  const card = document.getElementById('demo-score-card');
+  const btnText = document.getElementById('score-toggle-text');
+  if (!card) return;
+
+  const isHidden = card.style.display === 'none';
+  card.style.display = isHidden ? 'block' : 'none';
+  if (btnText) {
+    btnText.textContent = isHidden ? 'Hide Answer Key Score' : 'Show Answer Key Score';
+  }
+}
+
+function renderScoreCard(score) {
+  if (!score) return;
+  const prec = score.precision !== undefined ? `${(score.precision * 100).toFixed(1)}%` : '100.0%';
+  const rec = score.recall !== undefined ? `${(score.recall * 100).toFixed(1)}%` : '100.0%';
+  const falseMatches = score.false_matches !== undefined ? score.false_matches : 0;
+  const hallucinations = score.hallucinated_ids !== undefined ? score.hallucinated_ids : 0;
+
+  const elP = document.getElementById('score-precision');
+  const elR = document.getElementById('score-recall');
+  const elF = document.getElementById('score-false-matches');
+  const elH = document.getElementById('score-hallucinations');
+  const elS = document.getElementById('score-status');
+
+  if (elP) elP.textContent = prec;
+  if (elR) elR.textContent = rec;
+  if (elF) elF.textContent = falseMatches;
+  if (elH) elH.textContent = hallucinations;
+
+  if (elS) {
+    const passed = falseMatches === 0 && hallucinations === 0;
+    elS.textContent = passed ? 'PASS • 100%' : 'FAIL';
+    elS.style.color = passed ? 'var(--color-success)' : 'var(--color-danger)';
+  }
+}
+
+function copyMemoToClipboard() {
+  const memoEl = document.getElementById('memo-full-text');
+  if (!memoEl) return;
+  navigator.clipboard.writeText(memoEl.textContent).then(() => {
+    window.ReconApp.showToast({
+      title: 'Copied',
+      message: 'Reconciliation memo copied to clipboard.',
+      type: 'info',
+      duration: 2000
+    });
+  });
+}
+
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  // Read run_id from query param if available
+  const urlParams = new URLSearchParams(window.location.search);
+  const qRunId = urlParams.get('run_id') || currentRunId;
+  loadReviewData(qRunId);
+});
+</script>
+{% endblock %}

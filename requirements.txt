@@ -1,5 +1,7 @@
-flask
-pandas
-anthropic
-python-dotenv
-pytest
+flask>=3.0.0
+gunicorn>=21.0.0
+pandas>=2.0.0
+anthropic>=0.20.0
+python-dotenv>=1.0.0
+reportlab>=4.0.0
+pytest>=8.0.0

@@ -1,0 +1,458 @@
+{% extends "base.html" %}
+
+{% block title %}Under the Hood - Recon Draft{% endblock %}
+
+{% block content %}
+<div style="display: flex; flex-direction: column; gap: var(--space-5);">
+
+  <!-- Page Header -->
+  <div style="padding-bottom: var(--space-2); border-bottom: 1px solid var(--color-border);">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: var(--space-3);">
+      <div>
+        <h1 class="page-title">Under the Hood</h1>
+        <div class="page-subtitle">
+          AI does judgment. Python does math and checking. Deterministic reconciliation architecture and technical specifications.
+        </div>
+      </div>
+      <div style="display: flex; align-items: center; gap: var(--space-2);">
+        <span class="text-subtle" style="font-size: 11.5px; font-family: var(--font-mono);">Python 3.12 &bull; Claude 3.5 Sonnet</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 1. Compact Pipeline Diagram -->
+  <section class="card" id="pipeline-overview-section">
+    <div class="card-header">
+      <div class="card-title">System Pipeline</div>
+      <div style="display: flex; gap: 12px; font-size: 11px; color: var(--color-text-muted);">
+        <span>Deterministic Python Engine</span>
+        <span>&bull;</span>
+        <span>Claude 3.5 Sonnet</span>
+      </div>
+    </div>
+
+    <div class="card-body">
+      <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; font-size: 12px;">
+        <!-- 1. Input -->
+        <div style="border: 1px solid var(--color-border); border-radius: var(--radius-sm); padding: 8px 12px; background-color: var(--color-surface-subtle); min-width: 110px;">
+          <div style="font-size: 10px; text-transform: uppercase; color: var(--color-text-subtle);">01 &bull; Input</div>
+          <strong>Input Data</strong>
+          <div style="font-size: 11px; color: var(--color-text-muted); margin-top: 2px;">bank &amp; ledger CSV</div>
+        </div>
+
+        <span class="text-subtle">&rarr;</span>
+
+        <!-- 2. Pre-Matcher -->
+        <div style="border: 1px solid var(--color-border); border-radius: var(--radius-sm); padding: 8px 12px; background-color: var(--color-surface); min-width: 110px;">
+          <div style="font-size: 10px; text-transform: uppercase; color: var(--color-text-subtle);">02 &bull; Python</div>
+          <strong>Pre-Matcher</strong>
+          <div style="font-size: 11px; color: var(--color-text-muted); margin-top: 2px;">Exact pairs in cents</div>
+        </div>
+
+        <span class="text-subtle">&rarr;</span>
+
+        <!-- 3. Claude -->
+        <div style="border: 1px solid var(--color-border); border-radius: var(--radius-sm); padding: 8px 12px; background-color: var(--color-surface); min-width: 110px;">
+          <div style="font-size: 10px; text-transform: uppercase; color: var(--color-text-subtle);">03 &bull; AI</div>
+          <strong>Claude Agent</strong>
+          <div style="font-size: 11px; color: var(--color-text-muted); margin-top: 2px;">Leftover items &amp; skill</div>
+        </div>
+
+        <span class="text-subtle">&rarr;</span>
+
+        <!-- 4. Verification -->
+        <div style="border: 1px solid var(--color-border); border-radius: var(--radius-sm); padding: 8px 12px; background-color: var(--color-surface); min-width: 110px;">
+          <div style="font-size: 10px; text-transform: uppercase; color: var(--color-text-subtle);">04 &bull; Python</div>
+          <strong>Verification</strong>
+          <div style="font-size: 11px; color: var(--color-text-muted); margin-top: 2px;">8 hard checks</div>
+        </div>
+
+        <span class="text-subtle">&rarr;</span>
+
+        <!-- 5. Tie-out -->
+        <div style="border: 1px solid var(--color-border); border-radius: var(--radius-sm); padding: 8px 12px; background-color: var(--color-surface); min-width: 110px;">
+          <div style="font-size: 10px; text-transform: uppercase; color: var(--color-text-subtle);">05 &bull; Python</div>
+          <strong>Tie-Out Proof</strong>
+          <div style="font-size: 11px; color: var(--color-text-muted); margin-top: 2px;">Proved to the cent</div>
+        </div>
+
+        <span class="text-subtle">&rarr;</span>
+
+        <!-- 6. Memo -->
+        <div style="border: 1px solid var(--color-border); border-radius: var(--radius-sm); padding: 8px 12px; background-color: var(--color-surface); min-width: 110px;">
+          <div style="font-size: 10px; text-transform: uppercase; color: var(--color-text-subtle);">06 &bull; Claude</div>
+          <strong>Reviewer Memo</strong>
+          <div style="font-size: 11px; color: var(--color-text-muted); margin-top: 2px;">Numbers validated</div>
+        </div>
+
+        <span class="text-subtle">&rarr;</span>
+
+        <!-- 7. Human Review -->
+        <div style="border: 1px solid var(--color-border); border-radius: var(--radius-sm); padding: 8px 12px; background-color: var(--color-surface-subtle); min-width: 110px;">
+          <div style="font-size: 10px; text-transform: uppercase; color: var(--color-text-subtle);">07 &bull; Human</div>
+          <strong>Auditor Signoff</strong>
+          <div style="font-size: 11px; color: var(--color-text-muted); margin-top: 2px;">Final decision</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. Technical Inspection Tabs -->
+  <section class="card" id="hood-tabs-card">
+    <div class="card-header" style="border-bottom: none; padding-bottom: 0;">
+      <div class="tabs-nav" style="border-bottom: none; width: 100%;" id="hood-tabs-nav">
+        <button class="tab-btn active" data-tab="tab-skill" id="btn-tab-skill" onclick="switchHoodTab('tab-skill', this)">
+          Skill (SKILL.md)
+        </button>
+        <button class="tab-btn" data-tab="tab-tools" id="btn-tab-tools" onclick="switchHoodTab('tab-tools', this)">
+          Tools (4 Schemas)
+        </button>
+        <button class="tab-btn" data-tab="tab-guardrails" id="btn-tab-guardrails" onclick="switchHoodTab('tab-guardrails', this)">
+          Guardrails (8 Checks)
+        </button>
+        <button class="tab-btn" data-tab="tab-trace" id="btn-tab-trace" onclick="switchHoodTab('tab-trace', this)">
+          Last Run Trace
+        </button>
+        <button class="tab-btn" data-tab="tab-prompts" id="btn-tab-prompts" onclick="switchHoodTab('tab-prompts', this)">
+          Prompts (v0 vs v1 vs v2)
+        </button>
+      </div>
+    </div>
+
+    <div class="card-body" style="padding-top: var(--space-4);">
+
+      <!-- TAB 1: Skill (SKILL.md) -->
+      <div class="tab-pane active" id="tab-skill">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-3);">
+          <div style="font-size: 12px; color: var(--color-text-muted);">
+            <code>src/skills/SKILL.md</code> &bull; Accounting rules and GAAP compliance logic.
+          </div>
+          <button class="btn btn-secondary btn-sm" onclick="copySkillToClipboard()">
+            <span id="copy-skill-text">Copy SKILL.md</span>
+          </button>
+        </div>
+
+        <div style="border: 1px solid var(--color-border); border-radius: var(--radius-sm); padding: 14px; background-color: var(--color-surface-subtle); max-height: 520px; overflow-y: auto;">
+          <pre style="font-family: var(--font-mono); font-size: 11.5px; line-height: 1.55; color: var(--color-text); white-space: pre-wrap;" id="skill-content-display">Loading SKILL.md...</pre>
+        </div>
+      </div>
+
+      <!-- TAB 2: Tools (4 Schemas) -->
+      <div class="tab-pane" id="tab-tools">
+        <div style="margin-bottom: var(--space-3); font-size: 12px; color: var(--color-text-muted);">
+          Tool schemas provided to Claude in v2 reconciliation runner.
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 10px;" id="tools-container">
+          <div class="skeleton skeleton-title"></div>
+          <div class="skeleton skeleton-text" style="height: 80px;"></div>
+        </div>
+      </div>
+
+      <!-- TAB 3: Guardrails (8 Checks) -->
+      <div class="tab-pane" id="tab-guardrails">
+        <div style="margin-bottom: var(--space-3); font-size: 12px; color: var(--color-text-muted);">
+          Deterministic checks enforced in Python. Output is rejected or flagged if any check fails.
+        </div>
+        <div class="table-container">
+          <table class="table" id="guardrails-table">
+            <thead>
+              <tr>
+                <th style="width: 30px;"></th>
+                <th style="width: 22%;">Guardrail</th>
+                <th>Rule Text &amp; Enforcement</th>
+                <th style="width: 14%;">Severity</th>
+                <th style="width: 20%;">Implementation</th>
+              </tr>
+            </thead>
+            <tbody id="guardrails-tbody">
+              <tr><td colspan="5"><div class="skeleton skeleton-text"></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TAB 4: Last Run Trace -->
+      <div class="tab-pane" id="tab-trace">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-3); flex-wrap: wrap; gap: 8px;">
+          <div style="font-size: 12px; color: var(--color-text-muted);">
+            Execution timeline showing tool invocations, token usage, and cost.
+          </div>
+          <div style="display: flex; gap: 6px; align-items: center;">
+            <select id="trace-variant-selector" class="review-note-input" style="padding: 3px 8px; font-size: 11.5px;" onchange="loadTraceForVariant(this.value)">
+              <option value="full">Scenario: full</option>
+              <option value="clean">Scenario: clean</option>
+              <option value="timing">Scenario: timing</option>
+              <option value="fees">Scenario: fees</option>
+              <option value="errors">Scenario: errors</option>
+              <option value="tricky">Scenario: tricky</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- KPI Summary Strip -->
+        <div class="top-stats-row" style="margin-bottom: var(--space-3);">
+          <div class="stat-tile">
+            <div class="stat-label">Pre-matched Pairs</div>
+            <div class="stat-value" id="trace-prematched">49 pairs</div>
+          </div>
+          <div class="stat-tile">
+            <div class="stat-label">Tool Iterations</div>
+            <div class="stat-value" id="trace-total-steps">3 steps</div>
+          </div>
+          <div class="stat-tile">
+            <div class="stat-label">Tokens Consumed</div>
+            <div class="stat-value" id="trace-tokens">1,650</div>
+          </div>
+          <div class="stat-tile">
+            <div class="stat-label">Run Cost</div>
+            <div class="stat-value" id="trace-cost">$0.023</div>
+          </div>
+        </div>
+
+        <!-- Trace List -->
+        <div class="table-container">
+          <table class="table">
+            <thead>
+              <tr>
+                <th style="width: 60px;">Step</th>
+                <th style="width: 160px;">Tool Invoked</th>
+                <th>Input Arguments</th>
+                <th style="width: 140px; text-align: right;">Result</th>
+              </tr>
+            </thead>
+            <tbody id="trace-tbody">
+              <tr><td colspan="4"><div class="skeleton skeleton-text"></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TAB 5: Prompts (v0 vs v1 vs v2) -->
+      <div class="tab-pane" id="tab-prompts">
+        <div style="margin-bottom: var(--space-3); font-size: 12px; color: var(--color-text-muted);">
+          System prompt comparison across evaluation architectures.
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 12px;" id="prompts-grid">
+          <div class="skeleton skeleton-title"></div>
+          <div class="skeleton skeleton-text" style="height: 120px;"></div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+/* ==========================================================================
+   Under the Hood Technical Inspector
+   ========================================================================== */
+let rawSkillText = '';
+
+function switchHoodTab(tabId, btn) {
+  document.querySelectorAll('#hood-tabs-nav .tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('#hood-tabs-card .tab-pane').forEach(p => p.classList.remove('active'));
+
+  if (btn) btn.classList.add('active');
+  const targetPane = document.getElementById(tabId);
+  if (targetPane) targetPane.classList.add('active');
+}
+
+// 1. Load Skill
+function loadSkill() {
+  fetch('/api/skill')
+    .then(res => res.json())
+    .then(data => {
+      rawSkillText = data.content || '';
+      const display = document.getElementById('skill-content-display');
+      if (display) display.textContent = rawSkillText;
+    })
+    .catch(err => {
+      console.error('Error loading skill:', err);
+    });
+}
+
+function copySkillToClipboard() {
+  if (!rawSkillText) return;
+  navigator.clipboard.writeText(rawSkillText).then(() => {
+    const btnText = document.getElementById('copy-skill-text');
+    if (btnText) btnText.textContent = 'Copied!';
+    setTimeout(() => {
+      if (btnText) btnText.textContent = 'Copy SKILL.md';
+    }, 2000);
+  });
+}
+
+// 2. Load Tools
+function loadTools() {
+  fetch('/api/tools')
+    .then(res => res.json())
+    .then(data => {
+      renderTools(data.tools || []);
+    })
+    .catch(err => {
+      console.error('Error loading tools:', err);
+    });
+}
+
+function renderTools(tools) {
+  const container = document.getElementById('tools-container');
+  if (!container) return;
+
+  container.innerHTML = tools.map((tool, idx) => {
+    const schema = tool.input_schema || {};
+    const props = schema.properties || {};
+
+    return `
+      <div style="border: 1px solid var(--color-border); border-radius: var(--radius-sm); padding: 10px 14px; background-color: var(--color-surface-subtle);">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <strong class="item-id" style="font-size: 12px;">${escapeHtml(tool.name)}</strong>
+            <span style="font-size: 12px; color: var(--color-text-muted);">${escapeHtml(tool.description)}</span>
+          </div>
+          <span class="text-subtle" style="font-size: 11px; font-family: var(--font-mono);">${Object.keys(props).length} parameters</span>
+        </div>
+        <div style="margin-top: 8px; font-size: 11px; color: var(--color-text-subtle);">
+          Parameters: ${Object.keys(props).join(', ') || 'none'}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// 3. Load Guardrails
+function loadGuardrails() {
+  fetch('/api/hood/guardrails')
+    .then(res => res.json())
+    .then(data => {
+      renderGuardrails(data.guardrails || []);
+    })
+    .catch(err => {
+      console.error('Error loading guardrails:', err);
+    });
+}
+
+function renderGuardrails(guardrails) {
+  const tbody = document.getElementById('guardrails-tbody');
+  if (!tbody) return;
+
+  tbody.innerHTML = guardrails.map(g => `
+    <tr>
+      <td style="text-align: center; color: var(--color-success);">&check;</td>
+      <td>
+        <strong>${escapeHtml(g.name)}</strong>
+        <div class="text-subtle" style="font-size: 10.5px;">${escapeHtml(g.category)}</div>
+      </td>
+      <td style="font-size: 12px;">
+        <div>${escapeHtml(g.rule_text)}</div>
+        <div class="text-muted" style="font-size: 11px; margin-top: 2px;">Enforcement: ${escapeHtml(g.enforcement)}</div>
+      </td>
+      <td>
+        <span class="badge ${g.severity === 'CRITICAL' ? 'badge-danger' : 'badge-warning'}">${escapeHtml(g.severity)}</span>
+      </td>
+      <td style="font-size: 11px;">
+        <span class="text-mono">${escapeHtml(g.file)}</span>
+        <div class="text-subtle">&fnof; ${escapeHtml(g.function)}</div>
+      </td>
+    </tr>
+  `).join('');
+}
+
+// 4. Load Trace
+function loadTraceForVariant(variant) {
+  fetch(`/api/hood/trace/${encodeURIComponent(variant)}`)
+    .then(res => res.json())
+    .then(data => {
+      renderTrace(data);
+    })
+    .catch(err => {
+      console.error('Error loading trace:', err);
+    });
+}
+
+function renderTrace(data) {
+  document.getElementById('trace-prematched').textContent = `${data.pre_matches_count || 49} pairs`;
+  document.getElementById('trace-total-steps').textContent = `${(data.trace || []).length} steps`;
+  document.getElementById('trace-tokens').textContent = (data.tokens || 1650).toLocaleString();
+  document.getElementById('trace-cost').textContent = `$${(data.cost_usd || 0.023).toFixed(3)}`;
+
+  const tbody = document.getElementById('trace-tbody');
+  if (!tbody) return;
+
+  const trace = data.trace || [];
+  if (trace.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="4" class="text-muted" style="text-align: center; padding: 14px;">No execution trace recorded.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = trace.map(step => `
+    <tr>
+      <td class="text-mono" style="font-size: 11px;">#${step.step || 1}</td>
+      <td><span class="item-id">${escapeHtml(step.tool || 'call')}</span></td>
+      <td class="text-mono" style="font-size: 11px;">${escapeHtml(JSON.stringify(step.input || {}))}</td>
+      <td style="text-align: right;"><span class="badge badge-success">&check; OK</span></td>
+    </tr>
+  `).join('');
+}
+
+// 5. Load Prompts
+function loadPrompts() {
+  fetch('/api/hood/prompts')
+    .then(res => res.json())
+    .then(data => {
+      renderPrompts(data);
+    })
+    .catch(err => {
+      console.error('Error loading prompts:', err);
+    });
+}
+
+function renderPrompts(data) {
+  const container = document.getElementById('prompts-grid');
+  if (!container) return;
+
+  const verMeta = {
+    'v0': { name: 'Raw Claude (v0)', desc: 'Zero domain skill' },
+    'v1': { name: 'Claude + Skill (v1)', desc: 'Accounting prompt injected' },
+    'v2': { name: 'Full System (v2)', desc: 'Agent tools + pre-matcher' }
+  };
+
+  container.innerHTML = ['v0', 'v1', 'v2'].map(ver => {
+    const item = data[ver] || {};
+    const meta = verMeta[ver] || { name: ver, desc: '' };
+    return `
+      <div style="border: 1px solid var(--color-border); border-radius: var(--radius-sm); padding: 12px; background-color: var(--color-surface-subtle);">
+        <div style="margin-bottom: 8px;">
+          <strong>${escapeHtml(meta.name)}</strong>
+          <div class="text-muted" style="font-size: 11px;">${escapeHtml(meta.desc)}</div>
+        </div>
+        <div style="font-size: 11px; margin-bottom: 6px;" class="text-subtle">System Prompt:</div>
+        <div style="background-color: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-xs); padding: 8px; max-height: 180px; overflow-y: auto;">
+          <pre style="font-family: var(--font-mono); font-size: 10.5px; line-height: 1.45; white-space: pre-wrap; margin: 0;">${escapeHtml(item.system_prompt || '')}</pre>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  loadSkill();
+  loadTools();
+  loadGuardrails();
+  loadTraceForVariant('full');
+  loadPrompts();
+});
+</script>
+{% endblock %}

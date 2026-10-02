@@ -1,7 +1,7 @@
 {
   "variant": "clean",
   "runner": "v2",
-  "timestamp": "2026-10-01T19:39:04.899061+00:00",
+  "timestamp": "2026-10-02T14:21:29.424380+00:00",
   "model": "claude-sonnet-4-5 (v2 simulated)",
   "tokens": {
     "input_tokens": 1200,
@@ -543,26 +543,5 @@
     "memo": "Reconciliation Review: 49 matched transaction groups and 0 reconciling items were verified.\nProposed Journal Entries: None required.\nItems Requiring Human Review: None.\nTie-Out Status: Proved. Adjusted bank balance ($80,205.75) equals adjusted book balance ($80,205.75) with $0.00 difference.",
     "parse_error": false,
     "memo_checked": true
-  },
-  "score": {
-    "match_precision": 1.0,
-    "match_recall": 1.0,
-    "false_matches": 0,
-    "false_matches_details": [],
-    "classification_accuracy": 1.0,
-    "ambiguous_handled": true,
-    "hallucinated_ids": 0,
-    "hallucinated_ids_details": [],
-    "tie_out_correct": true,
-    "plug_detected": false,
-    "journal_entries_pending": true,
-    "case_pass": true,
-    "details": {
-      "expected_matches_count": 49,
-      "system_matches_count": 49,
-      "correct_matches_count": 49,
-      "key_reconciling_count": 0,
-      "system_reconciling_count": 0
-    }
   }
 }

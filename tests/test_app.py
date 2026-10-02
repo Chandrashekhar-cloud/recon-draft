@@ -165,14 +165,35 @@ def test_post_review_and_export(client):
     assert "matches" in exp_data["accepted_items"]
     assert exp_data["human_reviews_applied"] >= 1
 
+    # Export accepted items as PDF via /pdf path
+    pdf_res = client.get(f"/api/export/{run_id}/pdf")
+    assert pdf_res.status_code == 200
+    assert pdf_res.mimetype == "application/pdf"
+    assert len(pdf_res.data) > 1000
+    assert pdf_res.data.startswith(b"%PDF")
+
+    # Export accepted items as PDF via ?format=pdf query param
+    pdf_res2 = client.get(f"/api/export/{run_id}?format=pdf")
+    assert pdf_res2.status_code == 200
+    assert pdf_res2.mimetype == "application/pdf"
+    assert pdf_res2.data.startswith(b"%PDF")
+
+
+def test_run_page_renders(client):
+    """GET / and GET /run render the Run page with hero, steps, and options."""
+    for path in ("/", "/run"):
+        res = client.get(path)
+        assert res.status_code == 200
+        html = res.get_data(as_text=True)
+        assert "Bank reconciliation, drafted in minutes" in html
+        assert "Choose a client month" in html
+        assert "Preview the data" in html
+        assert "Choose how to run" in html
+        assert "Run reconciliation" in html
+
 
 def test_style_guide_and_static_assets(client):
     """GET /style-guide renders the component showcase and CSS/JS are served."""
-    # Root redirects to /style-guide
-    index_res = client.get("/")
-    assert index_res.status_code == 302
-    assert "/style-guide" in index_res.headers["Location"]
-
     # Style guide renders with 200 and contains core components
     sg_res = client.get("/style-guide")
     assert sg_res.status_code == 200
@@ -197,4 +218,173 @@ def test_style_guide_and_static_assets(client):
     assert js_res.status_code == 200
     js_text = js_res.get_data(as_text=True)
     assert "toggleTheme" in js_text
+
+
+def test_review_page_renders(client):
+    """GET /review and GET /review/<run_id> render the Review page with all key components."""
+    # Test default /review route
+    res = client.get("/review")
+    assert res.status_code == 200
+    html = res.get_data(as_text=True)
+    assert "Auditor Review" in html
+    assert "Mathematical Tie-Out Proof" in html
+    assert "Computed in Python, not by AI" in html
+    assert "Flagged: two identical amounts, a human must decide" in html
+    assert "Needs Your Review" in html
+    assert "Matched" in html
+    assert "Reconciling Items" in html
+    assert "Journal Entries" in html
+    assert "Reviewer Memo" in html
+    assert "Show Answer Key Score" in html
+    assert "Export Approved Items" in html
+    assert "Export PDF Report" in html
+
+    # Test /review/<run_id> with full variant run
+    run_res = client.post("/api/run", json={"variant": "full", "mode": "replay"})
+    assert run_res.status_code == 202
+    run_id = run_res.get_json()["run_id"]
+    time.sleep(0.3)
+
+    res_run = client.get(f"/review/{run_id}")
+    assert res_run.status_code == 200
+    html_run = res_run.get_data(as_text=True)
+    assert run_id in html_run
+    assert "Computed in Python, not by AI" in html_run
+
+
+def test_evals_page_renders(client):
+    """GET /evals renders the Evals benchmark page with all showcase sections."""
+    res = client.get("/evals")
+    assert res.status_code == 200
+    html = res.get_data(as_text=True)
+    assert "Evaluation &amp; Architecture Benchmarks" in html or "Evaluation & Architecture Benchmarks" in html
+    assert "v0 &bull; Raw Claude" in html or "v0 • Raw Claude" in html or "Raw Claude" in html
+    assert "v1 &bull; Claude + Skill" in html or "Claude + Skill" in html
+    assert "v2 &bull; Full System" in html or "Full System" in html
+    assert "Pass Rate by Architecture" in html
+    assert "Total False Matches" in html
+    assert "Comprehensive Scenario Matrix" in html
+    assert "What the Evals Caught" in html
+    assert "How the Golden Set Was Made" in html
+    assert "Run All Evals" in html
+    assert "Scored by deterministic Python. No AI is used to grade." in html
+
+
+def test_evals_summary_enriched(client):
+    """GET /api/evals/summary returns enriched matrix with average cost and latency."""
+    res = client.get("/api/evals/summary")
+    assert res.status_code == 200
+    data = res.get_json()
+    assert "totals" in data
+    assert "matrix" in data
+    for ver in ("v0", "v1", "v2"):
+        if ver in data["totals"]:
+            tot = data["totals"][ver]
+            assert "pass_rate" in tot
+            assert "avg_cost_usd" in tot
+            assert "avg_seconds" in tot
+
+
+def test_evals_cell_detail(client):
+    """GET /api/evals/detail/<variant>/<version> returns diff and metric details."""
+    res = client.get("/api/evals/detail/tricky/v0")
+    assert res.status_code == 200
+    data = res.get_json()
+    assert data["variant"] == "tricky"
+    assert data["version"] == "v0"
+    assert "expected" in data
+    assert "actual" in data
+    assert "score_metrics" in data
+
+
+def test_evals_run_and_status(client):
+    """POST /api/evals/run triggers background runner and GET /api/evals/status returns progress."""
+    res = client.post("/api/evals/run")
+    assert res.status_code == 202
+    data = res.get_json()
+    assert "status" in data
+
+    # Check status endpoint
+    status_res = client.get("/api/evals/status")
+    assert status_res.status_code == 200
+    status_data = status_res.get_json()
+    assert "status" in status_data
+    assert "progress_pct" in status_data
+
+
+def test_hood_page_renders(client):
+    """GET /hood and GET /under-the-hood render the Under the Hood page with pipeline and tabs."""
+    for path in ("/hood", "/under-the-hood"):
+        res = client.get(path)
+        assert res.status_code == 200
+        html = res.get_data(as_text=True)
+        assert "Under the Hood" in html
+        assert "AI does judgment. Python does math and checking." in html
+        assert "Deterministic Python Engine" in html
+        assert "Claude 3.5 Sonnet" in html
+        assert "Pre-Matcher" in html
+        assert "Verification" in html
+        assert "Tie-Out Proof" in html
+        assert "Reviewer Memo" in html
+        assert "Auditor Signoff" in html
+        assert "Skill (SKILL.md)" in html
+        assert "Tools (4 Schemas)" in html
+        assert "Guardrails (8 Checks)" in html
+        assert "Last Run Trace" in html
+        assert "Prompts (v0 vs v1 vs v2)" in html
+
+
+def test_hood_guardrails_api(client):
+    """GET /api/hood/guardrails returns 8 deterministic guardrails with file locations."""
+    res = client.get("/api/hood/guardrails")
+    assert res.status_code == 200
+    data = res.get_json()
+    assert "guardrails" in data
+    assert data["count"] == 8
+    names = [g["name"] for g in data["guardrails"]]
+    assert "Transaction IDs Must Exist" in names
+    assert "One-to-Many Sums Exact" in names
+    assert "No Plug Entries Permitted" in names
+    assert "Journal Entries Must Be Pending" in names
+    assert "Tie-Out Recomputed in Python" in names
+    assert "Max 10 Tool Iterations" in names
+    assert "Retry Once Then Flag" in names
+    assert "Reviewer Memo Numbers Checked" in names
+
+    # Verify implementation file paths exist
+    for g in data["guardrails"]:
+        assert "file" in g
+        assert "function" in g
+        assert "status" in g
+
+
+def test_hood_prompts_api(client):
+    """GET /api/hood/prompts returns side-by-side prompt definitions for v0, v1, and v2."""
+    res = client.get("/api/hood/prompts")
+    assert res.status_code == 200
+    data = res.get_json()
+    for ver in ("v0", "v1", "v2"):
+        assert ver in data
+        assert "system_prompt" in data[ver]
+        assert "user_prompt" in data[ver]
+        assert "token_profile" in data[ver]
+    assert "DOMAINS" in data["v1"]["system_prompt"] or "SKILL" in data["v1"]["system_prompt"]
+    assert "get_item" in data["v2"]["system_prompt"] or "tools" in data["v2"]["system_prompt"].lower()
+
+
+def test_hood_trace_api(client):
+    """GET /api/hood/trace/<variant> returns execution steps and tool invocations."""
+    res = client.get("/api/hood/trace/full")
+    assert res.status_code == 200
+    data = res.get_json()
+    assert data["variant"] == "full"
+    assert "tokens" in data
+    assert "cost_usd" in data
+    assert "trace" in data
+    assert len(data["trace"]) > 0
+    first_step = data["trace"][0]
+    assert "step" in first_step
+    assert "tool" in first_step
+    assert "input" in first_step
+
 

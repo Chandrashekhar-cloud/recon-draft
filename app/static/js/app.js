@@ -48,6 +48,28 @@
   }
 
   // 2. Tab Navigation
+  function switchTab(targetId, tabBtn) {
+    if (!tabBtn) {
+      tabBtn = document.querySelector(`.tab-btn[data-tab="${targetId}"]`);
+    }
+    if (tabBtn) {
+      const navContainer = tabBtn.closest('.tabs-nav');
+      if (navContainer) {
+        navContainer.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        tabBtn.classList.add('active');
+      }
+    }
+
+    const scope = (tabBtn && tabBtn.closest('.card')) || document;
+    scope.querySelectorAll('.tab-pane').forEach(pane => {
+      if (pane.id === targetId) {
+        pane.classList.add('active');
+      } else {
+        pane.classList.remove('active');
+      }
+    });
+  }
+
   function initTabs() {
     document.addEventListener('click', function (e) {
       const tabBtn = e.target.closest('.tab-btn');
@@ -56,23 +78,7 @@
       const targetId = tabBtn.getAttribute('data-tab');
       if (!targetId) return;
 
-      const navContainer = tabBtn.closest('.tabs-nav');
-      if (!navContainer) return;
-
-      const parentWrapper = navContainer.parentElement;
-
-      // Update button active state
-      navContainer.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-      tabBtn.classList.add('active');
-
-      // Update pane active state
-      parentWrapper.querySelectorAll('.tab-pane').forEach(pane => {
-        if (pane.id === targetId) {
-          pane.classList.add('active');
-        } else {
-          pane.classList.remove('active');
-        }
-      });
+      switchTab(targetId, tabBtn);
     });
   }
 
@@ -226,13 +232,27 @@
     }
   }
 
+  function escapeHtml(str) {
+    if (str === null || str === undefined) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
   // Export functions to window for onclick handlers
   window.ReconApp = {
     toggleTheme: toggleTheme,
     openModal: openModal,
     closeModal: closeModal,
-    showToast: showToast
+    showToast: showToast,
+    activateTab: switchTab,
+    escapeHtml: escapeHtml
   };
+  window.activateTab = switchTab;
+  window.escapeHtml = escapeHtml;
 
   // Run on DOM loaded
   document.addEventListener('DOMContentLoaded', function () {

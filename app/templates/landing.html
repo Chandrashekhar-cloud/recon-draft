@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+
+{% block title %}Recon Draft - AI-Assisted Bank Reconciliation, Built for Review{% endblock %}
+
+{% block content %}
+<div class="landing-container">
+
+  <!-- Hero Section -->
+  <section class="landing-hero">
+    <div class="hero-badge">RECON DRAFT</div>
+    <h1 class="hero-title">
+      AI-assisted bank reconciliation,<br>built for review.
+    </h1>
+    <p class="hero-subtitle">
+      Match transactions, investigate exceptions, verify the result, and prepare a reconciliation memo &mdash; without losing human oversight.
+    </p>
+
+    <div class="hero-actions">
+      <a href="/run" class="btn btn-primary btn-lg" id="hero-open-btn">
+        Open Reconciliation
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 6px;">
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+          <polyline points="12 5 19 12 12 19"></polyline>
+        </svg>
+      </a>
+      <a href="#how-it-works" class="btn btn-secondary btn-lg">
+        How it works
+      </a>
+    </div>
+
+    <!-- Core Principle Card -->
+    <div class="hero-principle-banner">
+      <div class="principle-quote">
+        &ldquo;Python does the math and checking. Claude helps analyze the uncertain cases. Humans approve accounting actions.&rdquo;
+      </div>
+      <div class="principle-meta">
+        Bank reconciliation, drafted in minutes &bull; Grounded in deterministic tie-out proof
+      </div>
+    </div>
+  </section>
+
+  <!-- Visual Workflow Diagram -->
+  <section class="landing-pipeline-preview">
+    <div class="pipeline-flow">
+      <div class="flow-node">
+        <span class="node-num">01</span>
+        <span class="node-label">Bank &amp; Ledger Data</span>
+      </div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-node">
+        <span class="node-num">02</span>
+        <span class="node-label">Deterministic Match</span>
+        <span class="node-engine">Python</span>
+      </div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-node">
+        <span class="node-num">03</span>
+        <span class="node-label">Exception Analysis</span>
+        <span class="node-engine">Claude 3.5</span>
+      </div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-node">
+        <span class="node-num">04</span>
+        <span class="node-label">Tie-Out Proof</span>
+        <span class="node-engine">Python</span>
+      </div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-node active">
+        <span class="node-num">05</span>
+        <span class="node-label">Human Review</span>
+        <span class="node-engine">Auditor</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works Section -->
+  <section class="landing-section" id="how-it-works">
+    <div class="section-header-centered">
+      <div class="section-kicker">WORKFLOW DESIGN</div>
+      <h2 class="section-heading">How Recon Draft Works</h2>
+      <p class="section-subtext">A structured four-step reconciliation designed for trust, auditability, and speed.</p>
+    </div>
+
+    <div class="how-it-works-grid">
+      <!-- Step 1 -->
+      <div class="workflow-card">
+        <div class="card-step-num">Step 1</div>
+        <h3 class="card-step-title">Choose a client month</h3>
+        <p class="card-step-desc">
+          Select client data and period scenarios &mdash; from standard clean months to complex edge cases featuring bank fees, timing lags, and ambiguous wires.
+        </p>
+        <div class="card-step-pill">Synthetic Dataset &bull; Brightloop Inc</div>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="workflow-card">
+        <div class="card-step-num">Step 2</div>
+        <h3 class="card-step-title">Preview the data</h3>
+        <p class="card-step-desc">
+          Verify opening and closing balances across bank statement activity and general ledger entries to ensure baseline integrity before processing.
+        </p>
+        <div class="card-step-pill">Opening: $50,000.00 &bull; 60 Ledger Rows</div>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="workflow-card">
+        <div class="card-step-num">Step 3</div>
+        <h3 class="card-step-title">Choose how to run</h3>
+        <p class="card-step-desc">
+          Select execution mode (offline verified replay or live model inference) and run reconciliation. Deterministic pre-matching clears exact 1:1 items in milliseconds.
+        </p>
+        <div class="card-step-pill">Zero Hallucinations &bull; Guardrails Enforced</div>
+      </div>
+
+      <!-- Step 4 -->
+      <div class="workflow-card">
+        <div class="card-step-num">Step 4</div>
+        <h3 class="card-step-title">Review &amp; Approve</h3>
+        <p class="card-step-desc">
+          Inspect only meaningful exceptions in the Auditor Review workspace, examine AI reasoning, approve proposed journal entries, and export signed-off reports.
+        </p>
+        <div class="card-step-pill">Tie-Out: $0.00 Difference &bull; Signoff Ready</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Value Pillars -->
+  <section class="landing-section pillars-section">
+    <div class="pillars-grid">
+      <div class="pillar-item">
+        <div class="pillar-label">DETERMINISTIC MATH</div>
+        <div class="pillar-val">100% Python Tie-Out</div>
+        <p class="pillar-text">
+          Reconciliation math, balance computations, and one-to-many sums are calculated strictly in Python &mdash; never left to LLM arithmetic.
+        </p>
+      </div>
+
+      <div class="pillar-item">
+        <div class="pillar-label">EXCEPTION REASONING</div>
+        <div class="pillar-val">Contextual Claude Analysis</div>
+        <p class="pillar-text">
+          Claude investigates unbooked fees, timing delays, and ambiguous candidates, proposing clear accounting treatments with explanation.
+        </p>
+      </div>
+
+      <div class="pillar-item">
+        <div class="pillar-label">AUDITOR CONTROL</div>
+        <div class="pillar-val">Human In The Loop</div>
+        <p class="pillar-text">
+          Nothing is posted automatically. Every journal entry adjustment and flagged pair requires explicit auditor approval before final export.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Bottom CTA Banner -->
+  <section class="landing-cta-banner">
+    <div>
+      <h3 style="font-size: 18px; font-weight: 600; color: var(--color-text); margin-bottom: 4px;">
+        Ready to run reconciliation?
+      </h3>
+      <p style="font-size: 13px; color: var(--color-text-muted);">
+        Experience the full end-to-end reconciliation workflow for September 2026.
+      </p>
+    </div>
+    <a href="/run" class="btn btn-primary btn-lg" id="bottom-open-btn">
+      Run reconciliation
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 6px;">
+        <line x1="5" y1="12" x2="19" y2="12"></line>
+        <polyline points="12 5 19 12 12 19"></polyline>
+      </svg>
+    </a>
+  </section>
+
+</div>
+{% endblock %}

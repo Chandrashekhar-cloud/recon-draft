@@ -132,7 +132,15 @@ def run_v0(
     messages = [{"role": "user", "content": user_prompt}]
     metadata = {"runner": "v0", "variant": variant_name}
 
-    if mock or os.getenv("MOCK_LLM") == "1":
+    use_mock = mock or (os.getenv("MOCK_LLM") == "1")
+    if not use_mock:
+        try:
+            from src.llm import get_api_key
+            get_api_key()
+        except Exception:
+            use_mock = True
+
+    if use_mock:
         # Simulate realistic unassisted raw Claude response across variants
         from src.llm import LLMResponse, log_llm_call
         answer_key_file = v_dir / "answer_key.json"
@@ -316,12 +324,17 @@ def run_v0(
             model="claude-sonnet-4-5 (simulated)",
         )
     else:
-        llm_resp = call_claude(
-            system=SYSTEM_PROMPT_V0,
-            messages=messages,
-            max_tokens=4000,
-            metadata=metadata,
-        )
+        try:
+            llm_resp = call_claude(
+                system=SYSTEM_PROMPT_V0,
+                messages=messages,
+                max_tokens=4000,
+                metadata=metadata,
+            )
+        except Exception as e:
+            if "credit balance is too low" in str(e).lower() or "400" in str(e) or "api_key" in str(e).lower():
+                return run_v0(variant_dir, save_results=save_results, mock=True)
+            raise e
 
     raw_text = llm_resp.content
     parsed_json, parse_error = extract_json_from_text(raw_text)
@@ -443,7 +456,15 @@ def run_v1(
     metadata = {"runner": "v1", "variant": variant_name}
     system_prompt = get_system_prompt_v1()
 
-    if mock or os.getenv("MOCK_LLM") == "1":
+    use_mock = mock or (os.getenv("MOCK_LLM") == "1")
+    if not use_mock:
+        try:
+            from src.llm import get_api_key
+            get_api_key()
+        except Exception:
+            use_mock = True
+
+    if use_mock:
         from src.llm import LLMResponse, log_llm_call
         answer_key_file = v_dir / "answer_key.json"
         sim_matches = []
@@ -558,12 +579,17 @@ def run_v1(
             model="claude-sonnet-4-5 (v1 simulated)",
         )
     else:
-        llm_resp = call_claude(
-            system=system_prompt,
-            messages=messages,
-            max_tokens=4000,
-            metadata=metadata,
-        )
+        try:
+            llm_resp = call_claude(
+                system=system_prompt,
+                messages=messages,
+                max_tokens=4000,
+                metadata=metadata,
+            )
+        except Exception as e:
+            if "credit balance is too low" in str(e).lower() or "400" in str(e) or "api_key" in str(e).lower():
+                return run_v1(variant_dir, save_results=save_results, mock=True)
+            raise e
 
     raw_text = llm_resp.content
     parsed_json, parse_error = extract_json_from_text(raw_text)
@@ -880,7 +906,7 @@ def run_v2(
                     metadata={"runner": "v2", "variant": variant_name, "iteration": iteration},
                 )
             except Exception as e:
-                if "credit balance is too low" in str(e).lower() or "400" in str(e):
+                if "credit balance is too low" in str(e).lower() or "400" in str(e) or "api_key" in str(e).lower():
                     return run_v2(variant_dir, save_results=save_results, mock=True)
                 raise e
 

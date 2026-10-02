@@ -1,0 +1,928 @@
+{% extends "base.html" %}
+
+{% block title %}Bank Reconciliation - Recon Draft{% endblock %}
+
+{% block content %}
+<div style="display: flex; flex-direction: column; gap: var(--space-5);">
+
+  <!-- Page Header -->
+  <div style="padding-bottom: var(--space-2); border-bottom: 1px solid var(--color-border);">
+    <div style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: var(--space-3);">
+      <div>
+        <h1 class="page-title">Bank Reconciliation</h1>
+        <div class="page-subtitle">
+          September 2026 &bull; Brightloop Inc &bull; Bank reconciliation, drafted in minutes. Compare bank activity with the general ledger and review reconciliation differences.
+        </div>
+      </div>
+      <div style="font-size: var(--font-xs); color: var(--color-text-subtle);">
+        Workspace: Cash #1010
+      </div>
+    </div>
+  </div>
+
+  <!-- 1. Step 1: Select reconciliation period / dataset -->
+  <section class="card" id="step-1-section">
+    <div class="card-header">
+      <div>
+        <div class="card-title">1. Choose a client month / dataset</div>
+        <div class="card-subtitle">Select dataset scenario to compare against general ledger</div>
+      </div>
+      <span class="badge badge-neutral" id="selected-variant-badge">Selected: Full Month</span>
+    </div>
+    <div class="card-body" style="padding: 0;">
+      <div class="table-container" style="border: none; border-radius: 0;">
+        <table class="table scenario-table" id="scenario-selector-table">
+          <thead>
+            <tr>
+              <th style="width: 32px;"></th>
+              <th>Scenario</th>
+              <th style="width: 140px; text-align: right;">Bank Rows</th>
+              <th style="width: 140px; text-align: right;">Ledger Rows</th>
+              <th style="width: 120px;">Status</th>
+            </tr>
+          </thead>
+          <tbody id="scenario-rows-body">
+            <!-- Clean Month -->
+            <tr class="variant-row" data-variant="clean" onclick="selectVariant('clean')">
+              <td style="text-align: center;"><span class="scenario-radio-circle"></span></td>
+              <td>
+                <strong style="color: var(--color-text);">Clean Month</strong>
+                <span class="text-muted" style="margin-left: 8px; font-size: var(--font-xs);">Standard settlement</span>
+              </td>
+              <td class="col-money">49</td>
+              <td class="col-money">49</td>
+              <td><span class="badge badge-neutral">Ready</span></td>
+            </tr>
+
+            <!-- Timing -->
+            <tr class="variant-row" data-variant="timing" onclick="selectVariant('timing')">
+              <td style="text-align: center;"><span class="scenario-radio-circle"></span></td>
+              <td>
+                <strong style="color: var(--color-text);">Timing</strong>
+                <span class="text-muted" style="margin-left: 8px; font-size: var(--font-xs);">Outstanding checks &amp; deposits in transit</span>
+              </td>
+              <td class="col-money">49</td>
+              <td class="col-money">52</td>
+              <td><span class="badge badge-neutral">Ready</span></td>
+            </tr>
+
+            <!-- Fees & Interest -->
+            <tr class="variant-row" data-variant="fees" onclick="selectVariant('fees')">
+              <td style="text-align: center;"><span class="scenario-radio-circle"></span></td>
+              <td>
+                <strong style="color: var(--color-text);">Fees &amp; Interest</strong>
+                <span class="text-muted" style="margin-left: 8px; font-size: var(--font-xs);">Bank charges, earned interest, NSF return</span>
+              </td>
+              <td class="col-money">52</td>
+              <td class="col-money">49</td>
+              <td><span class="badge badge-neutral">Ready</span></td>
+            </tr>
+
+            <!-- Errors -->
+            <tr class="variant-row" data-variant="errors" onclick="selectVariant('errors')">
+              <td style="text-align: center;"><span class="scenario-radio-circle"></span></td>
+              <td>
+                <strong style="color: var(--color-text);">Errors</strong>
+                <span class="text-muted" style="margin-left: 8px; font-size: var(--font-xs);">Bookkeeper digit transposition &amp; duplicates</span>
+              </td>
+              <td class="col-money">51</td>
+              <td class="col-money">52</td>
+              <td><span class="badge badge-neutral">Ready</span></td>
+            </tr>
+
+            <!-- Ambiguity -->
+            <tr class="variant-row" data-variant="tricky" onclick="selectVariant('tricky')">
+              <td style="text-align: center;"><span class="scenario-radio-circle"></span></td>
+              <td>
+                <strong style="color: var(--color-text);">Ambiguity</strong>
+                <span class="text-muted" style="margin-left: 8px; font-size: var(--font-xs);">Identical wire amounts &amp; net payouts</span>
+              </td>
+              <td class="col-money">53</td>
+              <td class="col-money">55</td>
+              <td><span class="badge badge-neutral">Ready</span></td>
+            </tr>
+
+            <!-- Full Month (Default) -->
+            <tr class="variant-row selected" data-variant="full" onclick="selectVariant('full')">
+              <td style="text-align: center;"><span class="scenario-radio-circle"></span></td>
+              <td>
+                <strong style="color: var(--color-text);">Full Month</strong>
+                <span class="text-muted" style="margin-left: 8px; font-size: var(--font-xs);">Comprehensive reconciliation scenario</span>
+              </td>
+              <td class="col-money">58</td>
+              <td class="col-money">60</td>
+              <td><span class="badge badge-neutral">Ready</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. Step 2: Data preview -->
+  <section class="card" id="step-2-section">
+    <div class="card-header">
+      <div>
+        <div class="card-title">2. Preview the data</div>
+        <div class="card-subtitle">Statement balances, client notes, and statement ledgers</div>
+      </div>
+      <div style="font-size: var(--font-xs); color: var(--color-text-muted);" id="preview-variant-tag">
+        Dataset: full
+      </div>
+    </div>
+
+    <div class="card-body">
+      <!-- Balance Stat Tiles Row -->
+      <div class="top-stats-row" style="margin-bottom: var(--space-4);" id="balance-tiles-container">
+        <!-- Bank Opening -->
+        <div class="stat-tile">
+          <div class="stat-label">Bank Opening</div>
+          <div class="stat-value" id="stat-bank-opening">$50,000.00</div>
+          <div class="stat-meta">2026-09-01</div>
+        </div>
+        <!-- Bank Closing -->
+        <div class="stat-tile">
+          <div class="stat-label">Bank Closing</div>
+          <div class="stat-value" id="stat-bank-closing">$85,573.65</div>
+          <div class="stat-meta">2026-09-30</div>
+        </div>
+        <!-- Book Opening -->
+        <div class="stat-tile">
+          <div class="stat-label">Book Opening</div>
+          <div class="stat-value" id="stat-book-opening">$50,000.00</div>
+          <div class="stat-meta">Cash #1010</div>
+        </div>
+        <!-- Book Closing -->
+        <div class="stat-tile">
+          <div class="stat-label">Book Closing</div>
+          <div class="stat-value" id="stat-book-closing">$87,490.75</div>
+          <div class="stat-meta" id="stat-variance-meta">
+            <span id="stat-variance-badge">Variance: $1,917.10</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Client Notes Box -->
+      <div class="client-notes-box" id="client-notes-container">
+        <div class="client-notes-header">
+          <span>Client notes (notes.txt)</span>
+        </div>
+        <div class="client-notes-content" id="client-notes-text">
+          Loading client notes...
+        </div>
+      </div>
+
+      <!-- Collapsible Raw Tables Disclosure -->
+      <div style="margin-top: var(--space-4); border-top: 1px solid var(--color-border-subtle); padding-top: var(--space-3);">
+        <button type="button" class="btn btn-secondary btn-xs" id="toggle-tables-btn" onclick="toggleRawTables()">
+          <span id="toggle-tables-label">Show raw transaction preview (58 bank / 60 ledger rows)</span>
+        </button>
+
+        <div id="raw-tables-collapsible" style="display: none; margin-top: 14px;">
+          <!-- Side-by-side Tables -->
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(440px, 1fr)); gap: var(--space-4);" id="tables-container">
+            <!-- Left: Bank Statement Table -->
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <strong style="font-size: var(--font-sm); color: var(--color-text);">
+                  Bank Statement (<span id="bank-count">58</span> rows)
+                </strong>
+                <span class="text-subtle" style="font-size: var(--font-xs); font-family: var(--font-mono);">bank.csv</span>
+              </div>
+              <div class="table-container" style="max-height: 340px;">
+                <table class="table" id="bank-table">
+                  <thead>
+                    <tr>
+                      <th style="width: 25%;">Date / ID</th>
+                      <th style="width: 45%;">Description</th>
+                      <th style="width: 30%; text-align: right;">Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody id="bank-table-body">
+                    <tr><td colspan="3"><div class="skeleton skeleton-text"></div></td></tr>
+                    <tr><td colspan="3"><div class="skeleton skeleton-text"></div></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Right: General Ledger Table -->
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <strong style="font-size: var(--font-sm); color: var(--color-text);">
+                  General Ledger (<span id="ledger-count">60</span> rows)
+                </strong>
+                <span class="text-subtle" style="font-size: var(--font-xs); font-family: var(--font-mono);">ledger.csv</span>
+              </div>
+              <div class="table-container" style="max-height: 340px;">
+                <table class="table" id="ledger-table">
+                  <thead>
+                    <tr>
+                      <th style="width: 25%;">Date / ID</th>
+                      <th style="width: 45%;">Account / Desc</th>
+                      <th style="width: 30%; text-align: right;">Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody id="ledger-table-body">
+                    <tr><td colspan="3"><div class="skeleton skeleton-text"></div></td></tr>
+                    <tr><td colspan="3"><div class="skeleton skeleton-text"></div></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. Step 3: Run reconciliation -->
+  <section class="card" id="step-3-section">
+    <div class="card-header">
+      <div>
+        <div class="card-title">3. Choose how to run</div>
+        <div class="card-subtitle">Select reconciliation engine configuration</div>
+      </div>
+      <div style="font-size: var(--font-xs); color: var(--color-text-muted);" id="selected-mode-badge">
+        Full Reconciliation
+      </div>
+    </div>
+
+    <div class="card-body">
+      <!-- Compact Options -->
+      <div class="segmented-control-grid" style="margin-bottom: var(--space-4);">
+        <!-- Baseline -->
+        <div class="segmented-option" data-mode="v0" onclick="selectMode('v0')">
+          <div class="segmented-title-row">
+            <span class="segmented-title">Baseline</span>
+            <span class="text-subtle" style="font-size: 11px;">Raw Claude</span>
+          </div>
+          <div class="segmented-desc">Standard baseline execution without accounting skills or tools.</div>
+        </div>
+
+        <!-- Skill -->
+        <div class="segmented-option" data-mode="v1" onclick="selectMode('v1')">
+          <div class="segmented-title-row">
+            <span class="segmented-title">Skill</span>
+            <span class="text-subtle" style="font-size: 11px;">Claude + Skill</span>
+          </div>
+          <div class="segmented-desc">Accounting rules injected into reasoning context.</div>
+        </div>
+
+        <!-- Full Reconciliation (Default) -->
+        <div class="segmented-option selected" data-mode="v2" onclick="selectMode('v2')">
+          <div class="segmented-title-row">
+            <span class="segmented-title">Full Reconciliation</span>
+            <span class="text-subtle" style="font-size: 11px;">Full System</span>
+          </div>
+          <div class="segmented-desc">Deterministic pre-matcher, Claude judgment, and tie-out verification.</div>
+        </div>
+
+        <!-- Replay -->
+        <div class="segmented-option" data-mode="replay" onclick="selectMode('replay')">
+          <div class="segmented-title-row">
+            <span class="segmented-title">Replay</span>
+            <span class="text-subtle" style="font-size: 11px;">Offline</span>
+          </div>
+          <div class="segmented-desc">Deterministic replay from verified run cache with 0 API calls.</div>
+        </div>
+      </div>
+
+      <!-- Action Footer -->
+      <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: var(--space-3); padding-top: var(--space-2); border-top: 1px solid var(--color-border-subtle);">
+        <div style="font-size: var(--font-xs); color: var(--color-text-muted);">
+          Ready: <strong id="action-summary-text" style="color: var(--color-text);">Full Month &bull; Full Reconciliation</strong>
+        </div>
+        <button class="btn btn-primary btn-lg" id="run-reconcile-btn" onclick="startReconciliation()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="5 3 19 12 5 21 5 3"/>
+          </svg>
+          <span>Run reconciliation</span>
+        </button>
+      </div>
+
+      <!-- Missing API Key Friendly Card -->
+      <div class="client-notes-box" id="api-error-card" style="display: none; border-color: var(--color-danger-border); background-color: var(--color-danger-bg); margin-top: 14px;">
+        <div style="font-weight: 600; color: var(--color-danger-text); font-size: var(--font-sm);">
+          Anthropic API Key or Credits Required for Live Run
+        </div>
+        <p style="margin-top: 6px; font-size: var(--font-xs); color: var(--color-danger-text); line-height: 1.5;">
+          You selected live runner (<strong id="error-runner-name">v2</strong>), but <code>ANTHROPIC_API_KEY</code> is not configured or credit balance is exhausted ($0).
+        </p>
+        <div style="display: flex; gap: var(--space-2); margin-top: 10px;">
+          <button class="btn btn-primary btn-sm" onclick="switchToReplayAndRun()">
+            Switch to Replay (Offline) &amp; Run
+          </button>
+          <button class="btn btn-secondary btn-sm" onclick="dismissErrorCard()">
+            Dismiss
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. Active Progress Section (Hidden until run starts) -->
+  <section class="card" id="run-progress-card" style="display: none;">
+    <div class="card-header">
+      <div style="display: flex; align-items: center; gap: var(--space-2);">
+        <div class="card-title" id="progress-card-title">Processing reconciliation...</div>
+        <span class="item-id" id="progress-run-id-badge">run_...</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: var(--space-2);">
+        <span class="text-mono" style="font-size: var(--font-xs); color: var(--color-text-muted);" id="elapsed-timer">00:00.0s</span>
+        <span class="badge badge-warning" id="progress-status-badge"><span class="badge-dot"></span> Processing</span>
+      </div>
+    </div>
+
+    <div class="card-body" style="padding: var(--space-6) var(--space-4);">
+      <!-- 5-Step Progress Bar -->
+      <div class="step-progress" id="pipeline-progress-bar">
+        <div class="step-line">
+          <div class="step-line-fill" id="step-line-fill" style="width: 10%;"></div>
+        </div>
+
+        <!-- 1. Matching -->
+        <div class="step-item active" id="prog-step-matching">
+          <div class="step-circle" id="circle-matching">1</div>
+          <div class="step-label">Matching</div>
+        </div>
+
+        <!-- 2. Claude review -->
+        <div class="step-item" id="prog-step-claude">
+          <div class="step-circle" id="circle-claude">2</div>
+          <div class="step-label">Claude review</div>
+        </div>
+
+        <!-- 3. Verification -->
+        <div class="step-item" id="prog-step-verifying">
+          <div class="step-circle" id="circle-verifying">3</div>
+          <div class="step-label">Verification</div>
+        </div>
+
+        <!-- 4. Memo -->
+        <div class="step-item" id="prog-step-memo">
+          <div class="step-circle" id="circle-memo">4</div>
+          <div class="step-label">Memo</div>
+        </div>
+
+        <!-- 5. Complete -->
+        <div class="step-item" id="prog-step-done">
+          <div class="step-circle" id="circle-done">5</div>
+          <div class="step-label">Complete</div>
+        </div>
+      </div>
+
+      <!-- Current Step Status Banner -->
+      <div style="text-align: center; margin-top: var(--space-5);">
+        <div style="font-size: var(--font-sm); font-weight: 500; color: var(--color-text);" id="progress-step-detail">
+          Executing deterministic pre-matching algorithms...
+        </div>
+        <div style="font-size: 11px; color: var(--color-text-subtle); margin-top: 3px;">
+          Polling status for run <span class="text-mono" id="detail-run-id">...</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+/* ==========================================================================
+   Run Page Interactive State Machine (Vanilla JS, Zero External Libraries)
+   ========================================================================== */
+let currentVariant = 'full';
+let currentMode = 'v2';
+let activeRunId = null;
+let pollIntervalId = null;
+let timerIntervalId = null;
+let runStartTime = null;
+
+// Currency Formatter from integer cents
+function formatCents(cents) {
+  if (typeof cents !== 'number' || isNaN(cents)) return '$0.00';
+  const isNeg = cents < 0;
+  const abs = Math.abs(cents);
+  const dollars = (abs / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  return (isNeg ? '-$' : '$') + dollars;
+}
+
+// 1. Variant Selection
+function selectVariant(variantName) {
+  currentVariant = variantName;
+
+  // Update selection on table rows
+  document.querySelectorAll('.variant-row').forEach(row => {
+    if (row.getAttribute('data-variant') === variantName) {
+      row.classList.add('selected');
+    } else {
+      row.classList.remove('selected');
+    }
+  });
+
+  const vMap = {
+    'clean': 'Clean Month',
+    'timing': 'Timing',
+    'fees': 'Fees & Interest',
+    'errors': 'Errors',
+    'tricky': 'Ambiguity',
+    'full': 'Full Month'
+  };
+
+  const badge = document.getElementById('selected-variant-badge');
+  if (badge) badge.textContent = `Selected: ${vMap[variantName] || variantName}`;
+
+  const previewTag = document.getElementById('preview-variant-tag');
+  if (previewTag) previewTag.textContent = `Dataset: ${variantName}`;
+
+  updateActionSummary();
+  loadVariantPreview(variantName);
+}
+
+function toggleRawTables() {
+  const coll = document.getElementById('raw-tables-collapsible');
+  const label = document.getElementById('toggle-tables-label');
+  if (!coll) return;
+  const isHidden = coll.style.display === 'none';
+  coll.style.display = isHidden ? 'block' : 'none';
+  if (label) {
+    label.textContent = isHidden ? 'Hide raw transaction preview' : 'Show raw transaction preview (58 bank / 60 ledger rows)';
+  }
+}
+
+// 2. Mode Selection
+function selectMode(modeName) {
+  currentMode = modeName;
+
+  document.querySelectorAll('.segmented-option').forEach(opt => {
+    if (opt.getAttribute('data-mode') === modeName) {
+      opt.classList.add('selected');
+    } else {
+      opt.classList.remove('selected');
+    }
+  });
+
+  const modeBadge = document.getElementById('selected-mode-badge');
+  const labels = {
+    'v0': 'Baseline',
+    'v1': 'Skill',
+    'v2': 'Full Reconciliation',
+    'replay': 'Replay'
+  };
+  if (modeBadge) modeBadge.textContent = labels[modeName] || modeName;
+
+  updateActionSummary();
+  dismissErrorCard();
+}
+
+function updateActionSummary() {
+  const summaryEl = document.getElementById('action-summary-text');
+  if (summaryEl) {
+    const vLabels = {
+      'clean': 'Clean Month',
+      'timing': 'Timing',
+      'fees': 'Fees & Interest',
+      'errors': 'Errors',
+      'tricky': 'Ambiguity',
+      'full': 'Full Month'
+    };
+    const mLabels = {
+      'v0': 'Baseline',
+      'v1': 'Skill',
+      'v2': 'Full Reconciliation',
+      'replay': 'Replay'
+    };
+    summaryEl.textContent = `${vLabels[currentVariant] || currentVariant} • ${mLabels[currentMode] || currentMode}`;
+  }
+}
+
+// 3. Load Variant Preview
+function loadVariantPreview(variantName) {
+  const bankBody = document.getElementById('bank-table-body');
+  const ledgerBody = document.getElementById('ledger-table-body');
+  const notesText = document.getElementById('client-notes-text');
+
+  if (bankBody) {
+    bankBody.innerHTML = `
+      <tr><td colspan="3"><div class="skeleton skeleton-text"></div></td></tr>
+      <tr><td colspan="3"><div class="skeleton skeleton-text" style="width: 85%;"></div></td></tr>
+    `;
+  }
+  if (ledgerBody) {
+    ledgerBody.innerHTML = `
+      <tr><td colspan="3"><div class="skeleton skeleton-text"></div></td></tr>
+      <tr><td colspan="3"><div class="skeleton skeleton-text" style="width: 80%;"></div></td></tr>
+    `;
+  }
+  if (notesText) {
+    notesText.innerHTML = '<div class="skeleton skeleton-text" style="width: 90%;"></div>';
+  }
+
+  fetch(`/api/variant/${encodeURIComponent(variantName)}/data`)
+    .then(res => {
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return res.json();
+    })
+    .then(data => {
+      renderVariantPreview(data);
+    })
+    .catch(err => {
+      console.error('Failed to load variant data:', err);
+      if (notesText) notesText.textContent = `Error loading preview for variant '${variantName}': ${err.message}`;
+    });
+}
+
+function renderVariantPreview(data) {
+  // 1. Balances
+  const balances = data.balances || {};
+  const bankOpen = balances.bank_opening_cents || 5000000;
+  const bankClose = balances.bank_closing_cents || 8557365;
+  const bookOpen = balances.book_opening_cents || 5000000;
+  const bookClose = balances.book_closing_cents || 8749075;
+
+  const bankOpenEl = document.getElementById('stat-bank-opening');
+  const bankCloseEl = document.getElementById('stat-bank-closing');
+  const bookOpenEl = document.getElementById('stat-book-opening');
+  const bookCloseEl = document.getElementById('stat-book-closing');
+
+  if (bankOpenEl) bankOpenEl.textContent = formatCents(bankOpen);
+  if (bankCloseEl) bankCloseEl.textContent = formatCents(bankClose);
+  if (bookOpenEl) bookOpenEl.textContent = formatCents(bookOpen);
+  if (bookCloseEl) bookCloseEl.textContent = formatCents(bookClose);
+
+  const diffCents = Math.abs(bankClose - bookClose);
+  const varBadge = document.getElementById('stat-variance-badge');
+  if (varBadge) {
+    if (diffCents === 0) {
+      varBadge.textContent = 'Balanced ($0.00)';
+      varBadge.style.color = 'var(--color-success)';
+    } else {
+      varBadge.textContent = `Variance: ${formatCents(diffCents)}`;
+      varBadge.style.color = 'var(--color-warning)';
+    }
+  }
+
+  // 2. Client Notes
+  const notesText = document.getElementById('client-notes-text');
+  if (notesText) {
+    notesText.textContent = data.notes || 'No client notes provided for this period.';
+  }
+
+  // 3. Bank Statement Rows
+  const bankRows = data.bank_rows || [];
+  const bankCountEl = document.getElementById('bank-count');
+  if (bankCountEl) bankCountEl.textContent = bankRows.length;
+
+  const bankBody = document.getElementById('bank-table-body');
+  if (bankBody) {
+    if (bankRows.length === 0) {
+      bankBody.innerHTML = '<tr><td colspan="3" class="text-muted" style="text-align: center; padding: 16px;">No bank transactions found.</td></tr>';
+    } else {
+      bankBody.innerHTML = bankRows.slice(0, 100).map(row => {
+        const amt = row.amount_cents || 0;
+        const isNeg = amt < 0;
+        return `
+          <tr>
+            <td>
+              <span class="text-mono" style="font-size: 11px;">${escapeHtml(row.date || '')}</span>
+              <span class="item-id" style="margin-left: 4px;">${escapeHtml(row.id || '')}</span>
+            </td>
+            <td>${escapeHtml(row.description || '')}</td>
+            <td class="col-money">
+              <span class="money ${isNeg ? 'money-negative' : 'money-positive'}">
+                ${isNeg ? '-' : '+'}${formatCents(Math.abs(amt))}
+              </span>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+  }
+
+  // 4. Ledger Rows
+  const ledgerRows = data.ledger_rows || [];
+  const ledgerCountEl = document.getElementById('ledger-count');
+  if (ledgerCountEl) ledgerCountEl.textContent = ledgerRows.length;
+
+  const ledgerBody = document.getElementById('ledger-table-body');
+  if (ledgerBody) {
+    if (ledgerRows.length === 0) {
+      ledgerBody.innerHTML = '<tr><td colspan="3" class="text-muted" style="text-align: center; padding: 16px;">No general ledger entries found.</td></tr>';
+    } else {
+      ledgerBody.innerHTML = ledgerRows.slice(0, 100).map(row => {
+        const amt = row.amount_cents || 0;
+        const isNeg = amt < 0;
+        return `
+          <tr>
+            <td>
+              <span class="text-mono" style="font-size: 11px;">${escapeHtml(row.date || '')}</span>
+              <span class="item-id" style="margin-left: 4px;">${escapeHtml(row.id || '')}</span>
+            </td>
+            <td>${escapeHtml(row.description || '')}</td>
+            <td class="col-money">
+              <span class="money ${isNeg ? 'money-negative' : 'money-positive'}">
+                ${isNeg ? '-' : '+'}${formatCents(Math.abs(amt))}
+              </span>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+  }
+}
+
+// 4. Start Reconciliation Execution
+function startReconciliation() {
+  dismissErrorCard();
+
+  const runBtn = document.getElementById('run-reconcile-btn');
+  if (runBtn) {
+    runBtn.disabled = true;
+    runBtn.innerHTML = `<span>Processing...</span>`;
+  }
+
+  // Show progress section
+  const progressCard = document.getElementById('run-progress-card');
+  if (progressCard) {
+    progressCard.style.display = 'block';
+    progressCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  const titleEl = document.getElementById('progress-card-title');
+  if (titleEl) titleEl.textContent = `Reconciling Month: ${currentVariant}`;
+
+  resetProgressBar();
+  startElapsedTimer();
+
+  fetch('/api/run', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      variant: currentVariant,
+      mode: currentMode
+    })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.error) {
+      throw new Error(data.error);
+    }
+    activeRunId = data.run_id;
+    const badge = document.getElementById('progress-run-id-badge');
+    const detailId = document.getElementById('detail-run-id');
+    if (badge) badge.textContent = activeRunId;
+    if (detailId) detailId.textContent = activeRunId;
+
+    // Start 1000ms polling
+    startPolling(activeRunId);
+  })
+  .catch(err => {
+    handleRunError(err.message || String(err));
+  });
+}
+
+// 5. Polling /api/run/<id>/status every 1000ms
+function startPolling(runId) {
+  if (pollIntervalId) clearInterval(pollIntervalId);
+
+  pollRunStatus(runId);
+  pollIntervalId = setInterval(() => {
+    pollRunStatus(runId);
+  }, 1000);
+}
+
+function pollRunStatus(runId) {
+  fetch(`/api/run/${encodeURIComponent(runId)}/status`)
+    .then(res => res.json())
+    .then(statusData => {
+      if (statusData.error && statusData.status === 'error') {
+        handleRunError(statusData.error);
+        return;
+      }
+
+      updatePipelineStep(statusData.current_step, statusData.steps);
+
+      if (statusData.status === 'done') {
+        completeRun(runId);
+      } else if (statusData.status === 'error') {
+        handleRunError(statusData.error || 'Execution failed.');
+      }
+    })
+    .catch(err => {
+      console.warn('Status poll retry:', err);
+    });
+}
+
+function updatePipelineStep(currentStep, stepsArray) {
+  const curNormalized = (currentStep || '').toLowerCase().trim();
+
+  let activeIndex = 0;
+  if (curNormalized.includes('matching')) activeIndex = 0;
+  else if (curNormalized.includes('claude')) activeIndex = 1;
+  else if (curNormalized.includes('verify') || curNormalized.includes('verifying')) activeIndex = 2;
+  else if (curNormalized.includes('memo')) activeIndex = 3;
+  else if (curNormalized.includes('done')) activeIndex = 4;
+
+  const fillPct = Math.min(100, Math.max(10, (activeIndex / 4) * 100));
+  const fillEl = document.getElementById('step-line-fill');
+  if (fillEl) fillEl.style.width = `${fillPct}%`;
+
+  const stepElements = [
+    { item: 'prog-step-matching', circle: 'circle-matching', text: '1' },
+    { item: 'prog-step-claude', circle: 'circle-claude', text: '2' },
+    { item: 'prog-step-verifying', circle: 'circle-verifying', text: '3' },
+    { item: 'prog-step-memo', circle: 'circle-memo', text: '4' },
+    { item: 'prog-step-done', circle: 'circle-done', text: '5' }
+  ];
+
+  stepElements.forEach((cfg, idx) => {
+    const itemEl = document.getElementById(cfg.item);
+    const circleEl = document.getElementById(cfg.circle);
+    if (!itemEl || !circleEl) return;
+
+    if (idx < activeIndex) {
+      itemEl.className = 'step-item completed';
+      circleEl.innerHTML = '&check;';
+    } else if (idx === activeIndex) {
+      itemEl.className = 'step-item active';
+      circleEl.textContent = cfg.text;
+    } else {
+      itemEl.className = 'step-item';
+      circleEl.textContent = cfg.text;
+    }
+  });
+
+  const detailEl = document.getElementById('progress-step-detail');
+  if (detailEl) {
+    const stepMessages = {
+      0: 'Executing deterministic pre-matching...',
+      1: 'Reviewing transactions and ambiguous candidates...',
+      2: 'Deterministic verification: proving tie-out balances...',
+      3: 'Synthesizing reconciliation memo...',
+      4: 'Complete! Preparing Review dashboard...'
+    };
+    detailEl.textContent = stepMessages[activeIndex] || `Step: ${currentStep}`;
+  }
+}
+
+function completeRun(runId) {
+  stopPolling();
+  stopElapsedTimer();
+
+  const fillEl = document.getElementById('step-line-fill');
+  if (fillEl) fillEl.style.width = '100%';
+
+  const doneItem = document.getElementById('prog-step-done');
+  const doneCircle = document.getElementById('circle-done');
+  if (doneItem) doneItem.className = 'step-item completed';
+  if (doneCircle) doneCircle.innerHTML = '&check;';
+
+  const statusBadge = document.getElementById('progress-status-badge');
+  if (statusBadge) {
+    statusBadge.className = 'badge badge-success';
+    statusBadge.innerHTML = '<span class="badge-dot"></span> Complete';
+  }
+
+  const detailEl = document.getElementById('progress-step-detail');
+  if (detailEl) detailEl.textContent = 'Reconciliation complete. Opening Review page...';
+
+  window.ReconApp.showToast({
+    title: 'Reconciliation Complete',
+    message: `Run ${runId} finished. Redirecting to Review...`,
+    type: 'success',
+    duration: 2500
+  });
+
+  setTimeout(() => {
+    window.location.href = `/review?run_id=${encodeURIComponent(runId)}`;
+  }, 700);
+}
+
+// 6. Error Handling
+function handleRunError(errorMessage) {
+  stopPolling();
+  stopElapsedTimer();
+
+  const runBtn = document.getElementById('run-reconcile-btn');
+  if (runBtn) {
+    runBtn.disabled = false;
+    runBtn.innerHTML = `
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="5 3 19 12 5 21 5 3"/>
+      </svg>
+      <span>Run reconciliation</span>
+    `;
+  }
+
+  const statusBadge = document.getElementById('progress-status-badge');
+  if (statusBadge) {
+    statusBadge.className = 'badge badge-danger';
+    statusBadge.innerHTML = '<span class="badge-dot"></span> Error';
+  }
+
+  const isApiKeyError = errorMessage.includes('ANTHROPIC_API_KEY') || 
+                        errorMessage.includes('API key') || 
+                        errorMessage.includes('credit balance') || 
+                        errorMessage.includes('400');
+
+  const detailEl = document.getElementById('progress-step-detail');
+  if (detailEl) {
+    detailEl.textContent = isApiKeyError
+      ? 'Live API unavailable (no active key or credits). Switch to Replay (offline) or configure API key.'
+      : `Execution stopped: ${errorMessage}`;
+  }
+
+  const activeStepItem = document.querySelector('.step-item.active');
+  if (activeStepItem) {
+    activeStepItem.classList.remove('active');
+  }
+
+  if (isApiKeyError) {
+    const errorCard = document.getElementById('api-error-card');
+    const runnerNameEl = document.getElementById('error-runner-name');
+    if (runnerNameEl) runnerNameEl.textContent = currentMode;
+    if (errorCard) errorCard.style.display = 'block';
+  } else {
+    window.ReconApp.showToast({
+      title: 'Run Error',
+      message: errorMessage,
+      type: 'danger',
+      duration: 5000
+    });
+  }
+}
+
+function switchToReplayAndRun() {
+  dismissErrorCard();
+  selectMode('replay');
+  setTimeout(() => {
+    startReconciliation();
+  }, 100);
+}
+
+function dismissErrorCard() {
+  const errorCard = document.getElementById('api-error-card');
+  if (errorCard) errorCard.style.display = 'none';
+}
+
+function startElapsedTimer() {
+  stopElapsedTimer();
+  runStartTime = Date.now();
+  const timerEl = document.getElementById('elapsed-timer');
+  if (timerEl) timerEl.textContent = '00:00.0s';
+
+  timerIntervalId = setInterval(() => {
+    if (!runStartTime) return;
+    const elapsedMs = Date.now() - runStartTime;
+    const secs = (elapsedMs / 1000).toFixed(1);
+    const mins = Math.floor(elapsedMs / 60000);
+    const remSecs = (secs % 60).toFixed(1);
+    const formatted = `${String(mins).padStart(2, '0')}:${String(remSecs).padStart(4, '0')}s`;
+    if (timerEl) timerEl.textContent = formatted;
+  }, 100);
+}
+
+function stopElapsedTimer() {
+  if (timerIntervalId) {
+    clearInterval(timerIntervalId);
+    timerIntervalId = null;
+  }
+}
+
+function stopPolling() {
+  if (pollIntervalId) {
+    clearInterval(pollIntervalId);
+    pollIntervalId = null;
+  }
+}
+
+function resetProgressBar() {
+  const fillEl = document.getElementById('step-line-fill');
+  if (fillEl) fillEl.style.width = '10%';
+
+  const statusBadge = document.getElementById('progress-status-badge');
+  if (statusBadge) {
+    statusBadge.className = 'badge badge-warning';
+    statusBadge.innerHTML = '<span class="badge-dot"></span> Processing';
+  }
+
+  updatePipelineStep('matching', []);
+}
+
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  selectVariant('full');
+  selectMode('v2');
+});
+</script>
+{% endblock %}

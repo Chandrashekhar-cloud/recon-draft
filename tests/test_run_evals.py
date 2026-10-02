@@ -19,6 +19,16 @@ from evals.run_evals import (
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
+@pytest.fixture(scope="module", autouse=True)
+def preserve_summary_json():
+    """Ensure results/summary.json is preserved across isolated test executions."""
+    summary_path = BASE_DIR / "results" / "summary.json"
+    backup = summary_path.read_text(encoding="utf-8") if summary_path.exists() else None
+    yield
+    if backup:
+        summary_path.write_text(backup, encoding="utf-8")
+
+
 def test_pricing_and_compute_cost():
     """Verify configurable constants and cost calculation."""
     assert INPUT_PRICE_PER_M > 0
@@ -89,6 +99,8 @@ def test_resumable_execution(tmp_path):
         }
 
     mock_dir = BASE_DIR / "results" / "v_mock"
+    summary_path = BASE_DIR / "results" / "summary.json"
+    backup = summary_path.read_text(encoding="utf-8") if summary_path.exists() else None
     try:
         with patch("evals.run_evals.runners_module.run_v_mock", mock_runner, create=True):
             # First run (executes runner)
@@ -119,6 +131,8 @@ def test_resumable_execution(tmp_path):
         import shutil
         if mock_dir.is_dir():
             shutil.rmtree(mock_dir, ignore_errors=True)
+        if backup:
+            summary_path.write_text(backup, encoding="utf-8")
 
 
 def test_summary_json_file_created():
@@ -211,12 +225,18 @@ def test_print_summary_table_output(capsys):
 def test_cli_main_execution(monkeypatch, capsys):
     """Verify python -m evals.run_evals execution with CLI arguments."""
     from evals.run_evals import main
-    test_args = ["run_evals.py", "--versions", "v0", "v1", "--variants", "clean", "--force", "--mock"]
-    monkeypatch.setattr("sys.argv", test_args)
+    summary_path = BASE_DIR / "results" / "summary.json"
+    backup = summary_path.read_text(encoding="utf-8") if summary_path.exists() else None
+    try:
+        test_args = ["run_evals.py", "--versions", "v0", "v1", "--variants", "clean", "--force", "--mock"]
+        monkeypatch.setattr("sys.argv", test_args)
 
-    main()
-    captured = capsys.readouterr().out
-    assert "clean" in captured
-    assert "v0" in captured
-    assert "v1" in captured
-    assert "Pass Rate" in captured
+        main()
+        captured = capsys.readouterr().out
+        assert "clean" in captured
+        assert "v0" in captured
+        assert "v1" in captured
+        assert "Pass Rate" in captured
+    finally:
+        if backup:
+            summary_path.write_text(backup, encoding="utf-8")

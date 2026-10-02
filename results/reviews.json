@@ -46,5 +46,261 @@
     "item_id": "BNK-1057",
     "decision": "accept",
     "note": "Auditor verified transaction documentation matches invoice #801."
+  },
+  {
+    "review_id": "rev_4fc386f1",
+    "timestamp": "2026-10-02T04:47:58.990169+00:00",
+    "run_id": "run_64a1509270",
+    "item_id": "BNK-1057",
+    "decision": "accept",
+    "note": "Auditor verified transaction documentation matches invoice #801."
+  },
+  {
+    "review_id": "rev_748173a7",
+    "timestamp": "2026-10-02T04:48:08.576705+00:00",
+    "run_id": "run_880d80ce1d",
+    "item_id": "BNK-1057",
+    "decision": "accept",
+    "note": "Auditor verified transaction documentation matches invoice #801."
+  },
+  {
+    "review_id": "rev_ff0d0200",
+    "timestamp": "2026-10-02T05:20:06.186833+00:00",
+    "run_id": "run_ce8702a988",
+    "item_id": "BNK-1057",
+    "decision": "accept",
+    "note": "Auditor verified transaction documentation matches invoice #801."
+  },
+  {
+    "review_id": "rev_cc212023",
+    "timestamp": "2026-10-02T05:21:21.303313+00:00",
+    "run_id": "run_36cda8051e",
+    "item_id": "BNK-1057",
+    "decision": "accept",
+    "note": "Auditor verified transaction documentation matches invoice #801."
+  },
+  {
+    "review_id": "rev_09100f75",
+    "timestamp": "2026-10-02T05:21:29.650881+00:00",
+    "run_id": "run_397c2701ae",
+    "item_id": "BNK-1057",
+    "decision": "accept",
+    "note": "Auditor verified transaction documentation matches invoice #801."
+  },
+  {
+    "review_id": "rev_8937cbd2",
+    "timestamp": "2026-10-02T05:43:03.229629+00:00",
+    "run_id": "full",
+    "item_id": "BNK-1057",
+    "decision": "accept",
+    "note": ""
+  },
+  {
+    "review_id": "rev_041a4bf9",
+    "timestamp": "2026-10-02T05:43:06.208654+00:00",
+    "run_id": "full",
+    "item_id": "BNK-1050",
+    "decision": "accept",
+    "note": "Approved proposed adjusting entry."
+  },
+  {
+    "review_id": "rev_cd68b24c",
+    "timestamp": "2026-10-02T05:45:04.889084+00:00",
+    "run_id": "run_0e6abe0fcb",
+    "item_id": "BNK-1057",
+    "decision": "accept",
+    "note": "Auditor verified transaction documentation matches invoice #801."
+  },
+  {
+    "review_id": "rev_53bb746c",
+    "timestamp": "2026-10-02T06:09:32.222059+00:00",
+    "run_id": "run_1d0d824825",
+    "item_id": "BNK-1057",
+    "decision": "accept",
+    "note": "Auditor verified transaction documentation matches invoice #801."
+  },
+  {
+    "review_id": "rev_16ce287b",
+    "timestamp": "2026-10-02T06:15:47.452243+00:00",
+    "run_id": "run_d97d44e296",
+    "item_id": "BNK-1057",
+    "decision": "accept",
+    "note": "Auditor verified transaction documentation matches invoice #801."
+  },
+  {
+    "review_id": "rev_1b138e4a",
+    "timestamp": "2026-10-02T06:22:36.061667+00:00",
+    "run_id": "run_baefee588b",
+    "item_id": "BNK-1057",
+    "decision": "accept",
+    "note": "Auditor verified transaction documentation matches invoice #801."
+  },
+  {
+    "review_id": "rev_1898d2a2",
+    "timestamp": "2026-10-02T06:24:16.896451+00:00",
+    "run_id": "run_94ff0aff93",
+    "item_id": "BNK-1057",
+    "decision": "accept",
+    "note": "Auditor verified transaction documentation matches invoice #801."
+  },
+  {
+    "review_id": "rev_2891b4d2",
+    "timestamp": "2026-10-02T07:01:52.886169+00:00",
+    "run_id": "run_2efe741061",
+    "item_id": "BNK-1057",
+    "decision": "accept",
+    "note": "Auditor verified transaction documentation matches invoice #801."
+  },
+  {
+    "review_id": "rev_b654161f",
+    "timestamp": "2026-10-02T07:02:24.386382+00:00",
+    "run_id": "run_fd369b213d",
+    "item_id": "BNK-1057",
+    "decision": "accept",
+    "note": "Auditor verified transaction documentation matches invoice #801."
+  },
+  {
+    "review_id": "rev_fce69b98",
+    "timestamp": "2026-10-02T07:25:36.685902+00:00",
+    "run_id": "run_c3abaf658a",
+    "item_id": "BNK-1057",
+    "decision": "accept",
+    "note": "Auditor verified transaction documentation matches invoice #801."
+  },
+  {
+    "review_id": "rev_527d755e",
+    "timestamp": "2026-10-02T07:29:37.883962+00:00",
+    "run_id": "run_11f58f348c",
+    "item_id": "BNK-1057",
+    "decision": "accept",
+    "note": "Auditor verified transaction documentation matches invoice #801."
+  },
+  {
+    "review_id": "rev_05ce7f8c",
+    "timestamp": "2026-10-02T07:30:26.106644+00:00",
+    "run_id": "run_625b2a4478",
+    "item_id": "BNK-1057",
+    "decision": "accept",
+    "note": "Auditor verified transaction documentation matches invoice #801."
+  },
+  {
+    "review_id": "rev_3bab4095",
+    "timestamp": "2026-10-02T07:31:20.424971+00:00",
+    "run_id": "run_aebf1facd8",
+    "item_id": "BNK-1057",
+    "decision": "accept",
+    "note": "Auditor verified transaction documentation matches invoice #801."
+  },
+  {
+    "review_id": "rev_0833c7b7",
+    "timestamp": "2026-10-02T07:32:51.986676+00:00",
+    "run_id": "run_00c09b47c5",
+    "item_id": "BNK-1057",
+    "decision": "accept",
+    "note": "Auditor verified transaction documentation matches invoice #801."
+  },
+  {
+    "review_id": "rev_e9cfbac2",
+    "timestamp": "2026-10-02T07:34:02.215725+00:00",
+    "run_id": "run_8fbb53a206",
+    "item_id": "BNK-1057",
+    "decision": "accept",
+    "note": "Auditor verified transaction documentation matches invoice #801."
+  },
+  {
+    "review_id": "rev_6182fd6c",
+    "timestamp": "2026-10-02T08:44:12.313904+00:00",
+    "run_id": "run_6546fa5743",
+    "item_id": "BNK-1057",
+    "decision": "accept",
+    "note": "Auditor verified transaction documentation matches invoice #801."
+  },
+  {
+    "review_id": "rev_3cc9afff",
+    "timestamp": "2026-10-02T09:23:16.997218+00:00",
+    "run_id": "run_d4f962df54",
+    "item_id": "BNK-1057",
+    "decision": "accept",
+    "note": "Auditor verified transaction documentation matches invoice #801."
+  },
+  {
+    "review_id": "rev_d86c4c33",
+    "timestamp": "2026-10-02T09:24:00.275316+00:00",
+    "run_id": "run_9824e3fe74",
+    "item_id": "BNK-1057",
+    "decision": "accept",
+    "note": "Auditor verified transaction documentation matches invoice #801."
+  },
+  {
+    "review_id": "rev_a70cc3ad",
+    "timestamp": "2026-10-02T09:25:57.821164+00:00",
+    "run_id": "run_bbab00889b",
+    "item_id": "BNK-1057",
+    "decision": "accept",
+    "note": "Auditor verified transaction documentation matches invoice #801."
+  },
+  {
+    "review_id": "rev_42ff30f4",
+    "timestamp": "2026-10-02T09:28:43.876151+00:00",
+    "run_id": "run_4311e3c3e0",
+    "item_id": "BNK-1057",
+    "decision": "accept",
+    "note": "Auditor verified transaction documentation matches invoice #801."
+  },
+  {
+    "review_id": "rev_9002d637",
+    "timestamp": "2026-10-02T09:33:23.480365+00:00",
+    "run_id": "run_0d10725752",
+    "item_id": "BNK-1057",
+    "decision": "accept",
+    "note": "Auditor verified transaction documentation matches invoice #801."
+  },
+  {
+    "review_id": "rev_92d62fb2",
+    "timestamp": "2026-10-02T13:45:38.220621+00:00",
+    "run_id": "run_ad6b2ceb55",
+    "item_id": "BNK-1057",
+    "decision": "accept",
+    "note": "Auditor verified transaction documentation matches invoice #801."
+  },
+  {
+    "review_id": "rev_bf0ef650",
+    "timestamp": "2026-10-02T13:50:19.032800+00:00",
+    "run_id": "run_906157bf67",
+    "item_id": "BNK-1057",
+    "decision": "accept",
+    "note": "Auditor verified transaction documentation matches invoice #801."
+  },
+  {
+    "review_id": "rev_4537d473",
+    "timestamp": "2026-10-02T13:52:19.059861+00:00",
+    "run_id": "run_57bf73015a",
+    "item_id": "BNK-1057",
+    "decision": "accept",
+    "note": "Auditor verified transaction documentation matches invoice #801."
+  },
+  {
+    "review_id": "rev_e59aa12f",
+    "timestamp": "2026-10-02T14:12:31.933921+00:00",
+    "run_id": "run_9646af2d78",
+    "item_id": "BNK-1057",
+    "decision": "accept",
+    "note": "Auditor verified transaction documentation matches invoice #801."
+  },
+  {
+    "review_id": "rev_c0663717",
+    "timestamp": "2026-10-02T14:13:28.154557+00:00",
+    "run_id": "run_7631a43eb9",
+    "item_id": "BNK-1057",
+    "decision": "accept",
+    "note": "Auditor verified transaction documentation matches invoice #801."
+  },
+  {
+    "review_id": "rev_234f967b",
+    "timestamp": "2026-10-02T14:15:39.571468+00:00",
+    "run_id": "run_d554b6fd1f",
+    "item_id": "BNK-1057",
+    "decision": "accept",
+    "note": "Auditor verified transaction documentation matches invoice #801."
   }
 ]
