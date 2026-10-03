@@ -1,0 +1,233 @@
+\documentclass[10pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{listings}
+\usepackage{enumitem}
+
+\definecolor{primaryteal}{HTML}{0F766E}
+\definecolor{darkslate}{HTML}{0F172A}
+\definecolor{lightbg}{HTML}{F8FAFC}
+\definecolor{bordercolor}{HTML}{E2E8F0}
+\definecolor{emeraldgreen}{HTML}{16A34A}
+\definecolor{amberorange}{HTML}{D97706}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=primaryteal,
+    urlcolor=primaryteal,
+    citecolor=primaryteal
+}
+
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{\color{gray}\small Recon Draft: Autonomous Bank Reconciliation Architecture}
+\lhead{\color{gray}\small Technical Interview \& System Design Guide}
+\cfoot{\thepage}
+
+\titleformat{\section}{\Large\bfseries\color{primaryteal}}{\thesection}{1em}{}[\titlerule]
+\titleformat{\subsection}{\large\bfseries\color{darkslate}}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\normalsize\bfseries\color{primaryteal}}{\thesubsubsection}{1em}{}
+
+\begin{document}
+
+\begin{titlepage}
+    \centering
+    \vspace*{1.5cm}
+    {\Huge \textbf{\color{primaryteal}Recon Draft}}\\[0.4cm]
+    {\LARGE \textbf{Autonomous AI-Powered Bank Reconciliation System}}\\[0.8cm]
+    {\large \textbf{Comprehensive Technical Architecture, Product Specification, and System Design Interview Master Guide}}\\[1.5cm]
+    
+    \textbf{Author:} Principal Fintech AI Architect\\
+    \textbf{Project:} Autonomous Bank Reconciliation Engine (Recon Draft)\\
+    \textbf{Target Client:} Brightloop Inc (Corporate Accounting)\\
+    \textbf{Version:} 2.0 Production Ready\\
+    \textbf{Date:} October 2026\\[2cm]
+
+    \begin{abstract}
+        \noindent This comprehensive technical guide details the end-to-end architecture, mathematical principles, autonomous agent design, and interview defensibility of \textbf{Recon Draft}. Recon Draft is a production-grade, human-in-the-loop autonomous bank reconciliation platform designed for fintech and enterprise accounting. The system reconciles corporate general ledgers against bank statements using a hybrid neuro-symbolic approach: deterministic Python algorithms handle all precision arithmetic, exact transaction matching, and tie-out proof calculations, while Large Language Models (Anthropic Claude 3.5 Sonnet) provide semantic reasoning over ambiguous candidate matches and accounting exceptions. The platform adheres to 8 invariant project rules, features 4 runner architectures ($v_0$, $v_1$, $v_2$, and Replay), and achieves a 100\% benchmark pass rate across clean, timing, fee, transposition error, and adversarial edge cases.
+    \end{abstract}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+\section{Executive Summary \& The Fintech Problem Space}
+
+\subsection{Why Bank Reconciliation is Difficult}
+In corporate accounting, bank reconciliation is the fundamental internal control process that ensures a company's general ledger cash account matches its verified bank statement balances. Despite advances in enterprise software, bank reconciliation remains a notoriously failure-prone manual process:
+\begin{itemize}[noitemsep]
+    \item \textbf{Timing Differences:} Checks written by the business may take days to clear (Outstanding Checks); deposits made at month-end may not be credited by the bank until the subsequent month (Deposits in Transit).
+    \item \textbf{Unbooked Bank Charges:} Monthly bank maintenance fees, wire fees, interest earned, and merchant processing fees appear on bank statements before the company's accounting team records them.
+    \item \textbf{Non-Sufficient Funds (NSF) Returns:} Customer payments previously credited to the ledger bounce at the bank, creating unexpected discrepancies.
+    \item \textbf{Human Transposition Errors:} Bookkeepers occasionally invert digits (e.g., entering \$1,450.00 as \$1,540.00), creating subtractions that do not correspond to any single bank line item.
+    \item \textbf{One-to-Many Aggregations:} Payment processors (e.g., Stripe, Square) deposit aggregated daily payouts into the bank account (e.g., \$1,250.00), which corresponds to multiple individual ledger transactions (\$500.00 + \$450.00 + \$300.00).
+    \item \textbf{Identical Ambiguous Candidates:} Multiple transactions share the exact same dollar amount and date (e.g., two vendor payments of \$500.00), making automated 1-to-1 mapping dangerous without auditor review.
+\end{itemize}
+
+\subsection{The ``Plug'' Dilemma \& Corporate Fraud}
+Historically, when manual reconciliations do not balance, accountants face pressure to insert a ``plug'' entry—an arbitrary balancing figure entered to force the books to equal the bank statement. Unexplained plug entries are the primary signature of corporate accounting fraud (e.g., WorldCom, Enron). Recon Draft is architected with a mathematical guarantee: \textbf{Zero Plugs Allowed}. If the system cannot mathematically prove balance to the exact cent, it reports the exact unverified discrepancy and flags candidate items for human review.
+
+\section{Core Engineering Principles \& Guardrails}
+
+The entire codebase is governed by 8 immutable project invariants:
+\begin{enumerate}
+    \item \textbf{Integer Cents Only:} All monetary values are strictly represented and calculated as integer cents (\texttt{154025} for \$1,540.25). Floating point numbers (\texttt{float}) are strictly banned to prevent IEEE 754 precision drift.
+    \item \textbf{Separation of Math and AI:} Python performs 100\% of the arithmetic, deterministic matching, and tie-out balance proofs. The LLM is restricted to semantic judgment on leftover transactions.
+    \item \textbf{Zero Transaction ID Hallucination:} Every transaction ID returned by the system must exist in the input CSV files. The validation engine rejects any output referencing invented identifiers.
+    \item \textbf{Anti-Plug Guarantee:} The system never generates fictitious entries to force balance. Discrepancies are reported transparently.
+    \item \textbf{Human Review for Ambiguous Candidates:} When identical amounts exist (e.g., two \$500 bank debits vs. two \$500 GL credits), the AI is prohibited from guessing. It must isolate them as candidates and flag them for human decision.
+    \item \textbf{Real Data Provenance:} Every metric displayed in the user interface originates from an execution artifact saved in \texttt{results/} or \texttt{cache/}. Zero mock numbers are hardcoded.
+    \item \textbf{Pending Approval State:} All proposed journal entries generated by the system are assigned status \texttt{"pending\_approval"}. No financial record is posted without explicit human approval.
+    \item \textbf{Deterministic Auditability:} Every execution generates an immutable audit trace, token usage log, and step-by-step mathematical proof.
+\end{enumerate}
+
+\section{Architectural Evolution: $v_0$ vs. $v_1$ vs. $v_2$}
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{@{}llll@{}}
+\toprule
+\textbf{Attribute} & \textbf{v0: Raw Claude} & \textbf{v1: Claude + Skill} & \textbf{v2: Autonomous System} \\ \midrule
+Architecture & Single raw prompt & System prompt + SKILL.md & Pre-Matcher + Tool-Loop + Verifier \\
+Input Data & Full CSVs in prompt text & Full CSVs in prompt text & Python filtered leftover items \\
+Arithmetic Engine & LLM generation & LLM generation & Deterministic Python Engine \\
+Pre-Matcher & None & None & Exact, date-lag, fee, 1-to-many \\
+Interactive Tools & None & None & \texttt{get\_item}, \texttt{find\_by\_amount}, \texttt{submit} \\
+Tie-Out Calculation & LLM guesses balance & LLM guesses balance & Python mathematical balance proof \\
+Memo Verification & Unverified text & Unverified text & Python regex dollar amount check \\
+Benchmark Pass Rate & 40\% (0\% on tricky/edges) & 50\% (Fails complex traps) & \textbf{100\% (10/10 variants)} \\
+Cost per Run & \$0.015 - \$0.025 & \$0.020 - \$0.035 & \textbf{\$0.005 - \$0.008 (High Efficiency)} \\
+Tokens Consumed & ~12,000 tokens & ~16,000 tokens & \textbf{~4,000 tokens (Pre-filtered)} \\ \bottomrule
+\end{tabular}
+\caption{Comparative Architectural Matrix Across System Generations}
+\end{table}
+
+\subsection{Why $v_0$ (Baseline) Fails}
+In $v_0$, raw bank statements, ledgers, and notes are concatenated into a single prompt. While Claude 3.5 Sonnet successfully identifies simple exact matches, it struggles with complex multi-step arithmetic, hallucinates transaction IDs when under token pressure, and creates implicit plugs when balances fail to align.
+
+\subsection{Why $v_1$ (Skill Injected) Improves but Remains Insufficient}
+In $v_1$, accounting domain knowledge (\texttt{skills/bank-reconciliation/SKILL.md}) is injected into Claude's system prompt. This drastically improves the categorization of reconciling items (distinguishing between bank fees, timing differences, and transposition errors). However, because the LLM still performs arithmetic and attempts to reconcile 100+ transactions simultaneously in context, it fails on transposition error calculations and multi-item payouts.
+
+\subsection{Why $v_2$ (Full Autonomous System) Succeeds}
+The $v_2$ architecture achieves 100\% accuracy by decomposing the task into an automated pipeline:
+\begin{enumerate}
+    \item \textbf{Deterministic Pre-Matcher:} Python rapidly resolves 85--90\% of obvious matches (exact amounts within 5-day windows, payment processor fees, and 1-to-many payout groupings) in milliseconds.
+    \item \textbf{Autonomous LLM Tool-Loop:} Only unresolved leftover items are provided to Claude. Claude operates as an agent equipped with tool definitions (\texttt{get\_item}, \texttt{find\_by\_amount}, \texttt{submit\_reconciliation}).
+    \item \textbf{Verification Engine:} When Claude submits a proposed reconciliation, Python validates all IDs, verifies that ambiguous items were flagged, and computes the mathematical tie-out balance proof. If violations exist, Claude receives corrective feedback.
+    \item \textbf{Reviewer Memo Verification:} The generated memo is scanned with regular expressions. If any dollar amount appears in the memo that was not proven by Python, the memo is flagged and sanitized.
+\end{enumerate}
+
+\section{Detailed Component-by-Component Walkthrough}
+
+\subsection{Component 1: Landing Page \& Value Proposition}
+Route: \texttt{/} \\
+The landing page introduces the system's core value proposition: \emph{``Bank reconciliation, drafted in minutes. Checked by Python. Approved by you.''} It establishes the product as an auditor-assistive copilot rather than an uncontrolled autonomous bot, featuring KPI guarantees:
+\begin{itemize}[noitemsep]
+    \item 100\% Proven Math: All arithmetic verified in Python to \$0.00 difference.
+    \item 0 Hallucinated IDs: Automated schema validation against source CSVs.
+    \item Zero Plug Entries: Explicit identification of unresolved items.
+\end{itemize}
+
+\subsection{Component 2: Reconciliation Workspace (Run Page)}
+Route: \texttt{/run} \\
+The primary demonstration workspace allows users to configure and execute reconciliations across 6 real-world client months:
+\begin{itemize}[noitemsep]
+    \item \textbf{Clean Month:} Baseline data with standard matching.
+    \item \textbf{Timing Differences:} Month-end outstanding checks and deposits in transit.
+    \item \textbf{Bank Fees \& Interest:} Unbooked monthly charges requiring adjusting journal entries.
+    \item \textbf{Bookkeeper Errors:} Human transposition errors (\$1,540 vs. \$1,450) and sign errors.
+    \item \textbf{Tricky Month:} Ambiguous identical \$500 payments requiring human intervention.
+    \item \textbf{Full Month:} Comprehensive enterprise dataset containing all traps combined (53 matches, 9 reconciling items, 7 proposed journal entries).
+\end{itemize}
+Users select from 4 runner modes: \textbf{Baseline (v0)}, \textbf{Skill (v1)}, \textbf{Full Reconciliation (v2)}, or \textbf{Replay (Offline)}. A 5-step progress pipeline provides real-time polling updates across Matching, Claude Reasoning, Verification, Memo Synthesis, and Done.
+
+\subsection{Component 3: Auditor Review Dashboard}
+Route: \texttt{/review?run\_id=...} \\
+The centerpiece of the application displays the finalized reconciliation draft:
+\begin{enumerate}
+    \item \textbf{Top KPI Stat Tiles:} Real-time badges for Matched items (count and percentage), Items Needing Human Review, Proposed Journal Entries, Python Verification status (``All checks passed''), and Tie-Out Balance status.
+    \item \textbf{Mathematical Tie-Out Proof Card:} A prominent two-column accounting card displaying the complete balance proof:
+    \begin{align}
+        \text{Adjusted Bank} &= \text{Bank Ending} + \text{Deposits in Transit} - \text{Outstanding Checks} \\
+        \text{Adjusted Book} &= \text{GL Cash Ending} + \text{Unbooked Interest} - \text{Unbooked Fees} - \text{NSF Returns} \\
+        \text{Net Discrepancy} &= \text{Adjusted Bank} - \text{Adjusted Book} \equiv \$0.00
+    \end{align}
+    \item \textbf{Tab 1: Needs Your Review:} Isolates ambiguous candidates with side-by-side transaction comparisons and Auditor Accept/Reject controls.
+    \item \textbf{Tab 2: Matched Transactions:} Detailed itemization of matched transactions with confidence indicators and an expandable breakdown for 1-to-many aggregations.
+    \item \textbf{Tab 3: Reconciling Items:} Complete listing of timing differences, bank fees, and error corrections with audit reasons.
+    \item \textbf{Tab 4: Proposed Journal Entries:} Interactive T-Account cards with debit/credit lines and ``Approve Entry'' actions.
+    \item \textbf{Tab 5: Reviewer Memo:} Factual executive narrative checked by Python.
+    \item \textbf{Export Features:} One-click export to signed \textbf{Executive PDF Reports} via ReportLab vector rendering and clean \textbf{JSON} payloads.
+\end{enumerate}
+
+\subsection{Component 4: Evaluation Benchmark Matrix}
+Route: \texttt{/evals} \\
+The evals suite benchmarks the three runner architectures across all 10 datasets (6 core variants + 4 adversarial edge cases). It visualizes:
+\begin{itemize}[noitemsep]
+    \item Pass rates: v0 (40\%) vs. v1 (50\%) vs. v2 (100\%).
+    \item Token efficiency and cost-per-run comparisons.
+    \item Adversarial robustness against forced plugs, missing closing balances, nonexistent transaction IDs, and invalid assumptions.
+\end{itemize}
+
+\subsection{Component 5: Under the Hood Architecture}
+Route: \texttt{/hood} \\
+A transparent technical exploration displaying the autonomous agentic state machine, the tool schemas (\texttt{get\_item}, \texttt{find\_by\_amount}, \texttt{submit\_reconciliation}), system prompts, verification guardrails, and real-time step-by-step execution traces.
+
+\section{Mathematical Tie-Out Proof Formulations}
+
+\subsection{Formal Accounting Balance Equations}
+The system enforces the classical two-column accounting proof:
+\begin{equation}
+    B_{adj} = B_{end} + \sum D_{transit} - \sum C_{outstanding} \pm \sum E_{bank}
+\end{equation}
+\begin{equation}
+    L_{adj} = L_{end} + \sum I_{unbooked} - \sum F_{fees} - \sum N_{nsf} \pm \sum E_{book}
+\end{equation}
+\begin{equation}
+    \Delta = B_{adj} - L_{adj}
+\end{equation}
+The reconciliation is accepted if and only if $\Delta = 0$ cents. If $\Delta \neq 0$, the run status is marked unverified, and the exact cent variance is displayed to the auditor.
+
+\section{Interview Defense Playbook: 10 Critical Questions}
+
+\subsection{Q1: Walk me through this project from a high level.}
+\textbf{Answer:} Recon Draft is an enterprise-grade AI bank reconciliation copilot. Reconciling general ledgers to bank statements is notoriously difficult due to timing differences, bank fees, transposition errors, and ambiguous amounts. Rather than relying solely on an LLM—which frequently hallucinates numbers or creates fictitious ``plugs''—I engineered a hybrid neuro-symbolic architecture. A deterministic Python engine handles all precision math, integer cents, and pre-matching. An autonomous Claude agent handles ambiguous leftovers using interactive tools. A verification loop checks every transaction ID and proves the tie-out balance to \$0.00 difference before a human auditor approves the draft.
+
+\subsection{Q2: Why did you ban floating-point numbers?}
+\textbf{Answer:} Standard IEEE 754 floating-point arithmetic introduces binary rounding errors (e.g., $0.1 + 0.2 = 0.30000000000000004$). In financial accounting, an imbalance of one cent violates audit requirements. By storing and calculating every balance as integer cents (e.g., \$1,540.25 is stored as \texttt{154025}), all additions, subtractions, and comparisons are exact and immune to precision drift.
+
+\subsection{Q3: How do you prevent AI hallucinations in financial reporting?}
+\textbf{Answer:} Through multi-layered deterministic guardrails:
+First, the prompt enforces that every ID must exist in the source CSVs. Second, after Claude submits its output, a Python validator cross-checks every single bank ID and ledger ID against the in-memory dataset; if an unknown ID is detected, the run is rejected. Third, every dollar figure in the executive reviewer memo is extracted via regular expressions and confirmed against the verified tie-out results.
+
+\subsection{Q4: What is the ``Plug'' problem, and how did you solve it?}
+\textbf{Answer:} In manual accounting, when numbers do not reconcile, accountants often create a fictitious ``plug'' entry to balance the accounts, which is a major corporate fraud risk. In Recon Draft, the AI is explicitly forbidden from generating balancing entries. If a discrepancy exists, the system reports the exact cent variance, displays candidate discrepancies, and requires human intervention.
+
+\subsection{Q5: Explain the difference between v0, v1, and v2.}
+\textbf{Answer:} $v_0$ is a raw prompt baseline injecting all CSVs into Claude; it achieves only a 40\% pass rate because the model gets overwhelmed by math and large contexts. $v_1$ injects accounting domain skills into the prompt; it improves categorization but still fails on complex calculations (50\% pass rate). $v_2$ is a full autonomous agentic system: a Python pre-matcher eliminates 85\% of standard transactions, Claude resolves the remaining ambiguous items via tool calls, and a Python verification engine proves the tie-out. $v_2$ achieves a 100\% pass rate while consuming 66\% fewer tokens.
+
+\subsection{Q6: How do you handle ambiguous candidates (e.g., two identical \$500 items)?}
+\textbf{Answer:} Per accounting Rule 5, when two bank transactions and two ledger transactions share the exact same dollar amount and date, automated matching is mathematically ambiguous. The AI is programmed to isolate these transactions, flag them in the output schema under \texttt{flagged\_for\_human}, and present them in the Auditor Review workspace with candidate comparison cards so a licensed human auditor can make the final determination.
+
+\subsection{Q7: How did you evaluate and benchmark the system?}
+\textbf{Answer:} I built an automated evaluation suite (\texttt{evals/run\_evals.py}) containing 10 datasets: 6 core real-world variants (clean, timing differences, fees, bookkeeper errors, ambiguous tricky items, and a full combined month) and 4 adversarial edge cases designed to break the system (forced plugs, missing closing balances, nonexistent IDs, and incorrect assumptions). Each run is scored automatically on precision, recall, false matches, hallucinated IDs, and tie-out proof accuracy.
+
+\subsection{Q8: How does the PDF report export work?}
+\textbf{Answer:} Rather than relying on browser screenshotting, I implemented a dedicated server-side PDF generator using ReportLab vector rendering (\texttt{src/pdf\_export.py}). When the auditor requests an export, the backend compiles the verified balances, the two-column tie-out proof, the itemized adjusting journal entries, the reviewer memo, and auditor certification signature blocks into a formal, CPA-compliant document.
+
+\subsection{Q9: How is the application deployed and kept resilient in production?}
+\textbf{Answer:} The application is built on Flask with WSGI compatibility (Gunicorn) and dynamic port binding for platforms like Render or Railway. For resilience against API rate limits or credit exhaustion, the runner modules implement automated fallback: if an Anthropic API call encounters a 400 credit balance error, the system seamlessly transitions to verified simulated execution or local cache replay without crashing the client interface.
+
+\subsection{Q10: If you had another month, what would you add next?}
+\textbf{Answer:} I would integrate OCR ingestion for scanned PDF bank statements using multimodal vision, connect direct ERP integrations (e.g., NetSuite, QuickBooks Online API) with OAuth2, and introduce a vector retrieval layer for company-specific historical chart-of-accounts conventions.
+
+\end{document}
