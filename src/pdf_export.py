@@ -288,16 +288,16 @@ def generate_reconciliation_pdf(
             Paragraph(f"Unadjusted Ending General Ledger Cash:<br/>&nbsp;&nbsp;<b>{fmt(book_closing)}</b>", styles["Body"]),
         ],
         [
-            Paragraph(f"(+) Deposits in Transit ({dep_in_transit_cnt} items):<br/>&nbsp;&nbsp;<font color='{COLOR_SUCCESS}'>+{fmt(dep_in_transit_sum)}</font>", styles["Body"]),
-            Paragraph(f"(+) Unbooked Interest Earned ({interest_cnt} items):<br/>&nbsp;&nbsp;<font color='{COLOR_SUCCESS}'>+{fmt(interest_sum)}</font>", styles["Body"]),
+            Paragraph(f"(+) Deposits in Transit ({dep_in_transit_cnt} items):<br/>&nbsp;&nbsp;<font color='{COLOR_SUCCESS}'>+{fmt(abs(dep_in_transit_sum))}</font>", styles["Body"]),
+            Paragraph(f"(+) Unbooked Interest Earned ({interest_cnt} items):<br/>&nbsp;&nbsp;<font color='{COLOR_SUCCESS}'>+{fmt(abs(interest_sum))}</font>", styles["Body"]),
         ],
         [
-            Paragraph(f"(-) Outstanding Checks ({out_checks_cnt} items):<br/>&nbsp;&nbsp;<font color='{COLOR_AMBER}'>-{fmt(out_checks_sum)}</font>", styles["Body"]),
-            Paragraph(f"(-) Unbooked Bank Fees ({fees_cnt} items):<br/>&nbsp;&nbsp;<font color='{COLOR_AMBER}'>-{fmt(fees_sum)}</font>", styles["Body"]),
+            Paragraph(f"(-) Outstanding Checks ({out_checks_cnt} items):<br/>&nbsp;&nbsp;<font color='{COLOR_AMBER}'>-{fmt(abs(out_checks_sum))}</font>", styles["Body"]),
+            Paragraph(f"(-) Unbooked Bank Fees ({fees_cnt} items):<br/>&nbsp;&nbsp;<font color='{COLOR_AMBER}'>-{fmt(abs(fees_sum))}</font>", styles["Body"]),
         ],
         [
             Paragraph("&nbsp;", styles["Body"]),
-            Paragraph(f"(-) NSF Returns / Chargebacks ({nsf_cnt} items):<br/>&nbsp;&nbsp;<font color='{COLOR_AMBER}'>-{fmt(nsf_sum)}</font>", styles["Body"]),
+            Paragraph(f"(-) NSF Returns / Chargebacks ({nsf_cnt} items):<br/>&nbsp;&nbsp;<font color='{COLOR_AMBER}'>-{fmt(abs(nsf_sum))}</font>", styles["Body"]),
         ],
         [
             Paragraph(f"<b>ADJUSTED BANK BALANCE:</b><br/><font size=10 color='{COLOR_PRIMARY}'><b>{fmt(adj_bank)}</b></font>", styles["BodyBold"]),
@@ -365,7 +365,7 @@ def generate_reconciliation_pdf(
             Paragraph(desc, styles["Body"]),
             Paragraph(deb_str, styles["Body"]),
             Paragraph(crd_str, styles["Body"]),
-            Paragraph(f"<font color='{COLOR_AMBER}'><b>{status}</b></font>", styles["Body"]),
+            Paragraph(f"<font color='{COLOR_AMBER}' size=7.5><b>{status}</b></font>", styles["Body"]),
         ])
 
     if len(je_rows) == 1:
@@ -377,7 +377,7 @@ def generate_reconciliation_pdf(
             Paragraph("N/A", styles["Body"]),
         ])
 
-    je_table = Table(je_rows, colWidths=[20, 190, 150, 130, 50])
+    je_table = Table(je_rows, colWidths=[20, 185, 135, 120, 80], repeatRows=1)
     je_table.setStyle(TableStyle([
         ("BACKGROUND", (0, 0), (-1, 0), COLOR_PRIMARY),
         ("ALIGN", (0, 0), (-1, 0), "LEFT"),
@@ -433,7 +433,7 @@ def generate_reconciliation_pdf(
             Paragraph("All records matched.", styles["Body"]),
         ])
 
-    recon_table = Table(recon_rows, colWidths=[65, 45, 120, 65, 245])
+    recon_table = Table(recon_rows, colWidths=[65, 45, 120, 65, 245], repeatRows=1)
     recon_table.setStyle(TableStyle([
         ("BACKGROUND", (0, 0), (-1, 0), COLOR_DARK),
         ("ALIGN", (0, 0), (-1, 0), "LEFT"),
