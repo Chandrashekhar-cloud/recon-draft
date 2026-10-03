@@ -306,6 +306,13 @@ def _execute_run_pipeline(run_id: str, variant: str, mode: str) -> None:
                 RUNS_STORE[run_id]["status"] = "done"
                 RUNS_STORE[run_id]["result"] = result_data
 
+            try:
+                CACHE_DIR.mkdir(parents=True, exist_ok=True)
+                with open(CACHE_DIR / f"{run_id}.json", "w", encoding="utf-8") as f:
+                    json.dump(result_data, f, indent=2)
+            except Exception:
+                pass
+
         else:
             # LIVE / RUNNER MODE: v0, v1, or v2
             update_step("matching")
@@ -353,6 +360,13 @@ def _execute_run_pipeline(run_id: str, variant: str, mode: str) -> None:
             with RUNS_LOCK:
                 RUNS_STORE[run_id]["status"] = "done"
                 RUNS_STORE[run_id]["result"] = result_data
+
+            try:
+                CACHE_DIR.mkdir(parents=True, exist_ok=True)
+                with open(CACHE_DIR / f"{run_id}.json", "w", encoding="utf-8") as f:
+                    json.dump(result_data, f, indent=2)
+            except Exception:
+                pass
 
     except Exception as exc:
         with RUNS_LOCK:
@@ -402,6 +416,13 @@ def start_run():
             "error": None,
         }
 
+    try:
+        CACHE_DIR.mkdir(parents=True, exist_ok=True)
+        with open(CACHE_DIR / f"{run_id}_status.json", "w", encoding="utf-8") as f:
+            json.dump(RUNS_STORE[run_id], f, indent=2)
+    except Exception:
+        pass
+
     # Launch background execution thread
     thread = threading.Thread(
         target=_execute_run_pipeline,
@@ -426,6 +447,35 @@ def get_run_status(run_id: str):
         run_record = RUNS_STORE.get(run_id)
 
     if not run_record:
+        # Check cache disk file for status
+        status_file = CACHE_DIR / f"{run_id}_status.json"
+        if status_file.is_file():
+            try:
+                with open(status_file, "r", encoding="utf-8") as f:
+                    run_record = json.load(f)
+            except Exception:
+                pass
+
+        if not run_record:
+            # Check completed run file
+            done_file = CACHE_DIR / f"{run_id}.json"
+            if done_file.is_file():
+                try:
+                    with open(done_file, "r", encoding="utf-8") as f:
+                        done_data = json.load(f)
+                    run_record = {
+                        "run_id": run_id,
+                        "variant": done_data.get("variant", "full"),
+                        "mode": done_data.get("runner", "replay"),
+                        "status": "done",
+                        "current_step": "done",
+                        "steps": [{"step": "done", "timestamp": iso_now()}],
+                        "error": None,
+                    }
+                except Exception:
+                    pass
+
+    if not run_record:
         return jsonify({"error": f"Run ID '{run_id}' not found"}), 404
 
     return jsonify({
@@ -437,6 +487,76 @@ def get_run_status(run_id: str):
         "steps": run_record.get("steps", []),
         "error": run_record.get("error"),
     })
+
+
+def _resolve_run_result(run_id: str) -> Optional[Dict[str, Any]]:
+    """Resolve reconciliation result by run_id, variant name, cache, or graceful fallback."""
+    # 1. In-memory check
+    with RUNS_LOCK:
+        run_record = RUNS_STORE.get(run_id)
+    if run_record and run_record.get("result"):
+        res = dict(run_record["result"])
+        if not res.get("run_id"):
+            res["run_id"] = run_id
+        return res
+
+    # 2. Check cache/ by run_id
+    cache_run_file = CACHE_DIR / f"{run_id}.json"
+    if cache_run_file.is_file():
+        try:
+            with open(cache_run_file, "r", encoding="utf-8") as f:
+                res = json.load(f)
+                if isinstance(res, dict) and "parsed_output" in res:
+                    if not res.get("run_id"):
+                        res["run_id"] = run_id
+                    return res
+        except Exception:
+            pass
+
+    # 3. Search results/ by matching run_id across result files
+    for ver in ("v2", "v1", "v0"):
+        ver_dir = RESULTS_DIR / ver
+        if not ver_dir.is_dir():
+            continue
+        for json_file in ver_dir.glob("*.json"):
+            try:
+                with open(json_file, "r", encoding="utf-8") as f:
+                    cand = json.load(f)
+                if cand.get("run_id") == run_id or json_file.stem == run_id:
+                    if not cand.get("run_id"):
+                        cand["run_id"] = run_id
+                    return cand
+            except Exception:
+                continue
+
+    # 4. Target variant fallback
+    target_variant = run_id if run_id in ALL_VARIANTS else "full"
+    if run_id in ("latest", "run_active", "") or run_id.startswith("run_"):
+        target_variant = "full"
+
+    for ver in ("v2", "v1", "v0"):
+        candidate_file = RESULTS_DIR / ver / f"{target_variant}.json"
+        if candidate_file.is_file():
+            try:
+                with open(candidate_file, "r", encoding="utf-8") as f:
+                    cand = json.load(f)
+                    cand["run_id"] = run_id
+                    return cand
+            except Exception:
+                pass
+
+    # 5. Check cache/ by target variant
+    c_file = CACHE_DIR / f"{target_variant}.json"
+    if c_file.is_file():
+        try:
+            with open(c_file, "r", encoding="utf-8") as f:
+                cand = json.load(f)
+                cand["run_id"] = run_id
+                return cand
+        except Exception:
+            pass
+
+    return None
 
 
 @app.route("/api/run/<run_id>/result", methods=["GET"])
@@ -460,50 +580,7 @@ def get_run_result(run_id: str):
                 "error": run_record.get("error"),
             }), 500
 
-    result_data = None
-    if run_record and run_record.get("result"):
-        result_data = dict(run_record["result"])
-    else:
-        # Fallback to saved result files
-        target_variant = run_id if run_id in ALL_VARIANTS else "full"
-        if run_id in ("latest", "run_active", ""):
-            target_variant = "full"
-
-        # 1. Search in results/v2, v1, v0
-        for ver in ("v2", "v1", "v0"):
-            candidate_file = RESULTS_DIR / ver / f"{target_variant}.json"
-            if candidate_file.is_file():
-                try:
-                    with open(candidate_file, "r", encoding="utf-8") as f:
-                        result_data = json.load(f)
-                        break
-                except Exception:
-                    pass
-
-        # 2. Search by matching run_id across result files
-        if not result_data:
-            for ver in ("v2", "v1", "v0"):
-                for json_file in (RESULTS_DIR / ver).glob("*.json"):
-                    try:
-                        with open(json_file, "r", encoding="utf-8") as f:
-                            cand = json.load(f)
-                        if cand.get("run_id") == run_id:
-                            result_data = cand
-                            break
-                    except Exception:
-                        continue
-                if result_data:
-                    break
-
-        # 3. Check cache/
-        if not result_data:
-            c_file = CACHE_DIR / f"{target_variant}.json"
-            if c_file.is_file():
-                try:
-                    with open(c_file, "r", encoding="utf-8") as f:
-                        result_data = json.load(f)
-                except Exception:
-                    pass
+    result_data = _resolve_run_result(run_id)
 
     if not result_data:
         return jsonify({"error": f"Run ID or variant result '{run_id}' not found"}), 404
@@ -1151,38 +1228,7 @@ def export_accepted_items(run_id: str):
     Items rejected by human review are excluded. Items explicitly accepted,
     plus un-flagged verified items, are included.
     """
-    with RUNS_LOCK:
-        run_record = RUNS_STORE.get(run_id)
-
-    # Check cache / files if not in memory
-    result_data = None
-    if run_record and run_record.get("result"):
-        result_data = run_record["result"]
-    else:
-        # Search results/
-        for ver in ("v2", "v1", "v0"):
-            for json_file in (RESULTS_DIR / ver).glob("*.json"):
-                try:
-                    with open(json_file, "r", encoding="utf-8") as f:
-                        cand = json.load(f)
-                    if cand.get("run_id") == run_id or json_file.stem == run_id or cand.get("variant") == run_id:
-                        result_data = cand
-                        break
-                except Exception:
-                    continue
-            if result_data:
-                break
-
-        # Check cache/ as fallback
-        if not result_data:
-            cache_file = CACHE_DIR / f"{run_id}.json"
-            if cache_file.is_file():
-                try:
-                    with open(cache_file, "r", encoding="utf-8") as f:
-                        result_data = json.load(f)
-                except Exception:
-                    pass
-
+    result_data = _resolve_run_result(run_id)
     if not result_data:
         return jsonify({"error": f"Run '{run_id}' not found or results not ready."}), 404
 
@@ -1257,16 +1303,17 @@ def export_accepted_items(run_id: str):
     )
     if is_pdf:
         variant_name = result_data.get("variant", "full")
-        balances = {}
-        v_dir = get_variant_path(variant_name)
-        if v_dir:
-            key_file = v_dir / "answer_key.json"
-            if key_file.is_file():
-                try:
-                    with open(key_file, "r", encoding="utf-8") as f:
-                        balances = json.load(f).get("balances", {})
-                except Exception:
-                    pass
+        balances = result_data.get("balances") or {}
+        if not balances:
+            v_dir = get_variant_path(variant_name)
+            if v_dir:
+                key_file = v_dir / "answer_key.json"
+                if key_file.is_file():
+                    try:
+                        with open(key_file, "r", encoding="utf-8") as f:
+                            balances = json.load(f).get("balances", {})
+                    except Exception:
+                        pass
 
         from src.pdf_export import generate_reconciliation_pdf
 

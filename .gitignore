@@ -13,6 +13,7 @@ __pycache__/
 
 # Cache temporary files
 cache/*.tmp
+cache/run_*.json
 
 # Testing cache
 .pytest_cache/
