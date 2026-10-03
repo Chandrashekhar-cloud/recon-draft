@@ -1,0 +1,52 @@
+name: CI / CD - Test and Deploy to Render
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  test:
+    name: Run Test Suite
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run Pytest
+        env:
+          ANTHROPIC_API_KEY: "mock-key-for-tests"
+        run: |
+          pytest
+
+  deploy:
+    name: Trigger Render Deployment
+    needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Render Deploy Hook
+        env:
+          RENDER_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+        run: |
+          if [ -n "$RENDER_HOOK" ]; then
+            echo "🚀 Triggering Render deploy hook..."
+            curl -s -S -X POST "$RENDER_HOOK"
+            echo "✅ Render deployment triggered successfully!"
+          else
+            echo "ℹ️ RENDER_DEPLOY_HOOK_URL secret not set."
+            echo "If your Render service is connected to GitHub directly, Render will automatically deploy on commit."
+            echo "To trigger deployments explicitly via this workflow, set RENDER_DEPLOY_HOOK_URL in GitHub Repo Settings -> Secrets -> Actions."
+          fi
