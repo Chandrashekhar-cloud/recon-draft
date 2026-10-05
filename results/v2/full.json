@@ -1,7 +1,7 @@
 {
   "variant": "full",
   "runner": "v2",
-  "timestamp": "2026-10-02T13:55:33.614358+00:00",
+  "timestamp": "2026-10-05T13:54:57.793100+00:00",
   "model": "claude-sonnet-4-5 (v2 simulated)",
   "tokens": {
     "input_tokens": 4010,
@@ -1119,5 +1119,26 @@
     "memo": "Reconciliation Review: 53 matched transaction groups and 9 reconciling items were verified.\nProposed Journal Entries (7 pending approval):\n- Adjusting entry for bank_fee_unbooked (BNK-1050): $40.00 (status: pending_approval)\n- Adjusting entry for interest_unbooked (BNK-1051): $55.20 (status: pending_approval)\n- Adjusting entry for nsf_return (BNK-1052): $480.00 (status: pending_approval)\n- Adjusting entry for duplicate_ledger (GL-2052): $95.00 (status: pending_approval)\n- Adjusting entry for transposition_error (GL-2053): $90.00 (status: pending_approval)\n- Adjusting entry for sign_error (GL-2054): $600.00 (status: pending_approval)\n- Adjusting entry for bank_fee_unbooked (BNK-1056): $87.30 (status: pending_approval)\nItems Requiring Human Review (1 item(s)):\n- IDs [BNK-1057, BNK-1058, GL-2059, GL-2060]: Ambiguous candidates with identical amounts flagged for human review.\nTie-Out Status: Proved. Adjusted bank balance ($87,723.65) equals adjusted book balance ($87,723.65) with $0.00 difference.",
     "parse_error": false,
     "memo_checked": true
+  },
+  "score": {
+    "match_precision": 1.0,
+    "match_recall": 1.0,
+    "false_matches": 0,
+    "false_matches_details": [],
+    "classification_accuracy": 1.0,
+    "ambiguous_handled": true,
+    "hallucinated_ids": 0,
+    "hallucinated_ids_details": [],
+    "tie_out_correct": true,
+    "plug_detected": false,
+    "journal_entries_pending": true,
+    "case_pass": true,
+    "details": {
+      "expected_matches_count": 53,
+      "system_matches_count": 53,
+      "correct_matches_count": 53,
+      "key_reconciling_count": 9,
+      "system_reconciling_count": 9
+    }
   }
 }

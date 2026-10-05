@@ -1,4 +1,3 @@
-
 # Recon Draft ⚖️
 ### Autonomous Bank Reconciliation Assistant &bull; Built for Review
 
@@ -19,7 +18,7 @@ Instead of letting an AI perform arithmetic, Recon Draft uses a **hybrid decoupl
 ## 🌐 Live Web Application
 
 - **Live URL:** [https://recon-draft-s0tm.onrender.com](https://recon-draft-s0tm.onrender.com)
-- **Primary Demo:** [https://recon-draft-s0tm.onrender.com/run](https://recon-draft-s0tm.onrender.com/run) *(Click "▶ Run Recommended Demo")*
+- **Primary Demo:** [https://recon-draft-s0tm.onrender.com/run](https://recon-draft-s0tm.onrender.com/run) *(Click "▶ Run Reconciliation")*
 - **Architecture Benchmarks:** [https://recon-draft-s0tm.onrender.com/evals](https://recon-draft-s0tm.onrender.com/evals)
 
 ---
@@ -53,7 +52,7 @@ Instead of letting an AI perform arithmetic, Recon Draft uses a **hybrid decoupl
 
 ## ✨ Key Features
 
-- **⚡ 1-Click Recommended Demo:** Pre-configures the Full Month scenario (118 records) and executes the end-to-end pipeline in seconds.
+- **⚡ 1-Click Reconciliation:** Pre-configures the Full Month scenario (118 records) and executes the end-to-end pipeline in seconds.
 - **⚖️ Two-Column Mathematical Tie-Out Proof:**
   - **Adjusted Bank Balance:** `$85,573.65` + `$2,800.00` (Deposits in Transit) - `$650.00` (Outstanding Checks) = **`$87,723.65`**
   - **Adjusted Book Balance:** `$87,490.75` - `$127.30` (Bank Fees) - `$480.00` (NSF Return) + `$55.20` (Interest) + `$785.00` (Clerical Errors) = **`$87,723.65`**
@@ -175,4 +174,3 @@ The project is configured for 1-click deployment on **Render** via [`render.yaml
 - **Runtime:** Python 3.11.9
 - **Server:** Gunicorn (`--workers 1 --threads 4 --timeout 120`)
 - **CI/CD:** Automated GitHub Actions test pipeline triggers on every push to `main`.
-
